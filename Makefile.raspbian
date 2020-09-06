@@ -1,11 +1,4 @@
-# I prefer "handmade" make files, it is a little bit of more worktime to start with
-# but I can read them, others can, and I know what they do!
-#
-# export PATH=/home/chrissalo/gcc-arm/bin:$PATH
-
 all:	tailgunner vecx vecx2 asteroids gyrocks battlezone gravitar spaceduel tempest blackwidow deluxe lunar Cine helloWorld redbaron linmenu VMMenu xhyperoid zblast
-
-
 
 lunar:
 	cd lunar; make -f Makefile.raspbian

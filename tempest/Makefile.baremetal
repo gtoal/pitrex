@@ -1,9 +1,3 @@
-# I prefer "handmade" make files, it is a little bit of more worktime to start with
-# but I can read them, others can, and I know what they do!
-#
-# export PATH=/home/chrissalo/gcc-arm/bin:$PATH
-
-
 # -DLOADER_START=0x4000000
 # must also be defined/changed in *.S files, since they do not parse defines
 # REMEMBER in bcm2835

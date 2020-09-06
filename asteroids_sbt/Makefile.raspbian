@@ -22,6 +22,21 @@ pitrexLib:
 $(BUILD_DIR)gmain.o: gmain.c rom.h game.c
 	$(CC) $(CFLAGS) -c -o $(BUILD_DIR)gmain.o gmain.c
 
+rom.h: game.c
+	@echo rom.h is rebuilt when game.c is rebuilt.
+
+035127.02:
+	@cp `md5sum \`locate 035127.02\` 2>/dev/null | fgrep e6c34b639fe16deff0f951be63076812 | head -1 | tr ' ' '\n' | tail -1` . 2> /dev/null || ( echo You need to follow the instructions in README-ROMS.txt in the main directory && exit 1 )
+	
+035145.02:
+	@cp `md5sum \`locate 035145.02\` 2>/dev/null | fgrep ca4f0146fb806f58a12e3e69d8fd7277 | head -1 | tr ' ' '\n' | tail -1` . 2> /dev/null || ( echo You need to follow the instructions in README-ROMS.txt in the main directory && exit 1 )
+
+035143.02:
+	@cp `md5sum \`locate 035143.02\` 2>/dev/null | fgrep dd35aef4a17c271151413cbb0893b550 | head -1 | tr ' ' '\n' | tail -1` . 2> /dev/null || ( echo You need to follow the instructions in README-ROMS.txt in the main directory && exit 1 )
+
+035144.02:
+	@cp `md5sum \`locate 035144.02\` 2>/dev/null | fgrep 8010044e056c7a2ba3538a8c68b773d2 | head -1 | tr ' ' '\n' | tail -1` . 2> /dev/null || ( echo You need to follow the instructions in README-ROMS.txt in the main directory && exit 1 )
+
 game.c: trans 035127.02 035145.02 035143.02 035144.02
 	./trans > game.c
 

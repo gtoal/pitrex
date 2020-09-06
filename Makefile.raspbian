@@ -3,79 +3,85 @@
 #
 # export PATH=/home/chrissalo/gcc-arm/bin:$PATH
 
-# a removed: astMake
-all:	tailgunnerMake vecxMake vecxMake2 asteroidsMake gyrocksMake battlezoneMake gravitarMake spaceduelMake tempestMake blackwidowMake deluxeMake lunarMake CineMake helloWorldMake redbaronMake linmenuMake
+all:	tailgunner vecx vecx2 asteroids gyrocks battlezone gravitar spaceduel tempest blackwidow deluxe lunar Cine helloWorld redbaron linmenu VMMenu xhyperoid zblast
 
 
 
-lunarMake:
+lunar:
 	cd lunar; make -f Makefile.raspbian
 	cd ..
 
-redbaronMake:
+redbaron:
 	cd redbaron; make -f Makefile.raspbian
 	cd ..
 
-#astMake:
-#	cd asteroids; make -f Makefile.raspbian
-#	cd ..
-
-deluxeMake:
+deluxe:
 	cd deluxe; make -f Makefile.raspbian
 	cd ..
 
-blackwidowMake:
+blackwidow:
 	cd blackwidow; make -f Makefile.raspbian
 	cd ..
 
-tailgunnerMake:
+tailgunner:
 	cd tailgunner; make -f Makefile.raspbian
 	cd ..
 
-vecxMake:
+vecx:
 	cd vecx.emulated; make -f Makefile.raspbian
 	cd ..
 
-vecxMake2:
+vecx2:
 	cd vecx.direct; make -f Makefile.raspbian
 	cd ..
 
-asteroidsMake:
+asteroids:
 	cd asteroids_sbt; make -f Makefile.raspbian
 	cd ..
 
-gyrocksMake:
+gyrocks:
 	cd gyrocks; make -f Makefile.raspbian
 	cd ..
 
-battlezoneMake:
+battlezone:
 	cd battlezone; make -f Makefile.raspbian
 	cd ..
 
-gravitarMake:
+gravitar:
 	cd gravitar; make -f Makefile.raspbian
 	cd ..
 
-spaceduelMake:
+spaceduel:
 	cd spaceduel; make -f Makefile.raspbian
 	cd ..
 
-tempestMake:
+tempest:
 	cd tempest; make -f Makefile.raspbian
 	cd ..
 
-CineMake:
+Cine:
 	cd cinematronics; make -f Makefile.raspbian
 	cd ..
 
-helloWorldMake:
+helloWorld:
 	cd hello_world; make -f Makefile.raspbian
 	cd ..
 
-linmenuMake:
+linmenu:
 	cd linmenu; make -f Makefile
 	cd ..
 
+VMMenu:
+	cd VMMenu; make -f Makefile.raspbian
+	cd ..
+	
+xhyperoid:
+	cd xhyperoid; make -f Makefile
+	cd ..
+	
+zblast:
+	cd zblast; make -f Makefile
+	cd ..
 
 clean:
 	cd lunar; make -f Makefile.raspbian clean
@@ -117,4 +123,10 @@ clean:
 	cd pitrex/pitrex; make -f Makefile.raspbian clean
 	cd ..
 	cd pitrex/vectrex; make -f Makefile.raspbian clean
+	cd ..
+	cd VMMenu; make -f Makefile.raspbian clean
+	cd ..
+	cd xhyperoid; make -f Makefile clean
+	cd ..
+	cd zblast; make -f Makefile clean
 	cd ..

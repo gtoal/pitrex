@@ -7,16 +7,21 @@ VECTREX = $(COMMON)vectrex/
 CFLAGS = -DPITREX=1  -DPIZERO -DRPI0 -Ofast -I$(BASE) -I$(PITREX) -I$(VECTREX)  -I$(COMMON)
 
 CC := gcc
-BUILD_DIR := build.raspbian/
+BUILD_DIR_PURE := build.raspbian
+BUILD_DIR := $(BUILD_DIR_PURE)/
 
 .PHONY: pitrexLib
+.PHONY: dirCheck
 
-all:	pitrexLib cinemu
+all:	dirCheck pitrexLib cinemu
 	echo All up to date.
 
 pitrexLib:
 	$(MAKE) -C $(PITREX) -f Makefile.raspbian all
 	$(MAKE) -C $(VECTREX) -f Makefile.raspbian all
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
 
 $(BUILD_DIR)options.o: options.c inifile.h options.h cines.h
 	$(CC) $(CFLAGS) -DO_BINARY=c -c -o $(BUILD_DIR)options.o options.c

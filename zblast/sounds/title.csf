@@ -1,0 +1,169 @@
+# title:	lilting
+# author:	Russell Marks
+# copyright:	Copyright (C) 1996 Russell Marks.
+# distribution: This music is free; you can redistribute it and/or
+#		modify it under the terms of the GNU General Public
+#		License as published by the Free Software Foundation;
+#		either version 2 of the License, or (at your option)
+#		any later version.
+#
+#		This work is distributed in the hope that it will be
+#		useful, but WITHOUT ANY WARRANTY; without even the
+#		implied warranty of MERCHANTABILITY or FITNESS FOR A
+#		PARTICULAR PURPOSE. See the GNU General Public License
+#		for more details.
+#
+#		You should have received a copy of the GNU General
+#		Public License along with this work; if not, write to
+#		the Free Software Foundation, 59 Temple Place - Suite
+#		330, Boston, MA 02111-1307, USA.
+#
+#		[The GPL is in ../COPYING if you got this with sod2;
+#		otherwise, a URL correct at the time of writing is
+#		http://www.gnu.org/copyleft/gpl.html.]
+#
+# added stereo 960116
+# modified for all samples being in same dir
+*tempo 140
+*samples
+high77a.22	11000
+polyoct.22	11000
+bassdrum3b.22 	20000
+snare.8		8000
+hihat.ami	8400
+hihat2.ami	8400
+v74.22		22000
+*blocklist
+2,3,4
+2,3,4,1,13,14
+2,3,4,1,5,6,13,14
+2,3,4,1,5,6,13,14
+2,3,4,1,5,6,13,14
+2,3,4,1,5,6,13,14
+7,8,9,10,11,12,15,16
+7,8,9,10,11,12,15,16
+7,8,9,10,11,12,15,16
+7,8,9,10,11,12,15,16
+2,3,4,1,5,6,13,14
+2,3,4,1,5,6,13,14
+7,8,9,10,11,12,15,16
+7,8,9,10,11,12,15,16
+2,3,4,1,5,6,13,14
+2,3,4,1,5,6,13,14
+2,3,4,1,5,6,13,14
+2,3,4,1,5,6,13,14
+*blocks
+#p1
+*e 16,8
+*S
+- - + + - - + + - - + + - - + + - - + + - - + + - - + + - - + +
+4 2 4 2 4 2 2 4 4 2 4 2 4 2 2 4 4 2 4 2 4 2 2 4 4 2 4 2 4 2 2 4
+f g c A g A c d f g c A g A c d f g c A g A c d f g c A g A c d
+2 2 3 2 1 1 2 2 2 2 3 2 1 1 2 2 2 2 3 2 1 1 2 2 2 2 3 2 1 1 2 2
+2,40
+#
+#p2-4
+*m
+*e 128,16
+*s 0
+A               A               d               d
+2222222222222222222222222222222222222222222222222222222222222222
+7,40
+*m
+*e 128,16
+*s 10
+d               c               f               g
+3222222222222222322222222222222222222222222222222222222222222222
+7,40
+*m
+*e 128,16
+*s -10
+f               e               A               A
+3222222222222222322222222222222222222222222222222222222222222222
+7,40
+#
+#p5-6
+*e 16,16
+*S
+- + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - +
+2222222222222222222222222222222222222222222222222222222222222222
+f g A c d   a g f d e f   e d   f g A c d       d e f g A g c d
+2 2 2 3 3   3 3 3 3 3 3   3 3   2 2 2 3 3       2 2 2 2 2 2 3 3
+1,30
+*e 16,16
+*S
+ - + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - +
+4444444444444444444444444444444444444444444444444444444444444444
+ d f g A c d   a g f d e f   e d   f g A c d       d e f g A g c
+ 3 2 2 2 3 3   3 3 3 3 3 3   3 3   2 2 2 3 3       2 2 2 2 2 2 3
+1,15
+#
+#p7
+*e 16,16
+A g c d   e f   A g c   d   e   A g c d   e f   A g c d e   f
+1 1 2 2   2 1   1 1 2   2   2   1 1 2 2   2 1   1 1 2 2 2   2
+2,40
+#
+#p8-10
+*m
+*e 128,16
+*s -5
+A               c               c               d
+1111111111111111211111111111111121111111111111112111111111111111
+7,40
+*m
+*e 128,16
+*s 1
+d               f               e               f
+2111111111111111211111111111111121111111111111112111111111111111
+7,40
+*m
+*e 128,16
+*s 7
+f               a               g               A
+2111111111111111211111111111111121111111111111112111111111111111
+7,40
+#
+#p11-12
+*e 16,16
+*S
+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+8888888888888888888888888888888888888888888888888888888888888888
+gdfdeda A a g f gdfdedadAdadgdfdgdfdeda A a g f gdfdeda gaAc da
+5555555555555555555555555555555555555555555555555555555555566655
+1,30
+*e 16,16
+*S
+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+c dagdfdeda A a g f gdfdedadAdadgdfdgdfdeda A a g f gdfdeda gaAc
+6555555555555555555555555555555555555555555555555555555555555566
+1,15
+#
+#p13-14
+*m
+*S
+-   +  -- --+ - -   +  - -+- -+--   +   --- +-  -   +   --+  --+
+2222222222222222222222222222222222222222222222222222222222222222
+c   c  cc ccc c c   c  c ccc cccc   c   ccc cc  c   c   ccc  ccc
+2222222222222222222222222222222222222222222222222222222222222222
+3   4  33 334 3 3   4  3 343 3433   4   333 43  3   4   334  334,50
+*e 8,4
+*s -1
+ccc ccc ccc ccc ccc ccc ccc  cccccc ccc ccc ccc ccc ccc cccc ccc
+2222222222222222222222222222222222222222222222222222222222222222
+555 655 555 655 555 655 555  556555 655 555 655 555 655 5556 556,25
+#
+#p15-16
+*m
+*S
+- - +  -- --+ + - - +   -- - -+ - - +  -- --- + - - +   -+   -+
+2222222222222222222222222222222222222222222222222222222222222222
+c c c  cc ccc c c c c   cc c cc c c c  cc ccc c c c c   cc   cc
+2222222222222222222222222222222222222222222222222222222222222222
+3 3 4  33 334 4 3 3 4   33 3 34 3 3 4  33 333 4 3 3 4   34   34,50
+*e 8,4
+*s -1
+ccc ccc ccccccc ccc ccc ccccccccccc ccc ccccccc ccc ccc cccccccc
+2222222222222222222222222222222222222222222222222222222222222222
+556 556 5555656 556 556 55556556556 556 5555656 556 556 55556656,25

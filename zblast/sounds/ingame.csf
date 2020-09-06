@@ -1,0 +1,201 @@
+# title:	macroscopic
+# author:	Russell Marks
+# copyright:	Copyright (C) 1995 Russell Marks.
+# distribution: This music is free; you can redistribute it and/or
+#		modify it under the terms of the GNU General Public
+#		License as published by the Free Software Foundation;
+#		either version 2 of the License, or (at your option)
+#		any later version.
+#
+#		This work is distributed in the hope that it will be
+#		useful, but WITHOUT ANY WARRANTY; without even the
+#		implied warranty of MERCHANTABILITY or FITNESS FOR A
+#		PARTICULAR PURPOSE. See the GNU General Public License
+#		for more details.
+#
+#		You should have received a copy of the GNU General
+#		Public License along with this work; if not, write to
+#		the Free Software Foundation, 59 Temple Place - Suite
+#		330, Boston, MA 02111-1307, USA.
+#
+#		[The GPL is in ../COPYING if you got this with sod2;
+#		otherwise, a URL correct at the time of writing is
+#		http://www.gnu.org/copyleft/gpl.html.]
+#
+# added stereo 960116
+# modified for all samples being in same dir
+*tempo 130
+*samples
+high77a.22	11000
+polyoct.22	11000
+bassdrum3b.22 	20000
+snare.8		7800
+hihat.ami	8400
+hihat2.ami	8400
+t30e31phased.22	22000
+high77a.22	11010
+high77a.22	10990
+*blocklist
+1,3
+1,6
+1,2,3
+1,2,6,10
+1,2,3,4,5,9,10
+1,2,6,7,8,9,10
+1,2,3,4,5,9,10
+1,2,6,7,8,9,10
+1,2,3,4,5,9,10
+1,2,6,7,8,9,10
+11,12
+11,12,13,14
+11,12,13,14,3,9,10
+11,12,13,14,6,9,10
+11,12,13,14,3,4,5,9,10
+11,12,13,14,6,7,8,9,10
+11,12,13,14,3,4,5,9,10
+11,12,13,14,6,7,8,9,10
+17,18,19,20,21
+15,16,3,4,5,17,18,19,20,21
+15,16,6,7,8,17,18,19,20,21
+15,16,3,4,5,17,18,19,20,21
+15,16,6,7,8,17,18,19,20,21
+11,12,13,14,3,4,5,9,10,19,20,21
+11,12,13,14,6,7,8,9,10,19,20,21
+11,12,13,14,3,4,5,9,10,19,20,21
+11,12,13,14,6,7,8,9,10,19,20,21
+3,4,5,19,20,21
+6,7,8,19,20,21
+*blocks
+#p1
+*e 8,16
+*s -5
+a  a acad  e fe a  a acaeafggfaaa  a acad  e fe a  a acaeafggfaa
+1111112122222222111111212122222211111121222222221111112121222222
+2,30
+#p2(1)
+*e 8,16
+*s 5
+a  a acad  e fe a  a acaeafggfaaa  a acad  e fe a  a acaeafggfaa
+2222223233333333222222323233333322222232333333332222223232333333
+2,20
+#p3-5
+#aegCfdeb
+*e 128,128
+*s 0
+a               e               g               a
+0111111111111111111111111111111111111111111111111111111111111111
+7,20
+*e 128,128
+*s -4
+c               g               c               c
+1111111111111111111111111111111121111111111111112111111111111111
+7,20
+*e 128,128
+*s 4
+e               a               e               e
+1111111111111111111111111111111121111111111111112111111111111111
+7,20
+#p6-8
+*e 128,128
+*s 0
+f               d               e               b
+1111111111111111111111111111111111111111111111110111111111111111
+7,20
+*e 128,128
+*s -4
+a               f               g               d
+1111111111111111111111111111111111111111111111111111111111111111
+7,20
+*e 128,128
+*s 4
+c               b               b               g
+2111111111111111111111111111111111111111111111111111111111111111
+7,20
+#p9-10
+*e 16,16
+*S
+-   +   - - +  --   +  - - -+- --   +   -  +   --   +   - - +---
+2222222222222222222222222222222222222222222222222222222222222222
+c   c   c c c  cc   c  c c ccc cc   c   c  c   cc   c   c c cccc
+2222222222222222222222222222222222222222222222222222222222222222
+3   4   3 3 4  33   4  3 3 343 33   4   3  4   33   4   3 3 4333,40
+*e 8,8
+ccc ccc ccc cc cccc ccc ccc cc cccc ccc ccc cc cccc ccc ccc cccc
+2222222222222222222222222222222222222222222222222222222222222222
+655 655 655 55 5655 655 656 55 5655 655 655 55 5655 655 656 5565,20
+#p11-12
+*e 2,14
+*S
+--------++++++++--------++++++++--------++++++++--------++++++--
+3  3  3 5 4 4 3 5  5  5 4 3 3 2 6  6  6 3 4 4 5 2  2  2 6 654 31
+a  a  a a f f d e  e  e e d d c d  d  d d e e f b  b  b b bag gb
+3333333344444444333333334444444433333333444444443333333344444433
+1,20
+*e 2,14
+*S
+----------++++++++--------++++++++--------++++++++--------++++++
+313  3  3 5 4 4 3 5  5  5 4 3 3 2 6  6  6 3 4 4 5 2  2  2 6 654
+gba  a  a a f f d e  e  e e d d c d  d  d d e e f b  b  b b bag
+3333333333444444443333333344444444333333334444444433333333444444
+1,10
+#p13
+*e 8,8
+a  b g  a       e  d f  g   a b c  e efb bddc c fge efd dec ccbb
+2222222222222222333333333333222233333332223333333333333333333322
+2,30
+#p14
+*e 8,8
+a a a a aaa a a e e e e ee ee e c c c c ccc cc cf f ff f ff c bb
+1111111111111111111111111111111111111111111111111111111111111100
+2,30
+#p15-16
+*e 16,16
+*s 16
+aeaeceeeaeac eeeafafcfefafac ceeebebabCbebeC babeaeaaaCaeaeCaCaa
+4444444444444444444444444444444444444444444444444444444444444444
+1,25
+*e 16,16
+*s -16
+Caaaeaeceeeaeac eeeafafcfefafac ceeebebabCbebeC babeaeaaaCaeaeCa
+4444444444444444444444444444444444444444444444444444444444444444
+1,13
+#p17-18
+*e 16,16
+*S
+-   +   -  -- + -   +   -  - -++-   +   -  - -+ -   +  -  - -+ -
+2222222222222222222222222222222222222222222222222222222222222222
+c   c   c  cc c c   c   c  c cccc   c   c  c cc c   c  c  c cc c
+2222222222222222222222222222222222222222222222222222222222222222
+3   4   3  33 4 3   4   3  3 3443   4   3  3 34 3   4  3  3 34 3,40
+*e 6,6
+ccccccccccc     ccccccccccc  c cccccccccccc  c  cccccccccc  c cc
+2222222222222222222222222222222222222222222222222222222222222222
+55555555555     55555555555  6 655555555555  6  5555555556  6 56,20
+#p19-21
+*e 8,0
+*S
+- ++ -- ++ -- +++ -- ++ -- ++ --- ++ -- ++ -- +++ -- ++ -- ++ --
+gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg
+*v
+9 26 24 13 13 129 26 24 13 13 129 26 24 13 13 129 26 24 13 13 12
+e Ce Ce Ce Ce Ceb eb eb eb eb eba ba ba ba ba baC aC aC aC aC aC
+5555555555555555555555555555555555555555555555555555555555555555
+1,15
+*e 8,0
+*S
+- ++ -- ++ -- +++ -- ++ -- ++ --- ++ -- ++ -- +++ -- ++ -- ++ --
+gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg
+*v
+9 26 24 13 13 129 26 24 13 13 129 26 24 13 13 129 26 24 13 13 12
+e Ce Ce Ce Ce Ceb eb eb eb eb eba ba ba ba ba baC aC aC aC aC aC
+5555555555555555555555555555555555555555555555555555555555555555
+8,15
+*e 8,0
+*S
+- ++ -- ++ -- +++ -- ++ -- ++ --- ++ -- ++ -- +++ -- ++ -- ++ --
+gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg
+*v
+9 26 24 13 13 129 26 24 13 13 129 26 24 13 13 129 26 24 13 13 12
+e Ce Ce Ce Ce Ceb eb eb eb eb eba ba ba ba ba baC aC aC aC aC aC
+5555555555555555555555555555555555555555555555555555555555555555
+9,15

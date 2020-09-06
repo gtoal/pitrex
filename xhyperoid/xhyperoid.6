@@ -1,0 +1,170 @@
+.\" -*- nroff -*-
+.\"
+.\" xhyperoid - an enhanced shoot-the-asteroids game.
+.\" Copyright (C) 1991 Edward Hutchins.
+.\" Unix/Linux port by Russell Marks, 2000.
+.\" Vectrex/PiTrex port by Kevin Koster, 2020.
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 2 of the License, or (at
+.\" your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program; if not, write to the Free Software
+.\" Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+.\"
+.\"
+.\" xhyperoid.6 - nroff -man source for [vx]hyperoid man page.
+.\"
+.\"
+.\"
+.TH XHYPEROID 6 "18th June, 2020" "Version 1.2-PiTrex" "Games"
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH NAME
+xhyperoid \- an enhanced shoot-the-asteroids game for X
+.br
+vhyperoid \- svgalib version of xhyperoid (modified for PiTrex via SVGAlib-Vectrex)
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH SYNOPSIS
+.B xhyperoid
+.br
+.B vhyperoid
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH DESCRIPTION
+xhyperoid is essentially an Asteroids clone, but with a few extra
+features, and some nice game physics.
+.PP
+The X version (xhyperoid) has a fully-resizable window. You'll
+probably want to `maximize' it most of the time (there may be a
+command-line option to do something like this eventually).
+.PP
+The svgalib version (vhyperoid) runs with the PiTrex.
+.PP
+Both versions use (apart from the score/lives/etc. display) only a
+square, centred playing area, as the original Hyperoid did. This is a
+feature not a bug. :-)
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH "GAMEPLAY AND KEYS"
+The object of the game is intuitive \- shoot everything!
+.PP
+The following keys control your ship:
+.TP
+.I Cursor Left/Right
+spin left or right
+.TP
+.I Cursor Down/Up
+forward or reverse thrust
+.TP
+.I Space
+fire (you can, and should, hold it down ;-))
+.TP
+.I Tab
+shields
+.TP
+.I s
+smartbomb (kill all baddies, but
+.I not
+asteroids)
+.PP
+Other keys:
+.TP
+.I Esc
+exit
+.TP
+.I F1
+start new game from level 1 (see below)
+.PP
+(No, there isn't currently any way to pause; and yes, this is on the
+TODO list. :-))
+.PP
+You have 3 lives, unlimited fuel and firepower, 3 shields and 3
+smartbombs. Your ship gets darker when you lose a life, but you keep
+on playing (unless you hit an asteroid). You get an extra life every
+100,000 points. When you lose the game, you start over immediately and
+can finish off the current level (which should now be 0) before
+starting over at level 1 (there is no waiting around between games).
+Alternatively, you can press
+.I F1
+to get a new game starting on level 1.
+.PP
+In addition to the asteroids and yourself, there are four other things
+you'll encounter in the game:
+.PP
+.TP
+.I Hunters
+The `UFO' equivalent. Can take one or more hits, the colour gives you
+a hint how many - they start off light cyan, but if they initially
+needed two or more hits, they'll turn dark cyan when they only need
+one more hit.
+.TP
+.I Spinners
+These spinning kamikaze baddies chase you and try to crash into you.
+The colour indicates how many hits are left before you destroy it -
+1=dark purple, 2=cyan, 3=dark cyan, 4=yellow, 5=dark yellow, 6=blue,
+7=dark blue, 8=green, 9=dark green. And if you get far enough into the
+game, they can take more hits than even
+.IR that .
+:-) When they crash into you, the number of hits left is how many hits
+they take out on your ship - if a dark cyan one hits you, that's three
+lives gone. So for yellow or worse, which can be hard to hit enough,
+using a bomb to get them is often the best/safest bet. (Shields are
+worth a try in emergencies, but it's hard to time it right.)
+.TP
+.I Swarmers
+These green squares are basically inert, but recursively split up
+several times unless you catch them early (before they've `swarmed'
+much).
+.TP
+.I Bonuses
+Spinning stars which chase you like Spinners (be careful not to
+confuse the two) and give you a bonus when they hit you. They are
+always in `light' colours, and the colour indicates the type -
+red=score (the amount depends on which level you're on), green=extra
+shield, blue=extra bomb, yellow=extra life. The bonus type works its
+way backwards through that list over time, so (most notably) extra
+life bonuses have to be caught as quickly as possible to avoid merely
+getting a bomb.
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH BUGS
+While the X version does
+.I work
+in mono, it doesn't work terribly well. Things are just generally too
+confusing.
+.PP
+Both versions can be a bit flickery. The X version is probably worse
+in this regard.
+.PP
+There are a couple of problems with the sound. The main one is that
+the smartbomb sound seems to be delayed.
+.PP
+The sound is only 8-bit 8kHz mono.
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH AUTHORS
+Edward Hutchins wrote the original Hyperoid, for Windows 3.x.
+.PP
+Russell Marks (russell.marks@ntlworld.com) ported it to Unix/Linux and
+added sound, and wrote this man page (partly based on the original
+version's help dialog, but mostly based on game experience and RTFS
+:-)).
+.PP
+Kevin Koster ported the SVGAlib version to work on the Vectrex via
+the PiTrex interface cartridge using the Vectrex Interface library
+by Christopher Salomon.

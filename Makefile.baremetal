@@ -1,0 +1,127 @@
+# I prefer "handmade" make files, it is a little bit of more worktime to start with (small change)
+# but I can read them, others can, and I know what they do!
+#
+# export PATH=/home/chrissalo/gcc-arm/bin:$PATH
+
+
+CFLAGS := -Ofast -I../pitrex -I../pitrex/baremetal/lib2835 -L../pitrex/baremetal -mfloat-abi=hard -nostartfiles -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -DRPI0 -DRPI1 -DFREESTANDING -DPITREX_DEBUG -DMHZ1000
+LDLAGS := -L../pitrex/baremetal -nostartfiles
+
+CC	= arm-none-eabi-gcc
+AS	= $(CC)
+LD	= arm-none-eabi-ld
+AR	= arm-none-eabi-ar
+
+
+all:	redbaronMake tailgunnerMake loaderMake vecxMake vecxMake2 asteroidsMake gyrocksMake battlezoneMake gravitarMake spaceduelMake tempestMake blackwidowMake deluxeMake astMake lunarMake CineMake helloWorldMake
+	
+	
+loaderMake: 
+	cd piTrexBoot; make -f Makefile
+	cd ..
+
+redbaronMake: 
+	cd redbaron; make -f Makefile.baremetal
+	cd ..
+
+lunarMake: 
+	cd lunar; make -f Makefile.baremetal
+	cd ..
+
+astMake: 
+	cd asteroids; make -f Makefile.baremetal
+	cd ..
+
+deluxeMake: 
+	cd deluxe; make -f Makefile.baremetal
+	cd ..
+
+blackwidowMake: 
+	cd blackwidow; make -f Makefile.baremetal
+	cd ..
+
+tailgunnerMake: 
+	cd tailgunner; make -f Makefile.baremetal
+	cd ..
+
+vecxMake: 
+	cd vecx.emulated; make -f Makefile.baremetal
+	cd ..
+
+vecxMake2: 
+	cd vecx.direct; make -f Makefile.baremetal
+	cd ..
+
+asteroidsMake: 
+	cd asteroids_sbt; make -f Makefile.baremetal
+	cd ..
+
+gyrocksMake: 
+	cd gyrocks; make -f Makefile.baremetal
+	cd ..
+
+battlezoneMake: 
+	cd battlezone; make -f Makefile.baremetal
+	cd ..
+
+gravitarMake: 
+	cd gravitar; make -f Makefile.baremetal
+	cd ..
+
+spaceduelMake: 
+	cd spaceduel; make -f Makefile.baremetal
+	cd ..
+	
+tempestMake: 
+	cd tempest; make -f Makefile.baremetal
+	cd ..
+	
+CineMake:
+	cd cinematronics; make -f Makefile.baremetal
+	cd ..
+
+helloWorldMake:
+	cd hello_world; make -f Makefile.baremetal
+	cd ..
+
+clean:
+	cd piTrexBoot; make -f Makefile clean
+	cd ..
+	cd lunar; make -f Makefile.baremetal clean
+	cd ..
+	cd redbaron; make -f Makefile.baremetal clean
+	cd ..
+	cd asteroids; make -f Makefile.baremetal clean
+	cd ..
+	cd deluxe; make -f Makefile.baremetal clean
+	cd ..
+	cd blackwidow; make -f Makefile.baremetal clean
+	cd ..
+	cd tailgunner; make -f Makefile.baremetal clean
+	cd ..
+	cd vecx.emulated; make -f Makefile.baremetal clean
+	cd ..
+	cd vecx.direct; make -f Makefile.baremetal clean
+	cd ..
+	cd asteroids_sbt; make -f Makefile.baremetal clean
+	cd ..
+	cd gyrocks; make -f Makefile.baremetal clean
+	cd ..
+	cd battlezone; make -f Makefile.baremetal clean
+	cd ..
+	cd gravitar; make -f Makefile.baremetal clean
+	cd ..
+	cd spaceduel; make -f Makefile.baremetal clean
+	cd ..
+	cd tempest; make -f Makefile.baremetal clean
+	cd ..
+	cd sim; make -f Makefile.baremetal clean
+	cd ..
+	cd cinematronics; make -f Makefile.baremetal clean
+	cd ..
+	cd hello_world; make -f Makefile.baremetal clean
+	cd ..
+	cd pitrex/pitrex; make -f Makefile.baremetal clean
+	cd ..
+	cd pitrex/vectrex; make -f Makefile.baremetal clean
+	cd ..

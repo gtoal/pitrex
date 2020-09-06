@@ -1,0 +1,110 @@
+
+I gather you have git installed. If not - do an "apt-get install git-core" or something similar.
+
+In general:
+- this is the first time I actually use git - so I am no pro either :-)
+- git seems to be used in two stages:
+  a) building a revision control system on your own computer
+       (you do not have to use github at all!)
+            With git you can build an own repository add/checkin/checkout build branches etc on your
+	         computer without anything remote happening.
+
+     see: https://product.hubspot.com/blog/git-and-github-tutorial-for-beginners
+          For How to setup and use an own repository.
+
+  b) Making your own repository "public" by "releasing" it to github.
+       If you are working with a team on a project, than each member has its own
+            repository on their computers. They can make changes to their own repository.
+	         (also build branches etc...)
+
+     If/when you want to make the changes "public" you PUSH your own repository to github,
+          either with a new branch or to the "master". (or do a pull request - but we will not do that (yet))
+
+-----------
+
+First step
+In our case the first step is to have the current public repository on github
+your "own" repository on your computer.
+
+In a "clean" environment, you just do:
+
+>    git clone https://github.com/malbanGit/pitrex.git
+
+This will setup in your current directory a "clone" of the repository master from github.
+The new directoy "pitrex" will appear - with all pitrex stuff inside.
+(I made a single subdirectory "software" in anticipation, that perhaps someday a "hardware"
+ directory, or a "documentation" might be a thing to do...)
+
+>    cd pitrex/pitrex/software
+
+This is our "usual" directory, from here you can execute e.g.:
+
+>   make -f Makefile.raspbian
+
+etc.
+
+Than you can work "normally" with the project.
+
+STATUS
+If you want to know your current changes, you can type
+>   git status
+
+
+This lists all deleted/changed/added files within the current project.
+
+ADD
+If you created new files withing the repository you must add them manually with
+(you can also add directories/structures)
+
+>   git add newfile
+
+COMMIT
+To commit (all) your changes locally - type:
+(you can also commit files/directories etc)
+
+>   git commit -a -m "comment of what changed"
+
+(First time you commit, you might have to tell git your credentials... don't worry, git will tell you
+ how. It is very helpfull!)
+
+PUSH
+To make your changes visible to other users - you also have to update our
+"public" github repository. Above changes were all made locally.
+
+To do that you use the push command - which updates the github repository with your changes.
+You must have a github user with the rights to update our repository.
+(Make a user - and tell me - I'll give you the rights)
+
+>   git push origin master
+
+(git will ask for your user name/passwd)
+
+Your changes will be committed!
+
+CONFLICT / PULL
+If someone else "pushed" already some changes to github (which concern the same files)
+- you might encounter a conflict message and the push will not be executed.
+
+In this case you must "update" your local respository with the changes first:
+
+>  git pull
+
+Will update your local repository with the current version held on github.
+If possible git will merge changes. If the automatic merge fails, you have to
+solve the conflicts manually. (git will tell you which files, you can also do a "git status")
+
+The files with the merge conflict have the conflicts "marked" with:
+
+<<<<<<< HEAD
+... some lines
+=======
+... some lines
+>>>>>>> e5f71728add78ac94cff0665d234474ab9a13e19
+
+Decide what to use and save the file
+
+UNDO
+UNDO all changes (locally from last commit)
+git reset --hard
+
+

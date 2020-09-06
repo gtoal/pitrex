@@ -1,0 +1,11 @@
+*tempo 160
+*samples
+synth/high77.12		12048
+*blocklist
+1
+#
+*blocks
+*e 16,16
+gg;
+34
+1,70

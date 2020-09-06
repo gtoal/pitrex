@@ -1,0 +1,83 @@
+// 8 bit for now
+void v_printBitmapUni(unsigned char *bitmapBlob, int width, int height, int sizeX, int x, int y)
+{
+//  v_readButtons(); 
+//  bitmapBlob=uniDirectional;
+//  width = 0x09;
+//  height = 0x50;
+//  x = -(9*4);
+//  y = 0x28;
+//    v_setBrightness(64);
+  
+	int patternAnds[] = {128,64,32,16,8,4,2,1};
+	// uni directional
+    
+	for (int yy=0;yy<height;yy++)
+	{
+    currentYSH=currentPortA=0x100;
+
+      v_directMove32n(x*128,(y-yy)*128);
+////////////////
+// Prepare line print
+
+
+        int afterYDelay = 6; // cranky dependend
+		if (crankyFlag & CRANKY_BETWEEN_VIA_B)
+		{
+			afterYDelay += crankyFlag&0x0f;
+		}
+
+		SET(VIA_port_b, 0x80);
+		DELAY_PORT_B_BEFORE_PORT_A();
+		SET(VIA_port_a, 0);
+
+//        UNZERO();
+        afterYDelay -= 2;
+
+		if (crankyFlag & CRANKY_NULLING_WAIT)
+		{
+			// some crankies need additional waits here!
+			afterYDelay += CRANKY_DELAY_Y_TO_NULL_VALUE;
+		}
+		if (afterYDelay>0)
+          DELAY_CYCLES(afterYDelay);
+
+        SET(VIA_port_b, 0x81);
+        DELAY_PORT_B_BEFORE_PORT_A();
+        SET(VIA_port_a, sizeX);
+////////////////
+        // prepare for raster output
+
+        SET(VIA_aux_cntl, 0x00);
+//DELAY_CYCLES(1);
+		// now print one line pattern
+
+		SET(VIA_port_b, 0x01); // enable ramp, mux = y integrator, disable mux
+        for (int xx=0;xx<width;xx++)
+		{
+			for (int bit=0;bit<8;bit++)
+			{
+				// output one raster dot - or not
+                if (*bitmapBlob & patternAnds[bit])
+                {
+                  vectrexwrite_short(VIA_cntl, 0xee);
+//                    SWITCH_BEAM_ON();
+                }
+                else
+                {
+                  vectrexwrite_short(VIA_cntl, 0xce);
+//                    SWITCH_BEAM_OFF();
+                }
+			}
+			bitmapBlob++;
+		}
+		// switch off, if last bit was on!
+        if (*bitmapBlob & 1)
+            vectrexwrite_short(VIA_cntl, 0xce);
+		
+		
+		SET(VIA_port_b, 0x81); // disable ramp, mux = y integrator, disable mux
+		// assume lightning is done CNTL
+		SET (VIA_aux_cntl, 0x80); // Shift reg mode = 000 free disable, T1 PB7 enabled
+	}
+}

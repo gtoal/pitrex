@@ -1,0 +1,25 @@
+Pitrex IO Lib Changes for V1.0:
+
+*Integrates Chris' "short" read/write functions.
+*Automatically detects the Raspberry Pi model that it's running on in Linux, and uses the corresponding UART configuration.
+
+V0.2.3:
+
+*Modified to work with UART1 by default, or UART0 if "UART0" is defined during compilation.
+*Uses local bcm2835 library file (eg. bare metal version).
+*Possibly other minor modifications to equate to the modifications that Malban made to V. 0.1.
+
+V0.2.2:
+
+*Fixed infinate loop in vectrexread, vectrexread_on_irq, vectrexwrite, vectrexwrite_on_irq if invalid address provided.
+
+V0.2.1:
+
+* Add parameter to vectrexinit() that makes it initialise the VIA as well as the PiTrex/GPIO. -DONE
+* Separate read and write operations so that completion can be checked after operations begun, by checking the status of the EDR.
+  -Now need error handling for invalid addresses so that not waiting on canceled write to complete. -DONE
+* Same approach to interrupts. -DONE
+* Interrupt loops only respond to specified interrupt read from IFR after #IRQ asserted. -DONE
+* Optimised read and write functions for sequential operation. - forget it, or for later
+* Comment out USE_EDR definition to allow option to be passed compiler with the compilation command. -DONE
+

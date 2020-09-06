@@ -1,0 +1,17 @@
+*tempo 120
+*samples
+synth/high77.12		3012
+pad/t30e31phased.22	22000
+synth/polyoct.22	11000
+*blocklist
+1,2
+#
+*blocks
+*e 16,16
+b A A;
+00000
+1,50
+*e 16,16
+b A A;
+11111
+1,50

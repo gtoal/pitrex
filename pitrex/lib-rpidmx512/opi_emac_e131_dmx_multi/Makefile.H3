@@ -1,0 +1,10 @@
+#
+DEFINES = E131_BRIDGE_MULTI ENABLE_SPIFLASH NDEBUG
+#
+LIBS =   
+#
+SRCDIR = firmware
+
+include ../h3-firmware-template/Rules.mk
+
+prerequisites:

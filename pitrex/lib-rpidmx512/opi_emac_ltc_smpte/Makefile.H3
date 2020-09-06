@@ -1,0 +1,10 @@
+#
+DEFINES = LTC_READER NDEBUG
+#
+LIBS = ltc tcnet midi
+#
+SRCDIR = firmware lib
+
+include ../h3-firmware-template/Rules.mk
+
+prerequisites:

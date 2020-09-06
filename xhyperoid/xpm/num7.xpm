@@ -1,0 +1,30 @@
+/* XPM */
+static char *num7_xpm[] = {
+/* width height ncolors chars_per_pixel */
+"16 16 7 1",
+/* colors */
+"  c #000000",
+". c #00FFFF",
+"X c None",
+"o c #008080",
+"O c #FFFF00",
+"+ c #808000",
+"@ c #0000FF",
+/* pixels */
+"XXXXXXXXXXXXXXXX",
+"XX            XX",
+"XX .......... XX",
+"XX .o.o.o.o.o XX",
+"XX        .o. XX",
+"XXXXXXXXX o.o XX",
+"XXXXXXXX ooo XXX",
+"XXXXXXX ooo XXXX",
+"XXXXXX @@@ XXXXX",
+"XXXXXX ++ XXXXXX",
+"XXXXXX ++ XXXXXX",
+"XXXXXX +O XXXXXX",
+"XXXXXX O+ XXXXXX",
+"XXXXXX OO XXXXXX",
+"XXXXXX    XXXXXX",
+"XXXXXXXXXXXXXXXX"
+};

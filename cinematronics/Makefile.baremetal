@@ -1,0 +1,88 @@
+# I prefer "handmade" make files, it is a little bit of more worktime to start with
+# but I can read them, others can, and I know what they do!
+#
+# export PATH=/home/chrissalo/gcc-arm/bin:$PATH
+
+
+# -DLOADER_START=0x4000000
+# must also be defined/changed in *.S files, since they do not parse defines
+# REMEMBER in bcm2835
+# MEM_COHERENT_REGION s defined now as 0x3f00000 !!!!
+
+BUILD_DIR_PURE := build.baremetal
+BUILD_DIR := $(BUILD_DIR_PURE)/
+
+LIB_DIR :=../pitrex/baremetal
+INC_DIR_PITREX := ../pitrex
+INC_DIR_LIBRARY := $(LIB_DIR)/lib2835
+PITREX_DIR := ../pitrex/pitrex/
+VECTREX_DIR := ../pitrex/vectrex/
+LOADER_DIR := ../piTrexBoot/
+
+LOADER_OBJ := 	$(LOADER_DIR)$(BUILD_DIR)baremetalEntry.o \
+		$(LOADER_DIR)$(BUILD_DIR)bareMetalMain.o \
+		$(LOADER_DIR)$(BUILD_DIR)cstubs.o \
+		$(LOADER_DIR)$(BUILD_DIR)rpi-armtimer.o \
+		$(LOADER_DIR)$(BUILD_DIR)rpi-aux.o \
+		$(LOADER_DIR)$(BUILD_DIR)rpi-gpio.o \
+		$(LOADER_DIR)$(BUILD_DIR)rpi-interrupts.o \
+		$(LOADER_DIR)$(BUILD_DIR)rpi-systimer.o
+
+PITREX_OBJ := 	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+		$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+
+VECTREX_OBJ :=	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+		$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+		$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o 
+
+COMMON_OBJ := 	$(LOADER_OBJ) $(PITREX_OBJ) $(VECTREX_OBJ)
+
+CINE_OBJ := 	$(BUILD_DIR)cineops.o \
+		$(BUILD_DIR)cinemu.o
+
+CFLAGS := -Wall -fuse-ld=bfd -Ofast -I$(INC_DIR_PITREX) -I$(INC_DIR_LIBRARY) -L$(LIB_DIR) -mfloat-abi=hard -nostartfiles -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -DRPI0 -DFREESTANDING -DPITREX_DEBUG -DMHZ1000 -DLOADER_START=0x4000000
+CC	= arm-none-eabi-gcc
+AS	= $(CC)
+LD	= arm-none-eabi-ld
+AR	= arm-none-eabi-ar
+
+.PHONY: pitrexLib
+.PHONY: dirCheck
+.PHONY: loaderObjects
+
+
+all:	dirCheck pitrexLib loaderObjects cine.img
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
+
+pitrexLib:
+	$(MAKE) -C $(PITREX_DIR) -f Makefile.baremetal all
+	$(MAKE) -C $(VECTREX_DIR) -f Makefile.baremetal all
+
+loaderObjects:
+	$(MAKE) -C $(LOADER_DIR) -f Makefile loaderObjects
+
+$(BUILD_DIR)cineops.o: cineops.c cinedbg.i  cineops.i  startframe.i
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)cineops.o -c cineops.c
+
+$(BUILD_DIR)cinemu.o: cinemu.c cines.h
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)cinemu.o -c cinemu.c
+
+cine.img: pitrexLib loaderObjects $(CINE_OBJ)
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)cine.elf.img \
+	$(COMMON_OBJ) \
+	$(CINE_OBJ) \
+	-lm -lff12c  -ldebug  -lhal  -lconsole -lff12c -lbob -li2c -lbcm2835 -larm $(LIB_DIR)/linkerHeapDefBoot.ld
+	$(RM) cine.img
+	arm-none-eabi-objcopy $(BUILD_DIR)cine.elf.img -O binary cine.img
+ifdef MAKE_IMAGE
+	cp cine.img /media/psf/Home/ubuntu64
+	cp cine.img /media/psf/macRoot/Volumes/baremetal
+endif
+
+clean:
+	$(RM) $(BUILD_DIR)*.*
+	$(RM) cine.img
+
+#-lutils

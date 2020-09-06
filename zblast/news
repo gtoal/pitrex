@@ -1,0 +1,49 @@
+* Changes between versions   -*- mode:indented-text; mode:outline-minor -*-
+
+This file (NEWS) documents the significant changes between all
+versions of zblast since 1.2, with the newest changes first.
+
+
+* Changes in zblast 1.3
+
+Fixed exploitable (to give group-id games) buffer-overrun in
+hi-score-writing.
+
+Finally gave in and added auto-fire, but only when run with
+`-autofire', and at the cost of disabling high-score saving. Thanks to
+Oohara Yuuma for contributing the code, and to "Ariel" for also
+suggesting auto-fire support.
+
+Fixed brokenness on second repeat of the levels. Thanks to Oohara
+Yuuma for spotting this.
+
+
+* Changes in zblast 1.2
+
+Fixed some potential buffer overruns.
+
+Now installed setgid games (for both versions), to avoid requiring
+(yikes) world-writable scores file.
+
+Defaults to 16kHz sound when available, resorting to the old 8kHz
+otherwise.
+
+Joystick/joypad support. Not that great a way to play it IMHO, but it
+was fun to gratuitously add support to something after having bought a
+pad. :-) You can disable this at compile time if need be.
+
+Saner installation, and new uninstall target.
+
+The sound-generating process now exits when the main program quits
+abnormally, rather than hanging around.
+
+Sound effects made louder.
+
+X version now supports `delete window' message from window manager.
+
+svgalib version converted to use svgalib's raw mode support rather
+than rawkey.
+
+Made text-drawing slightly more sane.
+
+The `loading music' bit indicates time passing a bit better.

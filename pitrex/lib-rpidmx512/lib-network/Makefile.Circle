@@ -1,0 +1,20 @@
+#
+# Makefile
+#
+
+CIRCLEHOME = ../Circle
+
+INCLUDE	+= -I ./include
+INCLUDE	+= -I ../lib-properties/include
+INCLUDE	+= -I ../include
+
+OBJS	= src/circle/networkcircle.o src/networkparams.o src/network.o src/networkconst.o
+
+EXTRACLEAN = src/circle/*.o src/*.o
+
+libnetwork.a: $(OBJS)
+	rm -f $@
+	$(AR) cr $@ $(OBJS)
+	$(PREFIX)objdump -D libnetwork.a | $(PREFIX)c++filt > libnetwork.lst
+
+include $(CIRCLEHOME)/Rules.mk

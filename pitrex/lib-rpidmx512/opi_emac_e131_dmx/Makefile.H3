@@ -1,0 +1,10 @@
+#
+DEFINES = E131_BRIDGE NDEBUG
+#
+LIBS = dmxmonitor
+#
+SRCDIR = firmware
+
+include ../h3-firmware-template/Rules.mk
+
+prerequisites:

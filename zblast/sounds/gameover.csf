@@ -1,0 +1,51 @@
+# title:	zblast game over tune
+# author:	Russell Marks
+# copyright:	none
+# distribution: public domain, do what you want with it
+#
+# very simple (and fairly quiet) drum pattern to play on game over.
+#
+*tempo 125
+*samples
+# XXX first 2 not used
+polyoct.22	22000
+polyoct.22	22100
+bassdrum3b.22 	20000
+snare.8		8000
+hihat.ami	8400
+hihat2.ami	8400
+*blocklist
+1,2
+1,2
+1,2
+1,2
+1,2
+1,2
+1,2
+1,2
+1,2
+1,2
+1,2
+1,2
+1,2
+1,2
+1,2
+1,2
+1,2
+1,2
+1,2
+1,2
+*blocks
+#p1
+*e 8,4
+c c c   ccc c c c   c  c c cc   c   c   c   c  c cc c   c   cc c
+2222222222222222222222222222222222222222222222222222222222222222
+5 5 6   555 6 5 5   6  5 5 56   5   6   5   6  5 56 6   5   66 6,10
+#
+#p2
+*m
+*v
+9  7  5  3  1 1 9  7  5  33 1   9  7  5  3  1 1 9  77 5 5  33 1
+c  c  c  c  c c c  c  c  cc c   c  c  c  c  c c c  cc c c  cc c
+2222222222222222222222222222222222222222222222222222222222222222
+3  3  3  3  3 3 4  4  4  44 4   3  3  3  3  3 3 4  44 4 4  44 4,20

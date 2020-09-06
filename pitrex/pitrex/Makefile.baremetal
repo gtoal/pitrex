@@ -1,0 +1,29 @@
+# I prefer "handmade" make files, it is a little bit of more worktime to start with
+# but I can read them, others can, and I know what they do!
+
+BUILD_DIR_PURE := build.baremetal
+BUILD_DIR := $(BUILD_DIR_PURE)/
+
+INC_DIR_PITREX := ../pitrex
+
+CFLAGS := -Ofast -I$(INC_DIR_PITREX) -mfloat-abi=hard -nostartfiles -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -DRPI0 -DFREESTANDING -DPITREX_DEBUG -DMHZ1000 -DLOADER_START=0x4000000
+CC	= arm-none-eabi-gcc
+AS	= $(CC)
+LD	= arm-none-eabi-ld
+AR	= arm-none-eabi-ar
+
+.PHONY: dirCheck
+
+all: dirCheck $(BUILD_DIR)bcm2835.o $(BUILD_DIR)pitrexio-gpio.o
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
+
+$(BUILD_DIR)bcm2835.o: bcm2835.c bcm2835.h
+	$(CC) $(CFLAGS) -c bcm2835.c -o $(BUILD_DIR)bcm2835.o
+
+$(BUILD_DIR)pitrexio-gpio.o: pitrexio-gpio.c pitrexio-gpio.h bcm2835.h
+	$(CC) $(CFLAGS) -c pitrexio-gpio.c -o $(BUILD_DIR)pitrexio-gpio.o
+
+clean:
+	$(RM) $(BUILD_DIR)*.*

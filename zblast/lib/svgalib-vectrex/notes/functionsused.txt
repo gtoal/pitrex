@@ -1,0 +1,65 @@
+For finding svgalib functions used.
+
+Lists of libvga and libvgag found in libvga_symbols.txt and
+libvgagl_symbols.txt, generated with:
+nm -D --defined-only /usr/lib/libvga.so.1.4.3 > libvga_symbols.txt
+nm -D --defined-only /usr/lib/libvgagl.so.1.4.3 > libvgagl_symbols.txt
+
+To find used functions in zblast:
+$ for i in `cat libvga_symbols.txt`; do [ $i != "D" -a $i != "T" -a $i != "A" -a $i != "B" -a $i != "R" ] && grep -w -F -o -I "$i" /home/cmp/svgalib/zblast-1.3/*; done | sort -u
+/home/cmp/svgalib/zblast-1.3/font.c:vga_drawline
+/home/cmp/svgalib/zblast-1.3/font.c:vga_drawpixel
+/home/cmp/svgalib/zblast-1.3/zblast.c:keyboard_close
+/home/cmp/svgalib/zblast-1.3/zblast.c:keyboard_getstate
+/home/cmp/svgalib/zblast-1.3/zblast.c:keyboard_init
+/home/cmp/svgalib/zblast-1.3/zblast.c:keyboard_keypressed
+/home/cmp/svgalib/zblast-1.3/zblast.c:keyboard_translatekeys
+/home/cmp/svgalib/zblast-1.3/zblast.c:keyboard_update
+/home/cmp/svgalib/zblast-1.3/zblast.c:vga_disabledriverreport
+/home/cmp/svgalib/zblast-1.3/zblast.c:vga_drawline
+/home/cmp/svgalib/zblast-1.3/zblast.c:vga_drawpixel
+/home/cmp/svgalib/zblast-1.3/zblast.c:vga_hasmode
+/home/cmp/svgalib/zblast-1.3/zblast.c:vga_init
+/home/cmp/svgalib/zblast-1.3/zblast.c:vga_setcolor
+/home/cmp/svgalib/zblast-1.3/zblast.c:vga_setmode
+vga_drawline
+
+$ for i in `cat libvgagl_symbols.txt`; do [ $i != "D" -a $i != "T" -a $i != "A" -a $i != "B" -a $i != "R" ] && grep -w -F -o -I "$i" /home/cmp/svgalib/zblast-1.3/*; done | sort -u
+/home/cmp/svgalib/zblast-1.3/font.c:gl_line
+/home/cmp/svgalib/zblast-1.3/font.c:gl_setpixel
+/home/cmp/svgalib/zblast-1.3/zblast.c:currentcontext
+/home/cmp/svgalib/zblast-1.3/zblast.c:gl_clearscreen
+/home/cmp/svgalib/zblast-1.3/zblast.c:gl_copyscreen
+/home/cmp/svgalib/zblast-1.3/zblast.c:gl_enableclipping
+/home/cmp/svgalib/zblast-1.3/zblast.c:gl_line
+/home/cmp/svgalib/zblast-1.3/zblast.c:gl_setcontextvga
+/home/cmp/svgalib/zblast-1.3/zblast.c:gl_setcontextvgavirtual
+/home/cmp/svgalib/zblast-1.3/zblast.c:gl_setpalettecolor
+/home/cmp/svgalib/zblast-1.3/zblast.c:gl_setpixel
+
+Add "-h" to grep command to list/show only the unique function names:
+$ for i in `cat libvga_symbols.txt`; do [ $i != "D" -a $i != "T" -a $i != "A" -a $i != "B" -a $i != "R" ] && grep -w -F -o -I -h "$i" /home/cmp/svgalib/zblast-1.3/*; done | sort -u
+keyboard_close
+keyboard_getstate
+keyboard_init
+keyboard_keypressed
+keyboard_translatekeys
+keyboard_update
+vga_disabledriverreport
+vga_drawline
+vga_drawpixel
+vga_hasmode
+vga_init
+vga_setcolor
+vga_setmode
+
+$ for i in `cat libvgagl_symbols.txt`; do [ $i != "D" -a $i != "T" -a $i != "A" -a $i != "B" -a $i != "R" ] && grep -w -F -o -I -r -h "$i" /home/cmp/svgalib/zblast-1.3/*; done | sort -u
+currentcontext
+gl_clearscreen
+gl_copyscreen
+gl_enableclipping
+gl_line
+gl_setcontextvga
+gl_setcontextvgavirtual
+gl_setpalettecolor
+gl_setpixel

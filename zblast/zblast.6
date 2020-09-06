@@ -1,0 +1,245 @@
+.\" -*- nroff -*-
+.\"
+.\" zblast - shoot the thingies for Linux console, or X.
+.\" Copyright (C) 1993-2003 Russell Marks.
+.\" PiTrex port by Kevin Koster, 2020.
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 2 of the License, or (at
+.\" your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program; if not, write to the Free Software
+.\" Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+.\"
+.\"
+.\" zblast.6/xzb.6 - nroff -man source for zblast/xzb man page.
+.\"
+.\"
+.\"
+.TH ZBLAST 6 "18th June, 2020" "Version 1.3-PiTrex" "Games"
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH NAME
+zblast, xzb \- blast the bad guys (svgalib and X versions)
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH SYNOPSIS
+.BR zblast / xzb
+.RI [ -small ]
+.RI [ -nodbuf ]
+.RI [ -nomusic ]
+.RI [ -nosound ]
+.RI [ -autofire ]
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH DESCRIPTION
+zblast is a shoot-'em-up.
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH OPTIONS
+.TP
+.I -small
+on xzb, use a 320x240 window instead of the default 640x480. On
+zblast, use 320x200 (quicker) rather than 640x480x256 (nicer). zblast
+also uses 320x200 on cards which don't support 640x480x256.
+.TP
+.I -nodbuf
+don't use double buffering. This doesn't work as well with the PiTrex.
+.TP
+.I -nomusic
+don't play any titlescreen or in-game music. This currently only makes
+any difference on Linux, and only if MUSIC_SUPPORT was defined when
+compiling. This option might be a good idea on (really) slow machines.
+.TP
+.I -nosound
+no sound at all. Also only applies to Linux, etc. This implies
+.IR -nomusic .
+.TP
+.I -autofire
+enable auto-fire, letting you hold down fire rather than hammering the
+space bar. Since this is a bit of a cheat, high-score saving is
+disabled.
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH GAMEPLAY
+The idea is this: Shoot everything. The whole lot. No messing. Your
+ship (the funny-looking green thing) is at the bottom of the
+screen/window. You can move left, right, up and down within the lower
+half of the screen/window. You can shoot (two shots at a time). You
+can also shoot a kind-of wave of shots (described hereon in as a PDC,
+or Power DisCharge - tacky eh?) to help satisfy your genocidal
+tendancies. The PDCs are in limited supply, the standard shots are
+not. When the bad guys explode, the green bits that fly in different
+directions (and flashing lines) aren't harmful. Neither are the
+`stars' (uh, dots) in the background. Just about everything else is.
+When your ship is blue however, it cannot be harmed. This happens
+whenever you have just lost energy, i.e. when you've just been hit.
+You start with 30 energy points. If you lose no energy in a wave you
+get 10 extra energy points; if you lose less than ten energy points in
+a wave you get an extra PDC. There are additional bonuses for
+finishing levels (a level is a group of five waves). If you run out of
+energy points the game is over.
+.PP
+Your score is shown at the top left. Your energy left and PDCs left
+are shown at the top right.
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH KEYS
+Cursor keys move up/down/left/right. Space fires. Enter fires a PDC. P
+pauses. Esc quits the game. All this is on the title screen.
+.PP
+Unless it was disabled at compile time, you can also (on Linux) use
+any joystick or joypad on
+.IR /dev/js0 .
+The first button fires, and the second fires a PDC. You can also use
+the first button at the title screen to start a game.
+.PP
+When you die, you can quit from the `game over' bit by pressing Esc.
+Like it says on the screen. :-)
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH "HINTS AND TIPS"
+The collision-detection in zblast is intentionally biased in your
+favour. The lines (sorry, "laser blasty things" :-)) at the left/right
+sides of your ship don't count as part of your ship as far as being
+hit is concerned. You can actually push it a bit further than this as
+far as being hit by the enemy ships themselves (rather than their
+shots) is concerned. (So now you know how to do wave 4 without getting
+hit...)
+.PP
+You get an extra 10 energy points if you finish a wave without being
+hit. Given how hard the later levels get, this makes getting good at
+doing some of the earlier waves very important if you want to get
+anywhere. Here's a list of waves you should be able to do this on (and
+if you can't, you need practice!): 1, 2, 3, 4, 6 (tricky), 7 (if
+you're lucky), 8 (esp. if you use a few PDCs), 9 (tricky), 14 (make
+sure you hammer the guys in the middle
+.I hard
+when the wave starts, so you breach the `V' formation and can attack
+the rest easily), 17 (if lucky), 19 (if lucky), 22 (get the big ship
+quick enough and it's easy), and finally 24 (if you're careful).
+You'll need to get clean sheets on most of these to stand a realistic
+chance of getting through all 35 waves. Take it from me, from wave 25
+onwards it gets
+.B VERY
+hard. At the time of writing, I've only managed to get all the way
+through twice.
+.PP
+You also get an extra PDC if you lose less than 10 energy points in a
+wave, but really this isn't all that important.
+.PP
+When waiting for the start of a new wave, don't just sit there
+recovering from the last one. Keep shooting! When the new wave starts,
+the enemy will be hit by any shots as usual, so you can hit 'em pretty
+hard if you do it right.
+.PP
+The dark purple baddies generate lesser baddies, so try to get them
+first.
+.PP
+Don't assume that all baddies of the same type take the same number of
+hits to destroy. It varies. (Though it's preset rather than random, so
+it'll always be the same on a wave-by-wave basis.)
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH "ABOUT THE MUSIC"
+The tracks played in zblast/xzb are just stereo csf files played via a
+hacked-up version of sod2. `title.csf', `ingame.csf' and
+`gameover.csf' can be replaced with any other csfs you like, but if
+you do this you must set SOD2_SAMPLE_PATH explicitly to include your
+sample directory. (This is required as the customised sod2 embedded in
+the program looks in /usr/local/games/lib/zblast by default.)
+.PP
+I'm afraid the csfs were written by me, and I'm not much of a
+musician. They are otherwise known as lilting.csf (title) and
+macroscopic.csf (game). (The game over music is just a quick drum
+pattern I did.)
+.PP
+For those that care, the music played in zblast is the same as output
+from (for example) `sod2 -Rips 16000 title.csf', or just `-ips 16000'
+if only mono sound is available. BTW, when zblast says `loading
+music', that's true to a certain extent but what's taking all the time
+is the sod2 preconstruct bit. :-)
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH "ENVIRONMENT VARIABLES"
+.TP
+.I ZBLAST_NAME
+This name is used on the hi-score table. If this isn't defined, then
+.I USER
+is used. If that isn't defined,
+.I LOGNAME
+is used (and if that isn't defined, it gets your login via
+getpwuid()). Unless
+.I ZBLAST_NAME
+is used, the first letter is capitalised. There's a maximum of 7 chars
+allowed for the name. Apologies if this seems short, but I was
+struggling for space on the title screen. :-)
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH BUGS
+The default unbuffered drawing style is `quick' but can be flickery.
+Use
+.I -dbuf
+for double buffering if the flicker is a problem and you have a fast
+enough configuration to handle it.
+.PP
+The game runs at a slightly different speed if you don't have sound.
+Also, some of the sounds aren't up to much. (You can use different
+ones if you want - they're 8-bit mono 8kHz unsigned samples.)
+.PP
+There are probably still too few waves, but now they do at least
+repeat and get faster next time round... ;-)
+.PP
+There's no file locking when writing to the scores file, so if more
+than one score is written at the same time, a score might be lost.
+.PP
+I haven't tested the joystick support on any, um, joysticks. :-) More
+precisely, I've only tested it on a joypad and not on any `proper'
+analogue joysticks. It
+.I should
+cope with them though.
+.PP
+The in-game music repeats, which is fair enough but it's only one
+track, so it can get a bit annoying after a while.
+.PP
+The music only plays 8-bit, and only at 16kHz. Not as bad as it used
+to be, at least.
+.PP
+The X version is called `xzb' rather than the obvious `xzblast' to
+avoid confusion with `xblast', a rather spiffy bomberman clone. Having
+the original still called `zblast' is probably fairly confusing, but
+that's just tough. :-)
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH ACKNOWLEDGEMENTS
+Davor Jadrijevic contributed the design for the weird purple baddie
+that first appears on wave 31. He also proposed interesting ideas
+about how they should move in a fleet, etc., which I was too lazy to
+bother with. :-)
+.PP
+Graham Richards contributed the sound you get when the baddies shoot.
+.PP
+Oohara Yuuma added auto-fire support.
+.\"
+.\"------------------------------------------------------------------
+.\"
+.SH AUTHOR
+Russell Marks (rus@svgalib.org). Hi-score 74376. :-)

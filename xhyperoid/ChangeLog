@@ -1,0 +1,68 @@
+2000-05-14  Russell Marks  <russell.marks@ntlworld.com>
+
+	* Version 1.2. (Starting here to carry on from Hyperoid's version
+	number.)
+
+	* Given up on finding the original author :-/ (since I'm merely
+	prefixing the original name with `x' I felt I should really ask
+	permission, as it were), and decided to just release it anyway.
+
+	* gtk.c: fixed strange X errors on exit (it seems a gdk_flush()
+	was needed in gc_init(), though I don't quite see why :-/). Also
+	now works in mono, though not especially well.
+
+2000-04-12  Russell Marks  <russell.marks@dtn.ntl.com>
+
+	* xhyperoid.6: created.
+
+	* README: created.
+
+	* Makefile: finished off and cleaned up a bit.
+
+2000-03-26  Russell Marks  <russell.marks@dtn.ntl.com>
+
+	* Tweaked level.xpm and score.xpm to be more readable (well,
+	slightly less *un*readable, anyway :-)).
+
+	* gtk.c: finally got the X version sorted out. The big speed
+	problem was with doing so many colour switches with a single GC;
+	using multiple `single-colour' GCs avoided the need for that.
+
+2000-03-24  Russell Marks  <russell.marks@dtn.ntl.com>
+
+	* gtk.c: first hack at an X version. Slow and jerky. :-(
+
+2000-03-23  Russell Marks  <russell.marks@dtn.ntl.com>
+
+	* Sorted out sounds. They now seem at least reasonably
+	appropriate.
+
+2000-03-22  Russell Marks  <russell.marks@dtn.ntl.com>
+
+	* More concerted attempt at removing the most severe macro abuse.
+	Also mass conversion of "//" comments.
+
+2000-03-21  Russell Marks  <russell.marks@dtn.ntl.com>
+
+	* hyperoid.c: fixed segfault (from original code) where NULL
+	pointer was occasionally dereferenced when breaking up an
+	asteroid.
+
+	* Got score and other status indication working.
+
+2000-03-18  Russell Marks  <russell.marks@dtn.ntl.com>
+
+	* hyperoid.c: added sound support (lifted from zblast). Only the
+	code is there at the moment; tested with zblast sounds, but need
+	to put together some appropriate for this.
+
+	* hyperoid.c: got a crude svgalib port mostly working - there's an
+	intermittent segfault problem, but I suspect that was in the
+	original code (not that that helps :-)), and I haven't implemented
+	the score etc. display yet.
+
+2000-03-17  Russell Marks  <russell.marks@dtn.ntl.com>
+
+	* Started port. The first step is to try and remove the more
+	obvious Windows dain bramage and unsightly Pascal/Modula-2-isms. I
+	may be some time. ;-)

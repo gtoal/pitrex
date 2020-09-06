@@ -1,0 +1,10 @@
+#
+DEFINES = E131_BRIDGE PIXEL_MULTI NDEBUG
+#
+LIBS =
+#
+SRCDIR = firmware
+
+include ../h3-firmware-template/Rules.mk
+
+prerequisites:

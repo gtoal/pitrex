@@ -1,0 +1,36 @@
+all:	dirCheck pitrexLib hello window bootmsg maze perspective drawships pacman cube gimms
+	$(RM) $(BUILD_DIR)*.* *~ hello bootmsg window maze perspective drawships pacman cube gimms
+
+gimms: $(BUILD_DIR)gimms.o $(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+       			   $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	        	   $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
+#		           $(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+#			   $(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o
+	$(RM) gimms
+	$(CC) $(CFLAGS) -o gimms \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(BUILD_DIR)gimms.o
+
+window: $(BUILD_DIR)windowmain.o  $(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+       			   $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	        	   $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
+#		           $(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+#			   $(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)windowmain.o
+
+$(BUILD_DIR)drawships.o: drawships.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)drawships.o -c drawships.c
+
+drawships: $(BUILD_DIR)drawships.o $(BUILD_DIR)window.o \
+	                   $(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+       			   $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	        	   $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
+#		           $(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+#			   $(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o
+	$(RM) drawships
+	$(CC) $(CFLAGS) -o drawships \
+	$(BUILD_DIR)window.o \

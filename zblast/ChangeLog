@@ -1,0 +1,149 @@
+2003-08-22  Russell Marks  <russell.marks@ntlworld.com>
+
+	* Version 1.3.
+
+	* Updated displayed copyright text.
+
+	* hiscore.c (writescore): fixed exploitable (for gid games)
+	buffer-overrun in hi-score-writing.
+
+	* Removed "FAQ", which wasn't particularly an FAQ and was really a
+	bit pointless.
+
+2002-04-28  Russell Marks  <russell.marks@ntlworld.com>
+
+	* zblast.c (playgame): fixed brokenness on second repeat of the
+	levels. Thanks to Oohara Yuuma for spotting this.
+
+2002-03-31  Russell Marks  <russell.marks@ntlworld.com>
+
+	* zblast.c (playgame): finally gave in and added auto-fire, but
+	only when run with `-autofire', and at the cost of disabling
+	high-score saving. Thanks to Oohara Yuuma for contributing the
+	code, and to "Ariel" for also suggesting auto-fire support.
+
+2000-12-17  Russell Marks  <russell.marks@ntlworld.com>
+
+	* Version 1.2.
+
+	* zblast.c (snd_main): made the `loading music' bit indicate time
+	passing a bit better, and used \r instead of \n when it's done.
+
+	* Updated title.csf/ingame.csf to reflect their GPLness. (Ouch,
+	glad I finally spotted this one!)
+
+	* Makefile: various updates - mainly saner installation, and new
+	uninstall target.
+
+	* Now installed setgid games (for both versions), to avoid
+	requiring (yikes) world-writable scores file.
+
+	* zblast.c (titledraw): `xzb -small's title screen looks slightly
+	better now.
+
+	* Now defaults to 16kHz sound when available, resorting to the old
+	8kHz otherwise.
+
+	* Fixed some of the more obvious not-checking-buffer-size
+	problems. I think only the SOD2_SAMPLE_PATH in grokfile.c could
+	have potentially been exploitable (and even for that one I have my
+	doubts).
+
+2000-07-03  Russell Marks  <russell.marks@ntlworld.com>
+
+	* zblast.c: joystick support (Linux-specific). You can disable
+	this at compile time if need be. Personally I find it too hard to
+	keep up the fire rate on my joypad (yes, it has the option to use
+	autofire, but that's Evil), and there isn't quite the control with
+	a d-pad you get from cursors. Still, it's there for those who
+	prefer it, and it was fun to gratuitously add support to something
+	after having bought a pad. :-)
+
+2000-03-19  Russell Marks  <rus@cartman>
+
+	* zblast.c: sound-generating process now exits when main program
+	quits abnormally, rather than hanging around.
+
+2000-01-02  Russell Marks  <rus@cartman>
+
+	* zblast.c: made sound effects louder.
+	
+	* zblast.c: made text-drawing slightly more sane, and (in X) added
+	support for `delete window' message from window manager.
+
+	* ANSIfied, caught a couple of minor problems (not really bugs as
+	they happened to work previously, HHOS :-)).
+
+	* Makefile: stopped using MORE_SOUNDBUF by default.
+
+	* zblast.c: converted to use svgalib's raw mode support rather
+	than rawkey.
+
+Thu Jan 30 03:03:51 1997  Russell Marks  <rus@lifeson>
+
+	* Version 1.1.
+
+	* zblast.c: made use of more sound buffer fragments a compile-time
+	option.
+
+Wed Dec 11 15:41:26 1996  Russell Marks  <rus@lifeson>
+
+	* New `phit.raw' (finally!).
+
+Sat Nov 23 05:06:14 1996  Russell Marks  <rus@lifeson>
+
+	* zblast.c: added console-switching support.
+
+Mon Nov 18 00:12:59 1996  Russell Marks  <rus@lifeson>
+
+	* Added hi-score table.
+
+	* zblast.c: use ints for signed values rather than char.
+	(Signedness of chars is all kinds of fun in portability terms.)
+
+Tue Nov 12 05:37:05 1996  Russell Marks  <rus@lifeson>
+
+	* zblast.c: made sound a bit less likely to screw up (click or
+ 	break up), at the expense of making it less synchronous. (Now uses
+ 	4 snd_frag fragments instead of 2.)
+
+	* zblast.c: added game over message, and (trivial) music for it.
+
+Fri Mar 29 04:03:01 1996  Russell Marks  <rus@lifeson>
+
+	* Added title/in-game music via a hacked-up sod2.
+
+	* Merged zblast and xzb.
+
+Sun Nov 12 02:09:36 1995  Russell Marks  <rus@lifeson>
+
+	* xzb.c: added icon and put in 'don't resize' window hints.
+
+	* xzb.icon: created.
+
+Sat Nov 11 20:00:48 1995  Russell Marks  <rus@lifeson>
+
+	* xzb.c: now loops after finishing all levels (and speeds up).
+
+Sat Nov 11 02:18:24 1995  Russell Marks  <rus@lifeson>
+
+	* xzb.6: created.
+
+	* xzb.c: done colour, made unbuffered display default, allowed
+	optional bigger display.
+
+Fri Nov 10 18:17:36 1995  Russell Marks  <rus@lifeson>
+
+	* xzb created, an X port.
+
+Tue Nov  1 02:01:10 1994  Russell Marks  (rus@lifeson)
+
+	* Previous significant changes: new type of bad guy (another kind
+	pending), five new waves and one removed (six levels total now),
+	some sounds changed - in particular Graham's cool ptowwwww sound
+	is used for the baddies' shots.
+
+	* Bugfix: it doesn't click at the end of a sound now.
+
+	* Started changelog.
+

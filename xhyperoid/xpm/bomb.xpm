@@ -1,0 +1,31 @@
+/* XPM */
+static char *bomb_xpm[] = {
+/* width height ncolors chars_per_pixel */
+"16 16 8 1",
+/* colors */
+"  c #000000",
+". c #C0C0C0",
+"X c #FF0000",
+"o c #808080",
+"O c #FFFFFF",
+"+ c #FFFF00",
+"@ c #808000",
+"z c None",
+/* pixels */
+"zzzzzzzzzzzzzzzz",
+"zzzzzzzz@@@zzzzz",
+"zzzzzz.@@.@@.zzz",
+"zzzzz.  O .@@.zz",
+"zzzzz.  o .z+X.z",
+"zzzz.      .X.zX",
+"zzz.   oOo  .+.z",
+"zz.o    .Oo o.Xz",
+"zz.      .O  .zz",
+"zz.       O  .zz",
+"zz.       o  .zz",
+"zz.o o      o.zz",
+"zzz.  o     .zzz",
+"zzzz.      .zzzz",
+"zzzzz.o  o.zzzzz",
+"zzzzzz....zzzzzz"
+};

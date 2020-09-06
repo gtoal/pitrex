@@ -1,0 +1,12 @@
+*tempo 140
+*samples
+synth/marimba.8		8400
+*blocklist
+1
+#
+*blocks
+*v
+9531
+egbe;
+3334
+1,100

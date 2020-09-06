@@ -1,0 +1,25 @@
+Really, really need pause. :-) This is tricky to do in an X-friendly
+way, as it means keeping the display refresh going without moving
+anything. Maybe just clear, stick up text saying it's paused, and not
+bother with drawing the usual stuff while paused?
+
+
+The source is a total mess, mainly because it was horribly Windowsy
+originally and that hasn't really been fixed yet. May even want to
+reindent the source to suit me, something I'd normally be very
+reluctant to do - but I've hacked this *so* much it might be
+justified.
+
+
+X version is a bit flickery, and can be very flickery when the screen
+is `busy' (leave it alone for a few minutes so swarmers take over, and
+you should be able to see what I mean). Unfortunately, I don't think
+there's too much I can do about this without killing the speed (I
+found double-buffering noticeably slow), which is a pain.
+
+
+It may be possible for (completely invisible!) black Spinners to be
+created on level 16 or so. Need to check if that's the case and fix if
+it is. (A proper fix would be a little bit more tricky than it sounds,
+though. The color changes when hit, and is set in (at least) two
+different places.)

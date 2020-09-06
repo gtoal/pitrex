@@ -1,0 +1,47 @@
+# I prefer "handmade" make files, it is a little bit of more worktime to start with
+# but I can read them, others can, and I know what they do!
+
+BUILD_DIR_PURE := build.raspbian
+BUILD_DIR := $(BUILD_DIR_PURE)/
+
+PITREX_DIR := ../pitrex/pitrex/
+VECTREX_DIR := ../pitrex/vectrex/
+CFLAGS := -Ofast -I../pitrex/ -DPIZERO -DRPI0
+CC := gcc
+
+.PHONY: pitrexLib
+.PHONY: dirCheck
+
+all:	dirCheck pitrexLib gyrocks
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
+
+pitrexLib:
+	$(MAKE) -C $(PITREX_DIR) -f Makefile.raspbian all
+	$(MAKE) -C $(VECTREX_DIR) -f Makefile.raspbian all
+
+$(BUILD_DIR)gyrocks.o: gyrocks.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)gyrocks.o -c gyrocks.c
+
+$(BUILD_DIR)objects.o: objects.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)objects.o -c objects.c
+
+$(BUILD_DIR)hershey_font.o: hershey_font.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)hershey_font.o -c hershey_font.c
+
+gyrocks: $(BUILD_DIR)gyrocks.o $(BUILD_DIR)objects.o  $(BUILD_DIR)hershey_font.o pitrexLib
+	$(RM) gyrocks
+	$(CC) $(CFLAGS) -o gyrocks \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)objects.o \
+	$(BUILD_DIR)hershey_font.o \
+	$(BUILD_DIR)gyrocks.o -lm
+
+clean:
+	$(RM) $(BUILD_DIR)*.*
+	$(RM) gyrocks

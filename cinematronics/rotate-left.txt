@@ -1,0 +1,4 @@
+these are correct orientation using horizontal vectrex when under raspbian but not stand-alone.
+need to discuss with malban best way to handle orientation flag...
+
+barrier sundance armorattack starhawk spacewars ripoff

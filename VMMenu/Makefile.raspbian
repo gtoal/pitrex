@@ -1,0 +1,101 @@
+BUILD_DIR_PURE := build.raspbian
+BUILD_DIR := $(BUILD_DIR_PURE)/
+PITREX_DIR := ../pitrex/pitrex/
+VECTREX_DIR := ../pitrex/vectrex/
+CFLAGS := -W -Wall -O2 -s -g -ggdb3 -I../pitrex/ -DPITREX -DPIZERO -DRPI0 # -Ofast
+CC = gcc
+LINK = gcc
+OBJ_DIR = obj
+VPATH=VMMSrc iniparser Linux VMMSDL
+INC = `sdl2-config --cflags` -I./VMMSrc -I./Win32/dvg -I./Linux -I./iniparser -I./VMMSDL
+LIBS= `sdl2-config --libs` -lSDL2 -lSDL2_mixer -lm
+RM = rm -f
+RMDIR = rm -rf
+MKDIR = mkdir -p $(1)
+OBJS = $(OBJ_DIR)/vmmenu.o \
+       $(OBJ_DIR)/graphics.o \
+       $(OBJ_DIR)/timer.o \
+       $(OBJ_DIR)/iniparser.o \
+       $(OBJ_DIR)/dictionary.o \
+       $(OBJ_DIR)/LinuxVMM.o \
+       $(OBJ_DIR)/VMM-SDL.o \
+       $(OBJ_DIR)/vchars.o \
+       $(OBJ_DIR)/gamelist.o \
+       $(OBJ_DIR)/editlist.o
+
+.PHONY: pitrexLib
+.PHONY: dirCheck
+
+all: dirCheck pitrexLib vmmenu
+	echo All up to date
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
+	if [ ! -d $(OBJ_DIR) ]; then mkdir $(OBJ_DIR); fi
+
+# Clean up intermediate files
+clean:
+	$(RM) $(BUILD_DIR)*.* *~
+	$(RM) vmmenu
+	$(RM) $(OBJ_DIR)/*.o
+
+pitrexLib:
+	$(MAKE) -C $(PITREX_DIR) -f Makefile.raspbian all
+	$(MAKE) -C $(VECTREX_DIR) -f Makefile.raspbian all
+
+# Flags for linker
+vmmenu: $(OBJS) $(PITREX_DIR)$(BUILD_DIR)bcm2835.o $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o $(VECTREX_DIR)$(BUILD_DIR)osWrapper.o $(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o
+	@echo Building for PiTrex under Linux on Pi0
+	$(CC) $(CFLAGS) -o $@ $(LIBS) $(OBJS) \
+	      $(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	      $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	      $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	      $(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	      $(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o
+
+# install
+install:
+#	cp vmmenu /usr/local/sbin
+	chown root vmmenu
+	chmod u+s vmmenu
+
+$(OBJ_DIR)/vmmenu.o: VMMSrc/vmmenu.c
+	$(CC) $(CFLAGS) -c $(INC) -o $@ VMMSrc/vmmenu.c
+
+$(OBJ_DIR)/graphics.o: PiTrex/graphics.c
+	$(CC) $(CFLAGS) -c $(INC) -o $@ PiTrex/graphics.c
+
+$(OBJ_DIR)/timer.o: Win32/dvg/timer.c
+	$(CC) $(CFLAGS) -c $(INC) -o $@ Win32/dvg/timer.c
+
+$(OBJ_DIR)/iniparser.o: iniparser/iniparser.c
+	$(CC) $(CFLAGS) -c $(INC) -o $@ iniparser/iniparser.c
+
+$(OBJ_DIR)/dictionary.o: iniparser/dictionary.c
+	$(CC) $(CFLAGS) -c $(INC) -o $@ iniparser/dictionary.c
+
+$(OBJ_DIR)/LinuxVMM.o: Linux/LinuxVMM.c
+	$(CC) $(CFLAGS) -c $(INC) -o $@ Linux/LinuxVMM.c
+
+$(OBJ_DIR)/VMM-SDL.o: VMMSDL/VMM-SDL.c
+	$(CC) $(CFLAGS) -c $(INC) -o $@ VMMSDL/VMM-SDL.c
+
+$(OBJ_DIR)/vchars.o: VMMSrc/vchars.c
+	$(CC) $(CFLAGS) -c $(INC) -o $@ VMMSrc/vchars.c
+
+$(OBJ_DIR)/gamelist.o: VMMSrc/gamelist.c
+	$(CC) $(CFLAGS) -c $(INC) -o $@ VMMSrc/gamelist.c
+
+$(OBJ_DIR)/editlist.o: VMMSrc/editlist.c
+	$(CC) $(CFLAGS) -c $(INC) -o $@ VMMSrc/editlist.c
+
+# TO DO: trim the command lines to the essentials:
+# gcc -W -Wall -O2 -s -g -ggdb3 -I../pitrex/ -DPIZERO -DRPI0  -c `sdl2-config --cflags` -I./VMMSrc -I./Win32/dvg -I./Linux -I./iniparser -I./VMMSDL PiTrex/graphics.c
+# gcc -W -Wall -O2 -s -g -ggdb3 -I../pitrex/ -DPIZERO -DRPI0  -c `sdl2-config --cflags` -I./VMMSrc -I./Win32/dvg -I./Linux -I./iniparser -I./VMMSDL Win32/dvg/timer.c
+# gcc -W -Wall -O2 -s -g -ggdb3 -I../pitrex/ -DPIZERO -DRPI0  -c `sdl2-config --cflags` -I./VMMSrc -I./Win32/dvg -I./Linux -I./iniparser -I./VMMSDL iniparser/iniparser.c
+# gcc -W -Wall -O2 -s -g -ggdb3 -I../pitrex/ -DPIZERO -DRPI0  -c `sdl2-config --cflags` -I./VMMSrc -I./Win32/dvg -I./Linux -I./iniparser -I./VMMSDL iniparser/dictionary.c
+# gcc -W -Wall -O2 -s -g -ggdb3 -I../pitrex/ -DPIZERO -DRPI0  -c `sdl2-config --cflags` -I./VMMSrc -I./Win32/dvg -I./Linux -I./iniparser -I./VMMSDL Linux/LinuxVMM.c
+# gcc -W -Wall -O2 -s -g -ggdb3 -I../pitrex/ -DPIZERO -DRPI0  -c `sdl2-config --cflags` -I./VMMSrc -I./Win32/dvg -I./Linux -I./iniparser -I./VMMSDL VMMSDL/VMM-SDL.c
+# gcc -W -Wall -O2 -s -g -ggdb3 -I../pitrex/ -DPIZERO -DRPI0  -c `sdl2-config --cflags` -I./VMMSrc -I./Win32/dvg -I./Linux -I./iniparser -I./VMMSDL VMMSrc/vchars.c
+# gcc -W -Wall -O2 -s -g -ggdb3 -I../pitrex/ -DPIZERO -DRPI0  -c `sdl2-config --cflags` -I./VMMSrc -I./Win32/dvg -I./Linux -I./iniparser -I./VMMSDL VMMSrc/gamelist.c
+# gcc -W -Wall -O2 -s -g -ggdb3 -I../pitrex/ -DPIZERO -DRPI0  -c `sdl2-config --cflags` -I./VMMSrc -I./Win32/dvg -I./Linux -I./iniparser -I./VMMSDL VMMSrc/editlist.c

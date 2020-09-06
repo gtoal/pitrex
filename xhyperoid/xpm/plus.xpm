@@ -1,0 +1,28 @@
+/* XPM */
+static char *plus_xpm[] = {
+/* width height ncolors chars_per_pixel */
+"16 16 5 1",
+/* colors */
+"  c None",
+". c #808080",
+"X c #FFFFFF",
+"o c #FFFF00",
+"O c #808000",
+/* pixels */
+"                ",
+"                ",
+"                ",
+"      ...       ",
+"      .oOX      ",
+"      .OoX      ",
+"   ....oO ..    ",
+"   .oOoOoOoOX   ",
+"   .OoOoOoOoX   ",
+"    XX OoXXXX   ",
+"      .oOX      ",
+"      .OoX      ",
+"       XXX      ",
+"                ",
+"                ",
+"                "
+};

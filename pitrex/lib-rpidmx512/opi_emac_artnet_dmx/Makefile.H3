@@ -1,0 +1,10 @@
+#
+DEFINES = ARTNET_NODE NDEBUG
+#
+LIBS = rdmdiscovery rdm dmxmonitor
+#
+SRCDIR = firmware lib
+
+include ../h3-firmware-template/Rules.mk
+
+prerequisites:

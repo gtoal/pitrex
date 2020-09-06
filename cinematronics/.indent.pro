@@ -1,0 +1,17 @@
+-bad
+-dj
+-bap
+-ci1
+-cli0.5
+-di4
+-nbc
+-nfc1
+-i3
+-npsl
+-nsc
+-br
+-ce
+-sob
+-fca
+-l78
+-ss

@@ -1,0 +1,28 @@
+# I prefer "handmade" make files, it is a little bit of more worktime to start with
+# but I can read them, others can, and I know what they do!
+
+BUILD_DIR_PURE := build.raspbian
+BUILD_DIR := $(BUILD_DIR_PURE)/
+
+CFLAGS := -Ofast -I../ -DPIZERO -DRPI0 -DPITREX_DEBUG -DAVOID_TICKS -DDISABLE_FIQ
+# -DRTSCHED
+CC := gcc
+
+.PHONY: dirCheck
+
+all: dirCheck $(BUILD_DIR)vectrexInterface.o $(BUILD_DIR)baremetalUtil.o $(BUILD_DIR)osWrapper.o
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
+
+$(BUILD_DIR)vectrexInterface.o: vectrexInterface.c vectrexInterface.h commands.i rasterFont.i vectorFont.i
+	$(CC) $(CFLAGS) -c vectrexInterface.c -o $(BUILD_DIR)vectrexInterface.o
+
+$(BUILD_DIR)baremetalUtil.o: baremetalUtil.c baremetalUtil.h
+	$(CC) $(CFLAGS) -c baremetalUtil.c -o $(BUILD_DIR)baremetalUtil.o
+
+$(BUILD_DIR)osWrapper.o: osWrapper.c osWrapper.h
+	$(CC) $(CFLAGS) -c osWrapper.c -o $(BUILD_DIR)osWrapper.o
+
+clean:
+	$(RM) $(BUILD_DIR)*.*

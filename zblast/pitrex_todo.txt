@@ -1,0 +1,30 @@
+2020-01-29:
+Updated: 2020-08-29
+
+* Port the X version as well.
+
+LOW PRIORITIES (try to port other games first)
+^^^^^^^^^^^^^^
+* Make In-game score display visible. -DONE
+
+* Text display that works when optimise = on.
+  -Better now with vectrexInterface lib from pitrex.10.
+   -Still need to fix wonkyness (zero between each character).
+    -Increased spacing between numbers, which at least makes them
+     more readable.
+     -A little better again now with latest Vectrex Interface lib.
+
+* Add buffering system to substitute for video RAM. -Don't need
+
+* Bare-Metal version (need to substitute for all of zblast's other Linux
+  dependencies).
+  -Don't bother now that I can run it in Linux.
+
+* Add sound effects via the Vectrex.
+
+* Replace the raster title graphic. - DONE
+  -Had to shrink a bit because font scaling changed in latest Vectrex Interface
+   lib.
+
+* Show high scores, or at least last score.
+  -Now displays last score on the title screen.

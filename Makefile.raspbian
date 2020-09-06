@@ -1,0 +1,120 @@
+# I prefer "handmade" make files, it is a little bit of more worktime to start with
+# but I can read them, others can, and I know what they do!
+#
+# export PATH=/home/chrissalo/gcc-arm/bin:$PATH
+
+# a removed: astMake
+all:	tailgunnerMake vecxMake vecxMake2 asteroidsMake gyrocksMake battlezoneMake gravitarMake spaceduelMake tempestMake blackwidowMake deluxeMake lunarMake CineMake helloWorldMake redbaronMake linmenuMake
+
+
+
+lunarMake:
+	cd lunar; make -f Makefile.raspbian
+	cd ..
+
+redbaronMake:
+	cd redbaron; make -f Makefile.raspbian
+	cd ..
+
+#astMake:
+#	cd asteroids; make -f Makefile.raspbian
+#	cd ..
+
+deluxeMake:
+	cd deluxe; make -f Makefile.raspbian
+	cd ..
+
+blackwidowMake:
+	cd blackwidow; make -f Makefile.raspbian
+	cd ..
+
+tailgunnerMake:
+	cd tailgunner; make -f Makefile.raspbian
+	cd ..
+
+vecxMake:
+	cd vecx.emulated; make -f Makefile.raspbian
+	cd ..
+
+vecxMake2:
+	cd vecx.direct; make -f Makefile.raspbian
+	cd ..
+
+asteroidsMake:
+	cd asteroids_sbt; make -f Makefile.raspbian
+	cd ..
+
+gyrocksMake:
+	cd gyrocks; make -f Makefile.raspbian
+	cd ..
+
+battlezoneMake:
+	cd battlezone; make -f Makefile.raspbian
+	cd ..
+
+gravitarMake:
+	cd gravitar; make -f Makefile.raspbian
+	cd ..
+
+spaceduelMake:
+	cd spaceduel; make -f Makefile.raspbian
+	cd ..
+
+tempestMake:
+	cd tempest; make -f Makefile.raspbian
+	cd ..
+
+CineMake:
+	cd cinematronics; make -f Makefile.raspbian
+	cd ..
+
+helloWorldMake:
+	cd hello_world; make -f Makefile.raspbian
+	cd ..
+
+linmenuMake:
+	cd linmenu; make -f Makefile
+	cd ..
+
+
+clean:
+	cd lunar; make -f Makefile.raspbian clean
+	cd ..
+	#cd asteroids; make -f Makefile.raspbian clean
+	#cd ..
+	cd deluxe; make -f Makefile.raspbian clean
+	cd ..
+	cd redbaron; make -f Makefile.raspbian clean
+	cd ..
+	cd blackwidow; make -f Makefile.raspbian clean
+	cd ..
+	cd tailgunner; make -f Makefile.raspbian clean
+	cd ..
+	cd vecx.emulated; make -f Makefile.raspbian clean
+	cd ..
+	cd vecx.direct; make -f Makefile.raspbian clean
+	cd ..
+	cd asteroids_sbt; make -f Makefile.raspbian clean
+	cd ..
+	cd gyrocks; make -f Makefile.raspbian clean
+	cd ..
+	cd battlezone; make -f Makefile.raspbian clean
+	cd ..
+	cd gravitar; make -f Makefile.raspbian clean
+	cd ..
+	cd spaceduel; make -f Makefile.raspbian clean
+	cd ..
+	cd tempest; make -f Makefile.raspbian clean
+	cd ..
+	cd sim; make -f Makefile.raspbian clean
+	cd ..
+	cd cinematronics; make -f Makefile.raspbian clean
+	cd ..
+	cd hello_world; make -f Makefile.raspbian clean
+	cd ..
+	cd linmenu; make -f Makefile clean
+	cd ..
+	cd pitrex/pitrex; make -f Makefile.raspbian clean
+	cd ..
+	cd pitrex/vectrex; make -f Makefile.raspbian clean
+	cd ..

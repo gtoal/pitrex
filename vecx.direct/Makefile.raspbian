@@ -1,0 +1,43 @@
+BUILD_DIR_PURE := build.raspbian
+BUILD_DIR := $(BUILD_DIR_PURE)/
+
+PITREX_DIR := ../pitrex/pitrex/
+VECTREX_DIR := ../pitrex/vectrex/
+CFLAGS := -Ofast -I../pitrex/ -DPIZERO -DRPI0
+CC := gcc
+
+.PHONY: pitrexLib
+.PHONY: dirCheck
+
+all:	dirCheck pitrexLib vecx
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
+
+$(BUILD_DIR)main.o: main.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)main.o -c main.c
+
+$(BUILD_DIR)e6809.o: e6809.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)e6809.o -c e6809.c
+
+$(BUILD_DIR)vecx.o: vecx.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)vecx.o -c vecx.c
+
+vecx: pitrexLib \
+	$(BUILD_DIR)e6809.o \
+	$(BUILD_DIR)main.o \
+	$(BUILD_DIR)vecx.o
+	$(RM) vecx
+	$(CC) $(CFLAGS) -o vecx \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)main.o \
+	$(BUILD_DIR)e6809.o \
+	$(BUILD_DIR)vecx.o
+
+clean:
+	$(RM) $(BUILD_DIR)*.*
+	$(RM) vecx

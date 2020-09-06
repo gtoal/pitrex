@@ -1,0 +1,86 @@
+zblast 1.3 - shoot the thingies -- for Vectrex!
+Copyright (C) 1993-2003 Russell Marks.
+              2020, Kevin Koster / PiTrex dev. team.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at
+your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+
+Description
+-----------
+
+zblast is a simple but fairly manic shoot-em-up. There are versions
+for both svgalib (the original) and X.
+
+-- Modified for PiTrex by Kevin Koster, 2020. SVGAlib function calls
+   replaced with calls to "vectrexInterface" library. Other minor
+   edits to change things cause problems with the Vectrex.
+
+Installation
+------------
+
+-- "make vga" builds for Vectrex. X version not yet adapted.
+
+For zblast (the svgalib version) you need svgalib (surprise :-)) - any
+reasonably recent version should be ok. If you don't have X on your
+machine, use `make vga' to avoid trying to compile xzb.
+
+For xzb (the X version) you should only need a Unix box with X11R5/R6
+and usleep(), but it's only been tested on a Linux (x86) box with gcc
+and X11R6 (XFree86). It might actually need a POSIX box with an ANSI C
+compiler, I haven't checked. If compiling on a non-Linux box or one
+without svgalib, be sure to do `make x' as plain `make' will try to
+compile zblast too.
+
+Edit the Makefile as required. For an average Linux box, you won't
+need any edits. Do note that you'll need a `games' group - but that
+shouldn't be a problem. (I think most distributions have one.)
+
+As usual, `make install' (as root) installs it after you've compiled
+whichever versions you want (vga or X or both).
+
+Once it's installed, do `man zblast' for further documentation.
+
+
+Speed/flicker tweaks
+--------------------
+
+On anything remotely modern it'll run quite comfortably. If you have
+problems with slower machines, try running with `-small'. That should
+speed things up a certain amount. If that's not enough, try `-small
+-nomusic'.
+
+By default, both versions use a fast but slightly flickery unbuffered
+line drawing style. If you run it with `-dbuf', you get a slower but
+flicker-free version. Personally, I don't think the slowdown is worth
+it on my machine, but if you have a fast enough box (or a mono X
+display, in xzb's case) you might want to try it. (The title animation
+is always drawn unbuffered, so don't worry if that still flickers.)
+
+Double buffering worked better for the PiTrex port, so it is now
+default. The "-nodbuf" option can now be used to disable it.
+
+
+Contacting me
+-------------
+
+You can email me at rus@svgalib.org.
+
+PiTrex info: http://computernerdkev.heliohost.org/pitrex/
+
+Have fun,
+-Rus.
+
+Have fun with a Vectrex,
+-Kevin Koster.

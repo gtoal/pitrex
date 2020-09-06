@@ -1,0 +1,92 @@
+# I prefer "handmade" make files, it is a little bit of more worktime to start with
+# but I can read them, others can, and I know what they do!
+#
+# export PATH=/home/chrissalo/gcc-arm/bin:$PATH
+
+
+# -DLOADER_START=0x4000000
+# must also be defined/changed in *.S files, since they do not parse defines
+# REMEMBER in bcm2835
+# MEM_COHERENT_REGION s defined now as 0x3f00000 !!!!
+
+EMU_NAME := tempest
+
+BUILD_DIR_PURE := build.baremetal
+BUILD_DIR := $(BUILD_DIR_PURE)/
+
+LIB_DIR :=../pitrex/baremetal
+INC_DIR_PITREX := ../pitrex
+INC_DIR_LIBRARY := $(LIB_DIR)/lib2835
+SIM_DIR := ../sim/
+PITREX_DIR := ../pitrex/pitrex/
+VECTREX_DIR := ../pitrex/vectrex/
+LOADER_DIR := ../piTrexBoot/
+
+CFLAGS := -fuse-ld=bfd  -Ofast -I$(INC_DIR_PITREX) -I$(INC_DIR_LIBRARY) -L$(LIB_DIR) -mfloat-abi=hard -nostartfiles -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -DRPI0 -DFREESTANDING -DPITREX_DEBUG -DMHZ1000 -DLOADER_START=0x4000000
+CC	= arm-none-eabi-gcc
+AS	= $(CC)
+LD	= arm-none-eabi-ld
+AR	= arm-none-eabi-ar
+
+.PHONY: pitrexLib
+.PHONY: dirCheck
+.PHONY: simLib
+.PHONY: loaderObjects
+
+all:	dirCheck pitrexLib simLib loaderObjects $(EMU_NAME).img
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
+
+pitrexLib:
+	$(MAKE) -C $(PITREX_DIR) -f Makefile.baremetal all
+	$(MAKE) -C $(VECTREX_DIR) -f Makefile.baremetal all
+
+simLib:
+	$(MAKE) -C $(SIM_DIR) -f Makefile.baremetal all
+
+loaderObjects:
+	$(MAKE) -C $(LOADER_DIR) -f Makefile loaderObjects
+
+
+$(BUILD_DIR)sim.o: $(EMU_NAME).c $(SIM_DIR)framework.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)sim.o -DSINGLE_GAME="\"$(EMU_NAME)\"" -DGAME_INC="\"../$(EMU_NAME)/$(EMU_NAME).c\"" -c $(SIM_DIR)framework.c
+
+$(BUILD_DIR)main.o: main.c  $(EMU_NAME).c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)main.o -c main.c -DSINGLE_GAME="\"$(EMU_NAME)\""
+
+$(EMU_NAME).img: pitrexLib simLib loaderObjects $(BUILD_DIR)sim.o $(BUILD_DIR)main.o
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)$(EMU_NAME).elf.img \
+	$(LOADER_DIR)$(BUILD_DIR)baremetalEntry.o \
+	$(LOADER_DIR)$(BUILD_DIR)bareMetalMain.o \
+	$(LOADER_DIR)$(BUILD_DIR)cstubs.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-armtimer.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-aux.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-gpio.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-interrupts.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-systimer.o \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)main.o \
+	$(BUILD_DIR)sim.o \
+	$(SIM_DIR)$(BUILD_DIR)display.o \
+	$(SIM_DIR)$(BUILD_DIR)vx_interface.o \
+	$(SIM_DIR)$(BUILD_DIR)memory.o \
+	$(SIM_DIR)$(BUILD_DIR)game.o \
+	$(SIM_DIR)$(BUILD_DIR)debugger.o \
+	$(SIM_DIR)$(BUILD_DIR)dis6502.o \
+	$(SIM_DIR)$(BUILD_DIR)mathbox.o \
+	$(SIM_DIR)$(BUILD_DIR)pokey.o -lm -lff12c  -ldebug  -lhal -lutils -lconsole -lff12c -lbob -li2c -lbcm2835 -larm $(LIB_DIR)/linkerHeapDefBoot.ld
+	$(RM) $(EMU_NAME).img
+	arm-none-eabi-objcopy $(BUILD_DIR)$(EMU_NAME).elf.img -O binary $(EMU_NAME).img
+ifdef MAKE_IMAGE
+	cp $(EMU_NAME).img /media/psf/Home/ubuntu64
+	cp $(EMU_NAME).img /media/psf/macRoot/Volumes/baremetal
+endif
+
+clean:
+	$(RM) $(BUILD_DIR)*.*
+	$(RM) $(EMU_NAME).img

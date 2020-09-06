@@ -1,0 +1,102 @@
+When I was preparing the release of the linux-friendly version of everything, it looks
+like I accidentally reverted to an earlier version of tailgunner.  I've since put right
+most of the things that I've noticed had reverted, but the current executable is rather
+flickery and plays slower than I remember.  I wonder if by accident it is playing at
+30Hz.  I'll look into that but for now have to put this aside and get on with the rest
+of the release.
+
+
+=========
+compare /home/pi/BACKUP/pitrex12c/tailgunner/ops.c
+
+Should we be using ops.c or tailgunr-ops.c?  Currently the makefile links
+with ops.c but tailgunr-ops.c has the updated MULS optimisation.
+ - proper version includes tailgunr-ops.c from ops.c ...
+ 
+laser handling....  is this an out of date version???
+
+YES.  /home/pi/src/pitrex12c/tailgunner is significantly updated
+
+lasers and MUL optimisation for a start...
+
+Check at least these:
+
+diff -r ./build.baremetal/tailgunner.img.s /home/pi/src/pitrex12c/tailgunner/build.baremetal/tailgunner.img.s
+diff -r ./externs.h /home/pi/src/pitrex12c/tailgunner/externs.h
+diff -r ./Makefile.baremetal /home/pi/src/pitrex12c/tailgunner/Makefile.baremetal
+diff -r ./Makefile.raspbian /home/pi/src/pitrex12c/tailgunner/Makefile.raspbian
+diff -r ./mdep.i /home/pi/src/pitrex12c/tailgunner/mdep.i
+diff -r ./ops.c /home/pi/src/pitrex12c/tailgunner/ops.c
+diff -r ./tailgunner.c /home/pi/src/pitrex12c/tailgunner/tailgunner.c
+diff -r ./tailgunner-data.i /home/pi/src/pitrex12c/tailgunner/tailgunner-data.i
+
+STILL TO PATCH:
+
+case 0x1af3:
+
+  // general printing routine
+  //fprintf(stderr, "X=%d Y=%d E=%d F=%d RTS=%04x\n", ram[3], ram[4], ram[14], ram[15], ram[0]);
+  if (ram[4] >= 600) ram[4] += 220; // raise 'SCORE' etc
+  if (ram[4] <= 50) ram[4] -= 50;   // lower 'CREDITS' as far as possible
+
+      /* Invariants: register_P = 0x0 register_I = 0x00 */;
+      /* opLDAdir_A_AA (a3) */
+      cmp_old = flag_C = acc_a0 = register_A; /* store old acc */
+      register_A = cmp_new = ram[register_I = 0x03]; /* set I register */
+
+...
+this has been moved more cleanly into tailgunner.c:
+
+      ToY -= FromY;
+      ToY = ((signed short int)(((signed short int)ToY) >> (signed short int)vgShiftLength)) /* SAR */;
+      ToY += FromY;
+
+      /* render the line */
+#ifndef DUALCPU
+      CinemaVectorData (FromX, FromY, ToX, ToY, vgColour);
+#endif
+
+      }
+
+case 0x1454:
+---
+      ToY -= FromY;
+      ToY = ((signed short int)(((signed short int)ToY) >> (signed short int)vgShiftLength)) /* SAR */;
+      ToY += FromY;
+
+
+      // todo
+      // them intro plaque and letters are displayed here
+      // possible hint is
+      // before each letter add a zero ref!
+      // clue would be the number of prints done per round
+      // if pinrt == 8 zero ref
+      // if print == 8 +2 zero ref etc...
+
+ // this also gives hints where not needed
+ // the intro ships...
+ // must test some RAM location - but I have no memory map , and no correct disassembly
+
+      plaqueCounter++;
+      int force = 0;
+      if ( (plaqueCounter == 9) || // after retangles -> T
+        (plaqueCounter == 11) ||   // -> A
+        (plaqueCounter == 14) ||   // -> IL
+        (plaqueCounter == 17) ||   // -> R
+        (plaqueCounter == 23) ||   // -> E
+        (plaqueCounter == 27) ||   // -> N
+        (plaqueCounter == 30) ||   // -> N
+        (plaqueCounter == 33) ||   // -> U
+        (plaqueCounter == 36)      // -> G
+      )
+        {
+          force = PL_BASE_FORCE_ZERO | PL_BASE_FORCE_RESET_ZERO_REF;
+        }
+        /* render the line */
+#ifndef DUALCPU
+      CinemaVectorDataHinted (FromX, FromY, ToX, ToY, vgColour, force);
+#endif
+
+      }
+
+case 0x1454:

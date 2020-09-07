@@ -20,6 +20,42 @@ dd35aef4a17c271151413cbb0893b550  asteroids_sbt/035143.02
 
 The cinemu emulator here is a new creation based on code extracted from other emulators.  It is not the original cinemu which was a DOS program written in assembly language.
 
+The roms used in the cinematronics emulator are defined in these ini files:
+ini/armorattack.ini:
+  RomImages = roms/armorattack/ar414le.t6,roms/armorattack/ar414lo.p6,roms/armorattack/ar414ue.u6,roms/armorattack/ar414uo.r6
+ini/barrier.ini:
+  RomImages=roms/barrier/barrier.t7,roms/barrier/barrier.p7
+ini/boxingbugs.ini:
+  RomImages=roms/boxingbugs/u1a,roms/boxingbugs/u1b,roms/boxingbugs/u2a,roms/boxingbugs/u2b,roms/boxingbugs/u3a,roms/boxingbugs/u3b,roms/boxingbugs/u4a,roms/boxingbugs/u4b
+ini/cosmicchasm.ini:
+  RomImages=roms/cosmicchasm/chasm.u4,roms/cosmicchasm/chasm.u12,roms/cosmicchasm/chasm.u8,roms/cosmicchasm/chasm.u16,roms/cosmicchasm/chasm.u3,roms/cosmicchasm/chasm.u11,roms/cosmicchasm/chasm.u7,roms/cosmicchasm/chasm.u15
+ini/demon.ini:
+  RomImages=roms/demon/demon.7t,roms/demon/demon.7p,roms/demon/demon.7u,roms/demon/demon.7r
+ini/qb3.ini:
+  RomImages=roms/qb3/qb3_le_t7.bin,roms/qb3/qb3_lo_p7.bin,roms/qb3/qb3_ue_u7.bin,roms/qb3/qb3_uo_r7.bin
+ini/ripoff.ini:
+  RomImages=roms/ripoff/ripoff.t7,roms/ripoff/ripoff.p7,roms/ripoff/ripoff.u7,roms/ripoff/ripoff.r7
+ini/solarquest.ini:
+  RomImages=roms/solarquest/solar.t7,roms/solarquest/solar.p7,roms/solarquest/solar.u7,roms/solarquest/solar.r7
+ini/spacewars.ini:
+  RomImages=roms/spacewars/spacewar.u7,roms/spacewars/spacewar.r7
+ini/speedfreak.ini:
+  RomImages=roms/speedfreak/speedfrk.t7,roms/speedfreak/speedfrk.p7,roms/speedfreak/speedfrk.u7,roms/speedfreak/speedfrk.r7
+ini/starcastle.ini:
+  RomImages=roms/starcastle/starcas.t7,roms/starcastle/starcas.p7,roms/starcastle/starcas.u7,roms/starcastle/starcas.r7
+ini/starhawk.ini:
+  RomImages=roms/starhawk/starhawk.u7,roms/starhawk/starhawk.r7
+ini/sundance.ini:
+  RomImages=roms/sundance/sundance.t7,roms/sundance/sundance.p7,roms/sundance/sundance.u7,roms/sundance/sundance.r7
+ini/tailgunner.ini:
+  RomImages=roms/tailgunner/tailg.t7,roms/tailgunner/tailg.p7,roms/tailgunner/tailg.u7,roms/tailgunner/tailg.r7
+ini/waroftheworlds.ini:
+  RomImages=roms/waroftheworlds/wotw.t7,roms/waroftheworlds/wotw.p7,roms/waroftheworlds/wotw.u7,roms/waroftheworlds/wotw.r7
+ini/warrior.ini:
+  RomImages=roms/warrior/warrior.t7,roms/warrior/warrior.p7,roms/warrior/warrior.u7,roms/warrior/warrior.r7
+
+so only those files will be needed out of the list below.  We'll trim it down as soon as possible.
+
 $ ls cinematronics/roms
 armorattack  boxingbugs   demon  ripoff      spacewars   starcastle  sundance    waroftheworlds
 barrier      cosmicchasm  qb3    solarquest  speedfreak  starhawk    tailgunner  warrior
@@ -145,7 +181,93 @@ ca4f0146fb806f58a12e3e69d8fd7277  asteroids_sbt/035145.02
 dd35aef4a17c271151413cbb0893b550  asteroids_sbt/035143.02
 8010044e056c7a2ba3538a8c68b773d2  asteroids_sbt/035144.02
 
-I haven't yet checked which of the following are actually used.
+The roms used by the Atari emulator are:
+
+  { "roms/BlackWidow/136017.101", 0x9000, 0x1000, 0 },
+  { "roms/BlackWidow/136017.102", 0xa000, 0x1000, 0 },
+  { "roms/BlackWidow/136017.103", 0xb000, 0x1000, 0 },
+  { "roms/BlackWidow/136017.104", 0xc000, 0x1000, 0 },
+  { "roms/BlackWidow/136017.105", 0xd000, 0x1000, 0 },
+  { "roms/BlackWidow/136017.106", 0xe000, 0x1000, 0 },
+  { "roms/BlackWidow/136017.107", 0x2800, 0x0800, 0 },
+  { "roms/BlackWidow/136017.108", 0x3000, 0x1000, 0 },
+  { "roms/BlackWidow/136017.109", 0x4000, 0x1000, 0 },
+  { "roms/BlackWidow/136017.110", 0x5000, 0x1000, 0 },
+  { "roms/Gravitar/136010.201", 0x9000, 0x1000, 0 },
+  { "roms/Gravitar/136010.202", 0xa000, 0x1000, 0 },
+  { "roms/Gravitar/136010.203", 0xb000, 0x1000, 0 },
+  { "roms/Gravitar/136010.204", 0xc000, 0x1000, 0 },
+  { "roms/Gravitar/136010.205", 0xd000, 0x1000, 0 },
+  { "roms/Gravitar/136010.206", 0xe000, 0x1000, 0 },
+  { "roms/Gravitar/136010.210", 0x2800, 0x0800, 0 },
+  { "roms/Gravitar/136010.207", 0x3000, 0x1000, 0 },
+  { "roms/Gravitar/136010.208", 0x4000, 0x1000, 0 },
+  { "roms/Gravitar/136010.209", 0x5000, 0x1000, 0 },
+  { "roms/SpaceDuel/136006.201", 0x4000, 0x1000, 0 },
+  { "roms/SpaceDuel/136006.102", 0x5000, 0x1000, 0 },
+  { "roms/SpaceDuel/136006.103", 0x6000, 0x1000, 0 },
+  { "roms/SpaceDuel/136006.104", 0x7000, 0x1000, 0 },
+  { "roms/SpaceDuel/136006.105", 0x8000, 0x1000, 0 },
+  { "roms/SpaceDuel/136006.106", 0x2800, 0x0800, 0 },
+  { "roms/SpaceDuel/136006.107", 0x3000, 0x1000, 0 },
+  { "roms/Tempest/136002-133.d1", 0x9000, 0x1000, 0 },
+  { "roms/Tempest/136002-134.f1", 0xa000, 0x1000, 0 },
+  { "roms/Tempest/136002-235.j1", 0xb000, 0x1000, 0 },  /* or .235 */
+  { "roms/Tempest/136002-136.lm1", 0xc000, 0x1000, 0 },
+  { "roms/Tempest/136002-237.p1", 0xd000, 0x1000, 0 },  /* or .237 */
+  { "roms/Tempest/136002-138.np3", 0x3000, 0x1000, 0 },
+	  read_rom_image_to("roms/Tempest/136002-125.d7", 0, 256, 0, avg_prom);
+  { "roms/Battlezone/036414.01", 0x5000, 0x0800, 0 },
+  { "roms/Battlezone/036413.01", 0x5800, 0x0800, 0 },
+  { "roms/Battlezone/036412.01", 0x6000, 0x0800, 0 },
+  { "roms/Battlezone/036411.01", 0x6800, 0x0800, 0 },
+  { "roms/Battlezone/036410.01", 0x7000, 0x0800, 0 },
+  { "roms/Battlezone/036409.01", 0x7800, 0x0800, 0 },
+  { "roms/Battlezone/036422.01", 0x3000, 0x0800, 0 },
+  { "roms/Battlezone/036421.01", 0x3800, 0x0800, 0 },
+  { "roms/RedBaron/037587-01.fh1",  0x4800, 0x0800, 0 },
+  { "roms/RedBaron/037000-01.e1", 0x5000, 0x0800, 0 },
+  { "roms/RedBaron/037587-01.fh1",  0x5800, 0x0800, 0x0800 },
+  { "roms/RedBaron/037001.01E", 0x4800, 0x0800, 0 },?
+  { "roms/RedBaron/037000-01.e1", 0x5000, 0x0800, 0 },
+  { "roms/RedBaron/036999.01E", 0x5800, 0x0800, 0 },
+  { "roms/RedBaron/036998-01.j1", 0x6000, 0x0800, 0 },
+  { "roms/RedBaron/036997-01.k1", 0x6800, 0x0800, 0 },
+  { "roms/RedBaron/036996-01.lm1", 0x7000, 0x0800, 0 },
+  { "roms/RedBaron/036995-01.n1", 0x7800, 0x0800, 0 },
+  { "roms/RedBaron/037006-01.bc3", 0x3000, 0x0800, 0 },
+  { "roms/RedBaron/037007-01.a3", 0x3800, 0x0800, 0 },
+  { "roms/LunarLander/034572.02", 0x6000, 0x0800, 0 },
+  { "roms/LunarLander/034571.02", 0x6800, 0x0800, 0 },
+  { "roms/LunarLander/034570.02", 0x7000, 0x0800, 0 },
+  { "roms/LunarLander/034569.02", 0x7800, 0x0800, 0 },
+  { "roms/LunarLander/034599.01", 0x4800, 0x0800, 0 },
+  { "roms/LunarLander/034598.01", 0x5000, 0x0800, 0 },
+  { "roms/LunarLander/034597.01", 0x5800, 0x0800, 0 },
+  { "roms/Asteroids/035145.02", 0x6800, 0x0800, 0 },
+  { "roms/Asteroids/035144.02", 0x7000, 0x0800, 0 },
+  { "roms/Asteroids/035143.02", 0x7800, 0x0800, 0 },
+  { "roms/Asteroids/035127.02", 0x5000, 0x0800, 0 },
+  { "roms/AsteroidsDeluxe/036430.01", 0x6000, 0x0800, 0 },
+  { "roms/AsteroidsDeluxe/036431.01", 0x6800, 0x0800, 0 },
+  { "roms/AsteroidsDeluxe/036432.01", 0x7000, 0x0800, 0 },
+  { "roms/AsteroidsDeluxe/036433.02", 0x7800, 0x0800, 0 },
+  { "roms/AsteroidsDeluxe/036800.01", 0x4800, 0x0800, 0 },
+  { "roms/AsteroidsDeluxe/036799.01", 0x5000, 0x0800, 0 },
+  { "roms/AsteroidsDeluxe/036430.02", 0x6000, 0x0800, 0 },
+  { "roms/AsteroidsDeluxe/036431.02", 0x6800, 0x0800, 0 },
+  { "roms/AsteroidsDeluxe/036432.02", 0x7000, 0x0800, 0 },
+  { "roms/AsteroidsDeluxe/036433.03", 0x7800, 0x0800, 0 },
+  { "roms/AsteroidsDeluxe/036800.02", 0x4800, 0x0800, 0 },
+  { "roms/AsteroidsDeluxe/036799.01", 0x5000, 0x0800, 0 },
+  { "roms/MajorHavoc/136025.104", 0x9000, 0x4000, 0 },
+  { "roms/MajorHavoc/136010.103", 0xa000, 0x4000, 0 },
+  { "roms/MajorHavoc/136010.109", 0xb000, 0x4000, 0 },
+  { "roms/MajorHavoc/136010.101", 0xc000, 0x4000, 0 },
+  { "roms/MajorHavoc/136010.106", 0xd000, 0x4000, 0 },
+  { "roms/MajorHavoc/136010.107", 0xe000, 0x4000, 0 },
+  { "roms/MajorHavoc/136010.108", 0x3000, 0x4000, 0 },
+  { "roms/MajorHavoc/136010.110", 0x2000, 0x2000, 0 },
 
 battlezone/roms/Battlezone:
 036174.01

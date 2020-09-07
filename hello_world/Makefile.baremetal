@@ -10,7 +10,7 @@ LIB_DIR :=../pitrex/baremetal
 INC_DIR_PITREX := ../pitrex
 INC_DIR_LIBRARY := $(LIB_DIR)/lib2835
 PITREX_DIR := ../pitrex/pitrex/
-VECTERX_DIR := ../pitrex/vectrex/
+VECTREX_DIR := ../pitrex/vectrex/
 LOADER_DIR := ../piTrexBoot/
 
 CFLAGS := -Ofast -I$(INC_DIR_PITREX) -I$(INC_DIR_LIBRARY) -L$(LIB_DIR) -mfloat-abi=hard -nostartfiles -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -DRPI0 -DFREESTANDING -DPITREX_DEBUG -DMHZ1000 -DLOADER_START=0x4000000
@@ -23,24 +23,25 @@ AR	= arm-none-eabi-ar
 .PHONY: dirCheck
 
 #bootmsg.img doesn't make sense in baremetal
-all:	dirCheck pitrexLib hello.img  window.img  maze.img  perspective.img pacman.img cube.img
+
+all:	dirCheck pitrexLib hello.img  window.img  maze.img  perspective.img  pacman.img  cube.img
 	echo All up to date
 
 dirCheck:
 	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
 
 clean:
-	$(RM) $(BUILD_DIR)*.* *~ hello.img window.img maze.img perspective.img
+	$(RM) $(BUILD_DIR)*.* *~ hello.img window.img maze.img perspective.img cube.img pacman.img
 
 pitrexLib:
 	$(MAKE) -C $(PITREX_DIR) -f Makefile.baremetal all
-	$(MAKE) -C $(VECTERX_DIR) -f Makefile.baremetal all
+	$(MAKE) -C $(VECTREX_DIR) -f Makefile.baremetal all
 	$(MAKE) -C $(LOADER_DIR) -f Makefile all
 
 $(BUILD_DIR)hello.o: hello.c
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)hello.o -c hello.c
 
-hello.img: $(BUILD_DIR)hello.o pitrexLib
+hello.img: $(BUILD_DIR)hello.o # pitrexLib
 	$(RM) hello.img
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)hello.elf.img \
 	$(LOADER_DIR)$(BUILD_DIR)baremetalEntry.o \
@@ -53,20 +54,16 @@ hello.img: $(BUILD_DIR)hello.o pitrexLib
 	$(LOADER_DIR)$(BUILD_DIR)rpi-systimer.o \
 	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
 	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
-	$(VECTERX_DIR)$(BUILD_DIR)vectrexInterface.o \
-	$(VECTERX_DIR)$(BUILD_DIR)osWrapper.o \
-	$(VECTERX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
 	$(BUILD_DIR)hello.o -lm -lff12c  -ldebug  -lhal -lutils -lconsole -lff12c -lbob -li2c -lbcm2835 -larm $(LIB_DIR)/linkerHeapDefBoot.ld
 	arm-none-eabi-objcopy $(BUILD_DIR)hello.elf.img -O binary hello.img
-ifdef MAKE_IMAGE
-	cp hello.img /media/psf/Home/ubuntu64
-	cp hello.img /media/psf/macRoot/Volumes/baremetal
-endif
 
 $(BUILD_DIR)pacman.o: pacman.c
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)pacman.o -c pacman.c
 
-pacman.img: $(BUILD_DIR)pacman.o pitrexLib
+pacman.img: $(BUILD_DIR)pacman.o # pitrexLib
 	$(RM) pacman.img
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)pacman.elf.img \
 	$(LOADER_DIR)$(BUILD_DIR)baremetalEntry.o \
@@ -79,20 +76,16 @@ pacman.img: $(BUILD_DIR)pacman.o pitrexLib
 	$(LOADER_DIR)$(BUILD_DIR)rpi-systimer.o \
 	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
 	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
-	$(VECTERX_DIR)$(BUILD_DIR)vectrexInterface.o \
-	$(VECTERX_DIR)$(BUILD_DIR)osWrapper.o \
-	$(VECTERX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
 	$(BUILD_DIR)pacman.o -lm -lff12c  -ldebug  -lhal -lutils -lconsole -lff12c -lbob -li2c -lbcm2835 -larm $(LIB_DIR)/linkerHeapDefBoot.ld
 	arm-none-eabi-objcopy $(BUILD_DIR)pacman.elf.img -O binary pacman.img
-ifdef MAKE_IMAGE
-	cp pacman.img /media/psf/Home/ubuntu64
-	cp pacman.img /media/psf/macRoot/Volumes/baremetal
-endif
 
-$(BUILD_DIR)window.o: window.c
-	$(CC) $(CFLAGS) -o $(BUILD_DIR)window.o -c window.c
+$(BUILD_DIR)windowmain.o: window.c
+	$(CC) -DMAIN $(CFLAGS) -o $(BUILD_DIR)windowmain.o -c window.c
 
-window.img: $(BUILD_DIR)window.o pitrexLib
+window.img: $(BUILD_DIR)windowmain.o # pitrexLib
 	$(RM) window.img
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)window.elf.img \
 	$(LOADER_DIR)$(BUILD_DIR)baremetalEntry.o \
@@ -105,20 +98,16 @@ window.img: $(BUILD_DIR)window.o pitrexLib
 	$(LOADER_DIR)$(BUILD_DIR)rpi-systimer.o \
 	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
 	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
-	$(VECTERX_DIR)$(BUILD_DIR)vectrexInterface.o \
-	$(VECTERX_DIR)$(BUILD_DIR)osWrapper.o \
-	$(VECTERX_DIR)$(BUILD_DIR)baremetalUtil.o \
-	$(BUILD_DIR)window.o -lm -lff12c  -ldebug  -lhal -lutils -lconsole -lff12c -lbob -li2c -lbcm2835 -larm $(LIB_DIR)/linkerHeapDefBoot.ld
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)windowmain.o -lm -lff12c  -ldebug  -lhal -lutils -lconsole -lff12c -lbob -li2c -lbcm2835 -larm $(LIB_DIR)/linkerHeapDefBoot.ld
 	arm-none-eabi-objcopy $(BUILD_DIR)window.elf.img -O binary window.img
-ifdef MAKE_IMAGE
-	cp window.img /media/psf/Home/ubuntu64
-	cp window.img /media/psf/macRoot/Volumes/baremetal
-endif
 
 $(BUILD_DIR)maze.o: maze.c
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)maze.o -c maze.c
 
-maze.img: $(BUILD_DIR)maze.o pitrexLib
+maze.img: $(BUILD_DIR)maze.o # pitrexLib
 	$(RM) maze.img
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)maze.elf.img \
 	$(LOADER_DIR)$(BUILD_DIR)baremetalEntry.o \
@@ -131,20 +120,16 @@ maze.img: $(BUILD_DIR)maze.o pitrexLib
 	$(LOADER_DIR)$(BUILD_DIR)rpi-systimer.o \
 	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
 	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
-	$(VECTERX_DIR)$(BUILD_DIR)vectrexInterface.o \
-	$(VECTERX_DIR)$(BUILD_DIR)osWrapper.o \
-	$(VECTERX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
 	$(BUILD_DIR)maze.o -lm -lff12c  -ldebug  -lhal -lutils -lconsole -lff12c -lbob -li2c -lbcm2835 -larm $(LIB_DIR)/linkerHeapDefBoot.ld
 	arm-none-eabi-objcopy $(BUILD_DIR)maze.elf.img -O binary maze.img
-ifdef MAKE_IMAGE
-	cp maze.img /media/psf/Home/ubuntu64
-	cp maze.img /media/psf/macRoot/Volumes/baremetal
-endif
 
 $(BUILD_DIR)perspective.o: perspective.c
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)perspective.o -c perspective.c
 
-perspective.img: $(BUILD_DIR)perspective.o pitrexLib
+perspective.img: $(BUILD_DIR)perspective.o # pitrexLib
 	$(RM) perspective.img
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)perspective.elf.img \
 	$(LOADER_DIR)$(BUILD_DIR)baremetalEntry.o \
@@ -157,20 +142,16 @@ perspective.img: $(BUILD_DIR)perspective.o pitrexLib
 	$(LOADER_DIR)$(BUILD_DIR)rpi-systimer.o \
 	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
 	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
-	$(VECTERX_DIR)$(BUILD_DIR)vectrexInterface.o \
-	$(VECTERX_DIR)$(BUILD_DIR)osWrapper.o \
-	$(VECTERX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
 	$(BUILD_DIR)perspective.o -lm -lff12c  -ldebug  -lhal -lutils -lconsole -lff12c -lbob -li2c -lbcm2835 -larm $(LIB_DIR)/linkerHeapDefBoot.ld
 	arm-none-eabi-objcopy $(BUILD_DIR)perspective.elf.img -O binary perspective.img
-ifdef MAKE_IMAGE
-	cp perspective.img /media/psf/Home/ubuntu64
-	cp perspective.img /media/psf/macRoot/Volumes/baremetal
-endif
 
 $(BUILD_DIR)cube.o: cube.c
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)cube.o -c cube.c
 
-cube.img: $(BUILD_DIR)cube.o pitrexLib
+cube.img: $(BUILD_DIR)cube.o # pitrexLib
 	$(RM) cube.img
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)cube.elf.img \
 	$(LOADER_DIR)$(BUILD_DIR)baremetalEntry.o \
@@ -183,13 +164,9 @@ cube.img: $(BUILD_DIR)cube.o pitrexLib
 	$(LOADER_DIR)$(BUILD_DIR)rpi-systimer.o \
 	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
 	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
-	$(VECTERX_DIR)$(BUILD_DIR)vectrexInterface.o \
-	$(VECTERX_DIR)$(BUILD_DIR)osWrapper.o \
-	$(VECTERX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
 	$(BUILD_DIR)cube.o -lm -lff12c  -ldebug  -lhal -lutils -lconsole -lff12c -lbob -li2c -lbcm2835 -larm $(LIB_DIR)/linkerHeapDefBoot.ld
 	arm-none-eabi-objcopy $(BUILD_DIR)cube.elf.img -O binary cube.img
-ifdef MAKE_IMAGE
-	cp cube.img /media/psf/Home/ubuntu64
-	cp cube.img /media/psf/macRoot/Volumes/baremetal
-endif
 

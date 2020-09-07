@@ -32,8 +32,11 @@ VECTREX_OBJ :=	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
 COMMON_OBJ := 	$(LOADER_OBJ) $(PITREX_OBJ) $(VECTREX_OBJ)
 
 CINE_OBJ := 	$(BUILD_DIR)cineops.o \
-		$(BUILD_DIR)cinemu.o
+		$(BUILD_DIR)cinemu.o \
+		$(BUILD_DIR)inifile.o \
+		$(BUILD_DIR)options.o
 
+# CFLAGS = -DPITREX=1 -DPIZERO -I$(BASE) -I$(PITREX) -I$(VECTREX)  -I$(COMMON)
 CFLAGS := -Wall -fuse-ld=bfd -Ofast -I$(INC_DIR_PITREX) -I$(INC_DIR_LIBRARY) -L$(LIB_DIR) -mfloat-abi=hard -nostartfiles -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -DRPI0 -DFREESTANDING -DPITREX_DEBUG -DMHZ1000 -DLOADER_START=0x4000000
 CC	= arm-none-eabi-gcc
 AS	= $(CC)
@@ -57,11 +60,17 @@ pitrexLib:
 loaderObjects:
 	$(MAKE) -C $(LOADER_DIR) -f Makefile loaderObjects
 
-$(BUILD_DIR)cineops.o: cineops.c cinedbg.i  cineops.i  startframe.i
-	$(CC) $(CFLAGS) -o $(BUILD_DIR)cineops.o -c cineops.c
+$(BUILD_DIR)options.o: options.c inifile.h options.h cines.h
+	$(CC) $(CFLAGS) -DO_BINARY=0 -c -o $(BUILD_DIR)options.o options.c
 
-$(BUILD_DIR)cinemu.o: cinemu.c cines.h
-	$(CC) $(CFLAGS) -o $(BUILD_DIR)cinemu.o -c cinemu.c
+$(BUILD_DIR)inifile.o: inifile.c inifile.h
+	$(CC) $(CFLAGS) -DO_BINARY=0 -c -o $(BUILD_DIR)inifile.o inifile.c
+
+$(BUILD_DIR)cineops.o: cineops.c
+	$(CC) $(CFLAGS) -c -o $(BUILD_DIR)cineops.o cineops.c
+
+$(BUILD_DIR)cinemu.o: cinemu.c cines.h inifile.h options.h # $(VECTREX)vectrexInterface.h $(VECTREX)vectorFont.i
+	$(CC) $(CFLAGS) -c -o $(BUILD_DIR)cinemu.o cinemu.c
 
 cine.img: pitrexLib loaderObjects $(CINE_OBJ)
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)cine.elf.img \
@@ -70,13 +79,9 @@ cine.img: pitrexLib loaderObjects $(CINE_OBJ)
 	-lm -lff12c  -ldebug  -lhal  -lconsole -lff12c -lbob -li2c -lbcm2835 -larm $(LIB_DIR)/linkerHeapDefBoot.ld
 	$(RM) cine.img
 	arm-none-eabi-objcopy $(BUILD_DIR)cine.elf.img -O binary cine.img
-ifdef MAKE_IMAGE
-	cp cine.img /media/psf/Home/ubuntu64
-	cp cine.img /media/psf/macRoot/Volumes/baremetal
-endif
 
 clean:
 	$(RM) $(BUILD_DIR)*.*
 	$(RM) cine.img
 
-#-lutils
+

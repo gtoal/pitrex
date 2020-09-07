@@ -7,74 +7,70 @@ LD	= arm-none-eabi-ld
 AR	= arm-none-eabi-ar
 
 
-all:	redbaronMake tailgunnerMake loaderMake vecxMake vecxMake2 asteroidsMake gyrocksMake battlezoneMake gravitarMake spaceduelMake tempestMake blackwidowMake deluxeMake astMake lunarMake CineMake helloWorldMake
+all:	redbaron tailgunner loader vecx vecx2 asteroids gyrocks battlezone gravitar spaceduel tempest blackwidow deluxe lunar Cine helloWorld
+
 	
-	
-loaderMake: 
+loader: 
 	cd piTrexBoot; make -f Makefile
 	cd ..
 
-redbaronMake: 
+redbaron: 
 	cd redbaron; make -f Makefile.baremetal
 	cd ..
 
-lunarMake: 
+lunar: 
 	cd lunar; make -f Makefile.baremetal
 	cd ..
 
-astMake: 
-	cd asteroids; make -f Makefile.baremetal
-	cd ..
-
-deluxeMake: 
+deluxe: 
 	cd deluxe; make -f Makefile.baremetal
 	cd ..
 
-blackwidowMake: 
+blackwidow: 
 	cd blackwidow; make -f Makefile.baremetal
 	cd ..
 
-tailgunnerMake: 
+tailgunner: 
 	cd tailgunner; make -f Makefile.baremetal
 	cd ..
 
-vecxMake: 
+vecx: 
 	cd vecx.emulated; make -f Makefile.baremetal
 	cd ..
 
-vecxMake2: 
+vecx2: 
 	cd vecx.direct; make -f Makefile.baremetal
 	cd ..
 
-asteroidsMake: 
+asteroids: 
 	cd asteroids_sbt; make -f Makefile.baremetal
 	cd ..
 
-gyrocksMake: 
+gyrocks: 
 	cd gyrocks; make -f Makefile.baremetal
 	cd ..
 
-battlezoneMake: 
+battlezone: 
 	cd battlezone; make -f Makefile.baremetal
 	cd ..
 
-gravitarMake: 
+gravitar: 
 	cd gravitar; make -f Makefile.baremetal
 	cd ..
 
-spaceduelMake: 
+spaceduel: 
 	cd spaceduel; make -f Makefile.baremetal
 	cd ..
 	
-tempestMake: 
+tempest: 
 	cd tempest; make -f Makefile.baremetal
 	cd ..
 	
-CineMake:
+Cine:
 	cd cinematronics; make -f Makefile.baremetal
 	cd ..
 
-helloWorldMake:
+helloWorld:
 	cd hello_world; make -f Makefile.baremetal
 	cd ..
 
@@ -84,8 +80,6 @@ clean:
 	cd lunar; make -f Makefile.baremetal clean
 	cd ..
 	cd redbaron; make -f Makefile.baremetal clean
-	cd ..
-	cd asteroids; make -f Makefile.baremetal clean
 	cd ..
 	cd deluxe; make -f Makefile.baremetal clean
 	cd ..

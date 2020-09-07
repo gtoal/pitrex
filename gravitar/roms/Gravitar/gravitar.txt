@@ -1,0 +1,120 @@
+ GRAVITAR SWITCH SETTINGS (Atari, 1982)
+    --------------------------------------
+    -------------------------------------------------------------------------------
+    Settings of 8-Toggle Switch on Gravitar PCB (at B4)
+     8   7   6   5   4   3   2   1   Option
+    -------------------------------------------------------------------------------
+    Off On                           Free play
+    On  On                           1 coin for 2 credits
+    Off Off                          1 coin for 1 credit <
+    On  Off                          2 coins for 1 credit
+            Off Off                  Right coin mechanism x 1 <
+            On  Off                  Right coin mechanism x 4
+            Off On                   Right coin mechanism x 5
+            On  On                   Right coin mechanism x 6
+                    Off              Left coin mechanism x 1 <
+                    On               Left coin mechanism x 2
+                        Off Off Off  No bonus coins <
+                        Off On  Off  For every 4 coins inserted,
+                                     logic adds 1 more coin
+                        On  On  Off  For every 4 coins inserted,
+                                     logic adds 2 more coins
+                        Off Off On   For every 5 coins inserted,
+                                     logic adds 1 more coin
+                        On  Off On   For every 3 coins inserted,
+                                     logic adds 1 more coin
+                        Off On  On   No bonus coins
+                        On  Off Off  ??? (not in manual!)
+                        On  On  On   No bonus coins
+    -------------------------------------------------------------------------------
+    < Manufacturer's recommended setting
+    -------------------------------------------------------------------------------
+    Settings of 8-Toggle Switch on Gravitar PCB (at D4)
+     8   7   6   5   4   3   2   1   Option
+    -------------------------------------------------------------------------------
+                            On  On   No bonus
+                            Off Off  Bonus ship every 10,000 points <
+     d   d               d  On  Off  Bonus ship every 20,000 points
+     e   e               e  Off On   Bonus ship every 30,000 points
+     s   s               s
+     U   U          On   U           Easy game play <
+                    Off              Hard game play
+     t   t               t
+     o   o  Off Off      o           3 ships per game
+     N   N  On  Off      N           4 ships per game <
+            Off On                   5 ships per game
+            On  On                   6 ships per game
+
+static INPUT_PORTS_START( gravitar )
+	PORT_START("IN0")
+	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_COIN2 )  // To fit "Coin B" Dip Switch
+	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_COIN1 )  // To fit "Coin A" Dip Switch
+	PORT_BIT( 0x0c, IP_ACTIVE_LOW, IPT_UNUSED )
+	PORT_SERVICE( 0x10, IP_ACTIVE_LOW )
+	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_SERVICE1 ) PORT_NAME("Diagnostic Step")
+	/* bit 6 is the VG HALT bit. We set it to "low" */
+	/* per default (busy vector processor). */
+	PORT_BIT( 0x40, IP_ACTIVE_HIGH, IPT_CUSTOM ) PORT_CUSTOM_MEMBER("avg", avg_device, done_r, nullptr)
+	/* bit 7 is tied to a 3kHz clock */
+	PORT_BIT( 0x80, IP_ACTIVE_HIGH, IPT_CUSTOM ) PORT_CUSTOM_MEMBER(DEVICE_SELF, bwidow_state,clock_r, nullptr)
+
+	PORT_START("DSW0")
+	PORT_DIPUNUSED_DIPLOC( 0x03, IP_ACTIVE_HIGH, "D4:!7,!8" )
+	PORT_DIPNAME(0x0c, 0x04, DEF_STR( Lives ) ) PORT_DIPLOCATION("D4:!5,!6")
+	PORT_DIPSETTING (  0x00, "3" )
+	PORT_DIPSETTING (  0x04, "4" )
+	PORT_DIPSETTING (  0x08, "5" )
+	PORT_DIPSETTING (  0x0c, "6" )
+	PORT_DIPNAME(0x10, 0x00, DEF_STR( Difficulty ) ) PORT_DIPLOCATION("D4:!4")
+	PORT_DIPSETTING (  0x00, DEF_STR( Easy ) )
+	PORT_DIPSETTING (  0x10, DEF_STR( Hard ) )
+	PORT_DIPUNUSED_DIPLOC( 0x20, IP_ACTIVE_HIGH, "D4:!3" )
+	PORT_DIPNAME(0xc0, 0x00, DEF_STR( Bonus_Life ) ) PORT_DIPLOCATION("D4:!1,!2")
+	PORT_DIPSETTING (  0x00, "10000" )
+	PORT_DIPSETTING (  0x40, "20000" )
+	PORT_DIPSETTING (  0x80, "30000" )
+	PORT_DIPSETTING (  0xc0, DEF_STR( None ) )
+
+	PORT_START("DSW1")
+	PORT_DIPNAME(0x03, 0x00, DEF_STR( Coinage ) ) PORT_DIPLOCATION("B4:!7,!8")
+	PORT_DIPSETTING (  0x01, DEF_STR( 2C_1C ) )
+	PORT_DIPSETTING (  0x00, DEF_STR( 1C_1C ) )
+	PORT_DIPSETTING (  0x03, DEF_STR( 1C_2C ) )
+	PORT_DIPSETTING (  0x02, DEF_STR( Free_Play ) )
+	PORT_DIPNAME(0x0c, 0x00, DEF_STR( Coin_B ) ) PORT_DIPLOCATION("B4:!5,!6")
+	PORT_DIPSETTING (  0x00, "*1" )
+	PORT_DIPSETTING (  0x04, "*4" )
+	PORT_DIPSETTING (  0x08, "*5" )
+	PORT_DIPSETTING (  0x0c, "*6" )
+	PORT_DIPNAME(0x10, 0x00, DEF_STR( Coin_A ) ) PORT_DIPLOCATION("B4:!4")
+	PORT_DIPSETTING (  0x00, "*1" )
+	PORT_DIPSETTING (  0x10, "*2" )
+	PORT_DIPNAME(0xe0, 0x00, "Bonus Coins" ) PORT_DIPLOCATION("B4:!1,!2,!3")
+	PORT_DIPSETTING (  0x80, "1 each 5" )
+	PORT_DIPSETTING (  0x60, "2 each 4" )
+	PORT_DIPSETTING (  0x40, "1 each 4" )
+	PORT_DIPSETTING (  0xa0, "1 each 3" )
+	PORT_DIPSETTING (  0x20, "1 each 2" )
+	PORT_DIPSETTING (  0x00, DEF_STR( None ) )
+
+	PORT_START("IN3")
+	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_BUTTON3 )
+	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_BUTTON1 )
+	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT ) PORT_2WAY
+	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT ) PORT_2WAY
+	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_BUTTON2 )
+	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_UNUSED )
+	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_UNUSED )
+	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_UNUSED )
+
+	PORT_START("IN4")
+	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_UNUSED )
+	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_UNUSED )
+	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_UNUSED )
+	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_UNUSED )
+	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_UNUSED )
+	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_START1 )
+	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_START2 )
+	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_UNUSED )
+INPUT_PORTS_END
+

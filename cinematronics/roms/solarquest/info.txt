@@ -1,0 +1,11 @@
+name	size	crc	sha1	region	offset	status	optional	merge	bios
+sq-2_le.6t	4096	1f3c5333	58d847b5f009a0363ae116768b22d0bcfb3d60a4	maincpu	0	good	no	 	 
+sq-2_lo.6p	4096	d6c16bcc	6953bdc698da060d37f6bc33a810ba44595b1257	maincpu	1	good	no	 	 
+sq-2_ue.6u	4096	a5970e5c	9ac07924ca86d003964022cffdd6a0436dde5624	maincpu	2000	good	no	 	 
+sq-2_uo.6r	4096	b763fff2	af1fd978e46a4aee3048e6e36c409821d986f7ee	maincpu	2001	good	no	 	 
+prom.f14	256	9edbf536	036ad8a231284e05f44b1106d38fc0c7e041b6e8	proms	0	good	no	 	 
+prom.e14	32	29dbfb87	d8c40ab010b2ea30f29b2c443819e2b69f376c04	proms	100	good	no	 	 
+prom.d14	32	9a05afbf	5d806a42424942ba5ef0b70a1d629315b37f931b	proms	120	good	no	 	 
+prom.c14	32	07492cda	32df9148797c23f70db47b840139c40e046dd710	proms	140	good	no	 	 
+prom.j14	32	a481ca71	ce145d61686f600cc16b77febfd5c783bf8c13b0	proms	160	good	no	 	 
+prom.e8	32	791ec9e1	6f7fcce4aa3be9020595235568381588adaab88e	proms	180	good	no	 	 

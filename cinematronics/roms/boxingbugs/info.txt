@@ -1,0 +1,16 @@
+name	size	crc	sha1	region	offset	status	optional	merge	bios
+u1a	4096	d3115b0f	9448e7ac1cdb5c7e0739623151be230ab630c4ea	maincpu	0	good	no	 	 
+u1b	4096	3a44268d	876ebe942ded787cfe357563a33d3e26a1483c5a	maincpu	1	good	no	 	 
+u2a	4096	c97a9cbb	8bdeb9ee6b24c0a4554bbf4532a43481a0360019	maincpu	2000	good	no	 	 
+u2b	4096	98d34ff5	6767a02a99a01712383300f9acb96cdeffbc9c69	maincpu	2001	good	no	 	 
+u3a	4096	5bb3269b	a9dbc91b1455760f10bad0d2ccf540e040a00d4e	maincpu	4000	good	no	 	 
+u3b	4096	85bf83ad	9229042e39c53fae56dc93f8996bf3a3fcd35cb8	maincpu	4001	good	no	 	 
+u4a	4096	25b51799	46465fe62907ae66a0ce730581e4e9ba330d4369	maincpu	6000	good	no	 	 
+u4b	4096	7f41de6a	d01dffad3cb6e76c535a034ea0277dce5801c5f1	maincpu	6001	good	no	 	 
+prom.f14	256	9edbf536	036ad8a231284e05f44b1106d38fc0c7e041b6e8	proms	0	good	no	 	 
+prom.e14	32	29dbfb87	d8c40ab010b2ea30f29b2c443819e2b69f376c04	proms	100	good	no	 	 
+prom.d14	32	9a05afbf	5d806a42424942ba5ef0b70a1d629315b37f931b	proms	120	good	no	 	 
+prom.c14	32	07492cda	32df9148797c23f70db47b840139c40e046dd710	proms	140	good	no	 	 
+prom.j14	32	a481ca71	ce145d61686f600cc16b77febfd5c783bf8c13b0	proms	160	good	no	 	 
+prom.e8	32	791ec9e1	6f7fcce4aa3be9020595235568381588adaab88e	proms	180	good	no	 	 
+

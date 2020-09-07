@@ -6,7 +6,17 @@ The cinematronics roms go in ${PIROOT}cinematronics/roms/* where * is a subdirec
 
 These are the files in our working directory. They may not all be necessary - we'll remove unnecessary ones from this list later.
 
-At the moment ${PIROOT}tailgunner/ is the only one that is given the static binary translation treatment.  The others are emulated.  The emulators all need some work to adapt the games for the Vectrex control panel.  When we started this we did not envisage having access to USB peripherals on the PiTrex's Raspberry Pi Zero, so the original controller code is unlikely to work and may have to be put back in from an older version of the emulation.
+At the moment ${PIROOT}tailgunner/ and ${PIROOT}asteroids_sbt/ are the only ones that are given the static binary translation treatment.  The others are emulated.  The emulators all need some work to adapt the games for the Vectrex control panel.  When we started this we did not envisage having access to USB peripherals on the PiTrex's Raspberry Pi Zero, so the original controller code is unlikely to work and may have to be put back in from an older version of the emulation.
+
+a377b3b34e4a4ca8b0048ea4ba53c480  cinematronics/roms/tailgunner/tailg.t7
+96bf9adaa9d21ab5fd5ed7fc26759486  cinematronics/roms/tailgunner/tailg.p7
+df68e2d4bd5e58513cb6e3a33768483b  cinematronics/roms/tailgunner/tailg.u7
+1d93d2e15e85ae30c9e2d850e3f3aae9  cinematronics/roms/tailgunner/tailg.r7
+
+e6c34b639fe16deff0f951be63076812  asteroids_sbt/035127.02
+ca4f0146fb806f58a12e3e69d8fd7277  asteroids_sbt/035145.02
+dd35aef4a17c271151413cbb0893b550  asteroids_sbt/035143.02
+8010044e056c7a2ba3538a8c68b773d2  asteroids_sbt/035144.02
 
 The cinemu emulator here is a new creation based on code extracted from other emulators.  It is not the original cinemu which was a DOS program written in assembly language.
 
@@ -130,3 +140,179 @@ f0ed682506bf1aa9426d8199234edbb7  cinematronics/roms/cosmicchasm/chasm.u3
 ee328218dd2067e47238021cdf84907d  cinematronics/roms/cosmicchasm/2732.bin
 8e79cc9dc3e16ef7cf0f58b04faa07e8  cinematronics/roms/cosmicchasm/chasm.u6
 72bad7e180a4586f312bb90f709efcf8  cinematronics/roms/cosmicchasm/chasm.u11
+e6c34b639fe16deff0f951be63076812  asteroids_sbt/035127.02
+ca4f0146fb806f58a12e3e69d8fd7277  asteroids_sbt/035145.02
+dd35aef4a17c271151413cbb0893b550  asteroids_sbt/035143.02
+8010044e056c7a2ba3538a8c68b773d2  asteroids_sbt/035144.02
+
+I haven't yet checked which of the following are actually used.
+
+battlezone/roms/Battlezone:
+036174.01
+036175.01
+036176.01
+036177.01
+036178.01
+036179.01
+036180.01
+036408.01
+036409.01
+036410.01
+036411.01
+036412.01
+036413.01
+036414.01
+036414.02
+036421.01
+036422.01
+readme.txt
+
+blackwidow/roms/BlackWidow:
+136017.101
+136017.102
+136017.103
+136017.104
+136017.105
+136017.106
+136017.107
+136017.108
+136017.109
+136017.110
+readme.txt
+
+deluxe/roms/AsteroidsDeluxe:
+034602.bin
+036430.02
+036431.02
+036432.02
+036433.03
+036799.01
+036800.02
+readme.txt
+
+gravitar/roms/Gravitar:
+136010.201
+136010.202
+136010.203
+136010.204
+136010.205
+136010.206
+136010.207
+136010.208
+136010.209
+136010.210
+136010.301
+136010.302
+136010.303
+136010.304
+136010.305
+136010.306
+136010.309
+136017.101
+136017.102
+136017.103
+136017.104
+136017.105
+136017.106
+136017.107
+136017.108
+136017.109
+136017.110
+readme.txt
+
+lunar/roms/LunarLander:
+034569.01
+034569.02
+034570.01
+034570.02
+034571.01
+034571.02
+034572.01
+034572.02
+034597.01
+034598.01
+034599.01
+034602.01
+034602-01.c8
+readme.txt
+
+redbaron/roms/RedBaron:
+036174-01.a1
+036175-01.e1
+036176-01.f1
+036177-01.h1
+036178-01.j1
+036179-01.k1
+036180-01.l1
+036408-01.k7
+036464-01.a5
+036995.01e
+036995-01.n1
+036996.01e
+036996-01.lm1
+036997.01e
+036997-01.k1
+036998.01e
+036998-01.j1
+036999.01e
+037000.01e
+037000-01.e1
+037001.01e
+037006-01.bc3
+037006.01e
+037007-01.a3
+037007.01e
+037587-01.fh1
+readme.txt
+
+spaceduel/roms/SpaceDuel:
+136006.102
+136006.103
+136006.104
+136006.105
+136006.106
+136006.107
+136006.201
+readme.txt
+
+tempest/roms/Tempest:
+136002.113
+136002-113.d1
+136002.114
+136002-114.e1
+136002.115
+136002-115.f1
+136002.116
+136002.117
+136002.118
+136002-118.k1
+136002.119
+136002-119.lm1
+136002.120
+136002-120.mn1
+136002.121
+136002-121.p1
+136002.122
+136002.123
+136002-123.np3
+136002.124
+136002-124.r3
+136002.125
+136002-125.d7
+136002.126
+136002.127
+136002.128
+136002.129
+136002.130
+136002.131
+136002.132
+136002-133.d1
+136002-134.f1
+136002-136.lm1
+136002-138.np3
+136002.217
+136002.222
+136002-235.j1
+136002-237.p1
+136002.316
+readme.txt

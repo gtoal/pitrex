@@ -1,0 +1,11 @@
+name		size	crc		sha1						region	offset	status	optional	merge	bios
+tgunner.t70	2048	21ec9a04	b442f34360d1d4769e7bca73a2d79ce97d335460	maincpu	0	good	no	 	 
+tgunner.p70	2048	8d7410b3	59ead49bd229a873f15334d0999c872d3d6581d4	maincpu	1	good	no	 	 
+tgunner.t71	2048	2c954ab6	9edf189a19b50a9abf458d4ef8ba25b53934385e	maincpu	1000	good	no	 	 
+tgunner.p71	2048	8e2c8494	65e461ec4938f9895e5ac31442193e06c8731dc1	maincpu	1001	good	no	 	 
+prom.f14	256	9edbf536	036ad8a231284e05f44b1106d38fc0c7e041b6e8	proms	0	good	no	 	 
+prom.e14	32	29dbfb87	d8c40ab010b2ea30f29b2c443819e2b69f376c04	proms	100	good	no	 	 
+prom.d14	32	9a05afbf	5d806a42424942ba5ef0b70a1d629315b37f931b	proms	120	good	no	 	 
+prom.c14	32	07492cda	32df9148797c23f70db47b840139c40e046dd710	proms	140	good	no	 	 
+prom.j14	32	a481ca71	ce145d61686f600cc16b77febfd5c783bf8c13b0	proms	160	good	no	 	 
+prom.e8		32	791ec9e1	6f7fcce4aa3be9020595235568381588adaab88e	proms	180	good	no	 	 

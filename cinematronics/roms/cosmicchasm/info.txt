@@ -1,0 +1,42 @@
+cchasm1:
+
+name		size	crc		sha1						region	offset	status	optional	merge	bios
+chasm.u4	4096	19244f25	79deaae82da8d1b16d05bbac43ba900c4b1d9f26	maincpu	0	good	no	chasm.u4	 
+chasm.u12	4096	5d702c7d	cbdceed45a1112594fbcbeb6976edc932b32d518	maincpu	1	good	no	chasm.u12	 
+chasm.u8	4096	56a7ce8a	14c790dcddb78d3b81b5a65fe3529e42c9708273	maincpu	2000	good	no	chasm.u8	 
+chasm.u16	4096	2e192db0	1a8ff983295ab52b5099c089b3142cdc56d28aee	maincpu	2001	good	no	chasm.u16	 
+chasm.u3	4096	9c71c600	900526eaff7483fc478ebfb3f14796ff8fd1d01f	maincpu	4000	good	no	chasm.u3	 
+chasm.u11	4096	a4eb59a5	a7bb3ca8f1f000f224def6342ca9d1eabcb210e6	maincpu	4001	good	no	chasm.u11	 
+chasm.u7	4096	8308dd6e	82ad7c27e9a41af5280ecd975d3530ff2ed27ad4	maincpu	6000	good	no	chasm.u7	 
+chasm.u15	4096	9d3abf97	476d684182d92d66263df82e1b5c4ff24b6814e8	maincpu	6001	good	no	chasm.u15	 
+chasm.u2	4096	008b26ef	6758d77bf48f466b8692bf7c678a597792d8cfdb	maincpu	8000	good	no	 	 
+chasm.u10	4096	c2c532a3	d29d40d42a2f69de0b1e2ee6a32633468a94fd85	maincpu	8001	good	no	 	 
+chasm.u6	4096	a96525d2	1c41bc3bf051cf1830182cbde6fba4e56db7e431	maincpu	a000	good	no	chasm.u6	 
+chasm.u14	4096	8e426628	2d70a7717b18cc892332b9d5d2de3ceba6c1481d	maincpu	a001	good	no	chasm.u14	 
+chasm.u1	4096	e02293f8	136757b3c9e0ebfde6c13c57ac52f5fdbf5fd65b	maincpu	c000	good	no	 	 
+chasm.u9	4096	d90c9773	4033f0579f0782db2157f6cbece53b0d74e61d4f	maincpu	c001	good	no	chasm.u9	 
+chasm.u5	4096	e4a58b7d	0e5f948cd110804e6119fafb4e3fa5904dd1390f	maincpu	e000	good	no	chasm.u5	 
+chasm.u13	4096	877e849c	bdeb97fcb7488e7f0866dd651204c362d2ec9f4f	maincpu	e001	good	no	chasm.u13	 
+2732.bin	4096	715adc4a	426be4f3334ef7f2e8eb4d533e64276c30812aa3	audiocpu   0	good	no	2732.bin	 
+
+cchasm:
+name		size	crc		sha1						region	offset	status	optional	merge	bios
+chasm.u4	4096	19244f25	79deaae82da8d1b16d05bbac43ba900c4b1d9f26	maincpu	0	good	no	 	 
+chasm.u12	4096	5d702c7d	cbdceed45a1112594fbcbeb6976edc932b32d518	maincpu	1	good	no	 	 
+chasm.u8	4096	56a7ce8a	14c790dcddb78d3b81b5a65fe3529e42c9708273	maincpu	2000	good	no	 	 
+chasm.u16	4096	2e192db0	1a8ff983295ab52b5099c089b3142cdc56d28aee	maincpu	2001	good	no	 	 
+chasm.u3	4096	9c71c600	900526eaff7483fc478ebfb3f14796ff8fd1d01f	maincpu	4000	good	no	 	 
+chasm.u11	4096	a4eb59a5	a7bb3ca8f1f000f224def6342ca9d1eabcb210e6	maincpu	4001	good	no	 	 
+chasm.u7	4096	8308dd6e	82ad7c27e9a41af5280ecd975d3530ff2ed27ad4	maincpu	6000	good	no	 	 
+chasm.u15	4096	9d3abf97	476d684182d92d66263df82e1b5c4ff24b6814e8	maincpu	6001	good	no	 	 
+u2		4096	4e076ae7	a72f5425b256785b810ee5f23917b44f778cfcd3	maincpu	8000	good	no	 	 
+u10		4096	cc9e19ca	6c46ec265c2cc0683470ed1df978b96b577c5ca1	maincpu	8001	good	no	 	 
+chasm.u6	4096	a96525d2	1c41bc3bf051cf1830182cbde6fba4e56db7e431	maincpu	a000	good	no	 	 
+chasm.u14	4096	8e426628	2d70a7717b18cc892332b9d5d2de3ceba6c1481d	maincpu	a001	good	no	 	 
+u1		4096	88b71027	49fa676d7838c643d642fbc70579ce29e76ba724	maincpu	c000	good	no	 	 
+chasm.u9	4096	d90c9773	4033f0579f0782db2157f6cbece53b0d74e61d4f	maincpu	c001	good	no	 	 
+chasm.u5	4096	e4a58b7d	0e5f948cd110804e6119fafb4e3fa5904dd1390f	maincpu	e000	good	no	 	 
+chasm.u13	4096	877e849c	bdeb97fcb7488e7f0866dd651204c362d2ec9f4f	maincpu	e001	good	no	 	 
+2732.bin	4096	715adc4a	426be4f3334ef7f2e8eb4d533e64276c30812aa3	audiocpu   0	good	no	 	 
+pal12l6.u76	52	a30e02b7	572f6d3f03e559f12e3bd5e087d7680ac69e9182	plds	0	good	no	 	 
+pal12l6.u77	52	458b9cdb	a3bff56d805f6dc494d294f079c3580430acf317	plds	100	good	no	 	 

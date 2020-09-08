@@ -104,7 +104,8 @@ void CinemaClearScreen (void)
   static long Frames = 0L;
   int mx = 0, my = 0;
   int tmp_btns;
-
+  static int alternating = 0;
+  if (((alternating++)&1) == 1) {
   mousecode = 0;
 
 
@@ -170,6 +171,7 @@ void CinemaClearScreen (void)
   ioInputs = (unsigned short) (mousecode | fireflag | shieldsflag | startflag);
 
   startFrame();
+}
 }
 
 

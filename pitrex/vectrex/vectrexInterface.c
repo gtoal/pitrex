@@ -189,6 +189,7 @@ int myDebug;
 #include <stdio.h>
 #include <stddef.h> // these are fresstanding includes!
 #include <stdint.h> // also "available":  <float.h>, <iso646.h>, <limits.h>, <stdarg.h>
+#include <string.h>
 
 #include <pitrex/pitrexio-gpio.h>
 #include <pitrex/bcm2835.h>
@@ -259,6 +260,7 @@ rpi_sys_timer_t* rpiSystemTimer;
 
 #ifdef AVOID_TICKS
 unsigned int scaleTotal = 0;
+uint32_t gpu_ier1=0, gpu_ier2=0, cpu_ier=0, fiqtemp=0;
 #define MAP_FAILED	((void *) -1)
 volatile uint32_t *bcm2835_int		= (uint32_t *)MAP_FAILED;
 #endif
@@ -4303,17 +4305,12 @@ void handlePipeline()
           printf(__VA_ARGS__); \
         }
 
-
-void displayPipeline()
+/* Waits until the specified minimum cycles before the next system timer
+ * interrupt, then disables all Linux system interrupts. */
+void disableLinuxInterrupts(unsigned int minOffset)
 {
-  int c = 0;
-  VectorPipeline *dpl = _P[pipelineAlt?0:1];
-  int delayedBeamOff=0;
-  if (myDebug) printf("Display pipeline started...!\r\n");
-
 #ifdef AVOID_TICKS
 	volatile uint32_t* paddr;
-	uint32_t fiqtemp;
 	uint32_t clk;
 	uint32_t gap0;
 //	uint32_t gap1;
@@ -4323,9 +4320,6 @@ void displayPipeline()
 //	uint32_t comp1;
 	uint32_t comp2;
 	uint32_t comp3;
-	uint32_t gpu_ier1=0, gpu_ier2=0, cpu_ier=0;
-
-	scaleTotal = (scaleTotal * DELAY_PI_CYCLE_EQUIVALENT) + ST_GAP_END;
 
 	/* Wait until no timer interrupts are due within the expected drawing time,
 	   otherwise the system clock will get messed up: */
@@ -4345,7 +4339,7 @@ void displayPipeline()
 //	 gap1 = (comp1 - clk);
 	 gap2 = (comp2 - clk);
 	 gap3 = (comp3 - clk);
-	} while ( gap0 < scaleTotal || gap2 < scaleTotal || gap3 < scaleTotal);
+	} while ( gap0 < minOffset || gap2 < minOffset || gap3 < minOffset);
 
 	/* Save interrupt configuration and disable interrupts */
 	if (bcm2835_int != MAP_FAILED)
@@ -4379,6 +4373,49 @@ void displayPipeline()
 	{
 	 printf("Interrupt address mapping failed\r\n");
 	}
+#endif
+}
+
+/* Restores interrupt configuration as it was when disabled. */
+void enableLinuxInterrupts()
+{
+#ifdef AVOID_TICKS
+	volatile uint32_t* paddr;
+//	printf("clk: %u | comp0: %u, comp2: %u, comp3: %u\nGap0: %u, Gap2: %u, Gap3: %u\n"
+//	 ,clk,comp0,comp2,comp3,gap0,gap2,gap3);
+
+	/* Re-enable interrupts with the previous settings */
+	if (bcm2835_int != MAP_FAILED)
+	{
+	 paddr = bcm2835_int + BCM2835_INT_GPU_IER1/4;
+	 bcm2835_peri_write(paddr,gpu_ier1);
+	 paddr = bcm2835_int + BCM2835_INT_GPU_IER2/4;
+	 bcm2835_peri_write(paddr,gpu_ier2);
+	 paddr = bcm2835_int + BCM2835_INT_CPU_IER/4;
+	 bcm2835_peri_write(paddr,cpu_ier);
+
+#ifdef DISABLE_FIQ
+	 /* Enable Fast Interrupt Requests: */
+	 paddr = bcm2835_int + BCM2835_INT_FIQ/4;
+	 fiqtemp = bcm2835_peri_read(paddr); // read FIQ control register 0x20C
+	 fiqtemp |= (1 << 7);               // set FIQ enable bit
+	 bcm2835_peri_write(paddr,fiqtemp);// write back to register
+#endif
+//	 printf("GPU IER1: 0x%X | GPU IER2: 0x%X | CPU IER: 0x%X\n",gpu_ier1,gpu_ier2,cpu_ier);
+	}
+#endif
+}
+
+void displayPipeline()
+{
+  int c = 0;
+  VectorPipeline *dpl = _P[pipelineAlt?0:1];
+  int delayedBeamOff=0;
+  if (myDebug) printf("Display pipeline started...!\r\n");
+
+#ifdef AVOID_TICKS
+  scaleTotal = (scaleTotal * DELAY_PI_CYCLE_EQUIVALENT) + ST_GAP_END;
+  disableLinuxInterrupts(scaleTotal);
 #endif
 
   if (browseMode)
@@ -4749,31 +4786,10 @@ void displayPipeline()
   // safety only
   SWITCH_BEAM_OFF();
   ZERO_AND_CONTINUE();
-  
-#ifdef AVOID_TICKS
-//	printf("clk: %u | comp0: %u, comp2: %u, comp3: %u\nGap0: %u, Gap2: %u, Gap3: %u\n"
-//	 ,clk,comp0,comp2,comp3,gap0,gap2,gap3);
 
-	/* Re-enable interrupts with the previous settings */
-	if (bcm2835_int != MAP_FAILED)
-	{
-	 paddr = bcm2835_int + BCM2835_INT_GPU_IER1/4;
-	 bcm2835_peri_write(paddr,gpu_ier1);
-	 paddr = bcm2835_int + BCM2835_INT_GPU_IER2/4;
-	 bcm2835_peri_write(paddr,gpu_ier2);
-	 paddr = bcm2835_int + BCM2835_INT_CPU_IER/4;
-	 bcm2835_peri_write(paddr,cpu_ier);
-	 
-#ifdef DISABLE_FIQ
-	 /* Enable Fast Interrupt Requests: */
-	 paddr = bcm2835_int + BCM2835_INT_FIQ/4;
-	 fiqtemp = bcm2835_peri_read(paddr); // read FIQ control register 0x20C
-	 fiqtemp |= (1 << 7);               // set FIQ enable bit
-	 bcm2835_peri_write(paddr,fiqtemp);// write back to register
-#endif
-//	 printf("GPU IER1: 0x%X | GPU IER2: 0x%X | CPU IER: 0x%X\n",gpu_ier1,gpu_ier2,cpu_ier);
-	}
-	scaleTotal = 0;
+#ifdef AVOID_TICKS
+ enableLinuxInterrupts();
+ scaleTotal = 0;
 #endif
 }
 

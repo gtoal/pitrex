@@ -565,10 +565,14 @@ if (startAdr == 0x1000) fprintf(stderr, "DECODING 1000\n");
 	    }
             fprintf(codefile, "%sMULS_START(%d);  // register_PC = %04x\n", cur_tabs, muls, register_PC);
 	    muls -= 1;
-	    for (i = 0; i <= muls; i++) cineops[state][opCode](opCode); // mulhack
+	    for (i = 0; i <= muls; i++) cineops[state][opCode](opCode); // mulhack -- SHOULD REMOVE THIS
             register_PC += muls; startAdr += muls; // skip all but 1 which is done elsewhere
 	    fprintf(codefile, "%sMULS_END();  // register_PC = %04x\n", cur_tabs, register_PC);
 	  } else {
+	    // This is actually wrong and we only got away with this because tailgunner doesn't
+	    // have any single MUL instructions.  The problem is that the MUL() code has now been
+	    // removed, so this call does nothing: !  Need to reinstate the MUL() code, and remove
+	    // the generation of MUL() calls above .
             cineops[state][opCode](opCode); // single MUL
 	  }
 	} else {

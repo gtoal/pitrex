@@ -12,3 +12,7 @@ We realise that there are some imported projects here from other repositories wh
 duplicated, but for the moment it is simpler just to have everything together.  When we have
 more experience with git and packaging software, we'll reduce the overhead here and supply scripts
 to install the external code.
+
+PiTrex Links:
+Wiki: http://computernerdkev.heliohost.org/pitrex/wiki/
+Developer's Forum / Mailing List: https://groups.io/g/pitrex-dev

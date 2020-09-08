@@ -31,7 +31,7 @@ int loadAndPlayRAW()
 	  // file is loaded
 	  printf("File loaded successfully (%i)!\r\n",fsize);
 // sample rate is 15000
-  	  v_playDirectSampleAll(ymBufferLoad, fsize/3, 15000);     
+  	  v_playDirectSampleAll(ymBufferLoad, fsize/4, 15000);     
 //      }
     }
     return 1;

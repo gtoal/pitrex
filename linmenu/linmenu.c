@@ -3,8 +3,8 @@
 */
 #include <stdio.h>
 #include <unistd.h>
-//#include <sys/wait.h>
-//#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 
 #include <pitrex/pitrexio-gpio.h>
 #include <vectrex/vectrexInterface.h>
@@ -16,24 +16,23 @@ void loadAndStart(char FILE_NAME[], char *parameter)
     int result;
     
     v_noSound();
-/*    pid_t pID = vfork();
+    pid_t pID = fork();
     if (pID < 0)
       printf("Failed to fork\r\n");
 
     if ( pID == 0 )
     {
-*/
-     result = execlp(FILE_NAME, FILE_NAME, parameter, NULL);
-     if (result < 0)
-     {
-       printf("Program failed to load\r\n");
-     }
-     else
-     {
-//       wait(NULL);
-       sleep(1); //Should just disable 1+2+3+4 exit function for 1s instead.
-     }
-//    }
+      result = execlp(FILE_NAME, FILE_NAME, parameter, NULL);
+      if (result < 0)
+      {
+        printf("Program failed to load\r\n");
+      }
+    }
+    else
+    {
+      wait(NULL);
+      usleep(500000); //Should just disable 1+2+3+4 exit function for 1s instead.
+    }
 }
 
 int selectedMenu;
@@ -97,8 +96,13 @@ void bootMenu(void)
     int i;
 //    loaderSettings.lastSelection = (unsigned char) selectedMenu; // remember last started game
 
-    for (i = 0; i <= max; i++) {
-      if (selectedMenu==i) loadAndStart(menuItems[i].img, menuItems[i].param);
+    for (i = 0; i <= max; i++)
+    {
+      if (selectedMenu==i)
+      {
+       usleep(200000);
+       loadAndStart(menuItems[i].img, menuItems[i].param);
+      }
     }
   }
   

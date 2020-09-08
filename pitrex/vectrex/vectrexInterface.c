@@ -1144,9 +1144,9 @@ void v_WaitRecal()
   }
 
     */
-    
-    
-    
+
+
+
     displayPipeline();
     handleUARTInterface();
     // wait for Via T2 to expire
@@ -1225,6 +1225,7 @@ void v_WaitRecal_buffered(int buildBuffer)
   if (currentButtonState ==0xf) // button 1+ 2 + 3+4 -> go menu
   {
     #ifndef FREESTANDING
+    v_noSound();
     exit(0); // pressing all four buttons exits
     #else
     printf("Restarting kernel...%08x %08x\r\n",(int)settings->loader, (int)*settings->loader);

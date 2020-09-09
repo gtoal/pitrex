@@ -746,12 +746,11 @@ int execIniFile (void)
    if (err != iniErrOk)
       return (err);
 
-   err = findSection ("[Inputs]");
-
-   if (err != iniErrOk) {
-      pSectErr ("Inputs");
-      return (err);
-   }
+//   err = findSection ("[Inputs]");
+//   if (err != iniErrOk) {
+//      pSectErr ("Inputs");
+//      return (err);
+//   }
 
    err = getAllInputs ();	// read all the inputs
 

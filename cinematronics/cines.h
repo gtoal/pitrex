@@ -1,6 +1,14 @@
 #ifndef CINES_H
 #define CINES_H
 
+#define UINT32 unsigned int
+#define UINT16 unsigned short int
+#define UINT8  unsigned char
+
+#define INT32  signed int
+#define INT16  signed short int
+#define INT8   signed char
+
 #define uchar unsigned char
 #define uint unsigned int
 
@@ -112,29 +120,67 @@ extern uint *getAvlBrkPt(void);
 extern uint  isAnyBrkPt(void);
 extern uint decodeCmd(char *aCmdStr);
 extern void hotkeys(int &cc);
-
-#else /* NOT DEBUGGER */
-extern int cineExec(void);
 #endif
 
-extern void cineSetGameName(char *name);
-extern void cineSetJMI(int aJMIflag);
-extern void cineSetMSize(int aMemSizeFlag);
-extern void cineSetMonitor(int aMonitor);
-extern void cineSetRate(uint aRefresh);
-extern void cineSetSw(uint aSwitches, uint aInputs);
-extern void cineInit(uchar *, uchar *);
-extern void cineReset(void);
+#define GAME_TAILGUNNER 1
+#define GAME_RIPOFF 2
+#define GAME_SPACEWARS 3
+#define GAME_BOXINGBUGS 4
+#define GAME_ARMORATTACK 5
+#define GAME_STARCASTLE 6
+#define GAME_STARHAWK 7
+#define GAME_SPEEDFREAK 8
+#define GAME_DEMON 9
+#define GAME_SOLARQUEST 10
+#define GAME_COSMICCHASM 11
+#define GAME_WAROFTHEWORLDS 12
+#define GAME_WARRIOR 13
+#define GAME_BARRIER 14
+#define GAME_SUNDANCE 15
+#define GAME_QB3 16
+
 extern void vgSetMode(int mode);
 extern void vgSetCineSize(int Xmin, int Ymin, int Xmax, int Ymax);
-extern void vgSetMonitor(int aMonitor, int RB, int GB, int BB, int RC, int GC, int BC);
 extern void vgSetTwinkle(int aTwinkle);
 extern void vgSetRotateFlip(int rotate, int flipX, int flipY);
 extern void vgInit(void);
-extern void memfcs(uchar *block, uint count, uint *fcs);
+extern void vgSetMonitor (int aMonitor, int RB, int GB, int BB, int RC, int GC, int BC);
+extern void cineReset (void);
+extern void cineSetGame (char *name, int id);
+extern void cineSetJMI (UINT8 j);
+extern void cineSetMSize (UINT8 m);
+extern void cineSetMonitor (UINT8 m);
+extern UINT32 cineGetElapsedTicks (UINT32 dwClearIt);
+extern void cineReleaseTimeslice (void);
+extern UINT32 cineExec (void);
+extern void cineInit (unsigned char *progdata, unsigned char *optkeymap);
+extern void cineSetRate (unsigned int aRefresh);
+extern void cineSetSw (unsigned int aSwitches, unsigned int aInputs);
 extern void cineSetMouse(uint aMouseType, uint aMouseSpeedX, uint aMouseSpeedY, uint aKeyMask, uchar *aMouseSeg);
 
 // Cine I/O stuff
 //extern int checkMouse(void);
+extern void CinemaClearScreen (void);
+extern void startFrame(void);
 
+extern void startFrame_tailgunner(void);
+extern void startFrame_ripoff(void);
+extern void startFrame_spacewars(void);
+extern void startFrame_boxingbugs(void);
+extern void startFrame_armorattack(void);
+extern void startFrame_starcastle(void);
+extern void startFrame_starhawk(void);
+extern void startFrame_speedfreak(void);
+extern void startFrame_demon(void);
+extern void startFrame_solarquest(void);
+extern void startFrame_cosmicchasm(void);
+extern void startFrame_waroftheworlds(void);
+extern void startFrame_warrior(void);
+extern void startFrame_barrier(void);
+extern void startFrame_sundance(void);
+extern void startFrame_qb3(void);
+
+extern uchar bNewFrame;
+      
 #endif /* CINES_H */
+

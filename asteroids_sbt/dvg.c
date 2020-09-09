@@ -303,8 +303,11 @@ if (browseMode)
   if (((my > 50) && (mx > -40) && (mx < 40)) || (currentButtonState&4)) keycode |= 0x00800000; // THRUST
   if (currentButtonState&8) keycode |= 0x00400000; // FIRE
   if (((my < -90) && (mx > -40) && (mx < 40)) || ((keycode&0x00C00000) == 0x00C00000)) keycode = 0x00000100;
-  // START/HYPERSPACE when THRUST+FIRE both pressed or joystick down
-  // passed back to game via readkeypad above
+  // Not yet implemented: START/HYPERSPACE when THRUST+FIRE both pressed or joystick down -
+  //   - combination is problematic as people are likely to try to fire while moving.  Also looked
+  //     at, but not implemented, joystick-down as a hyperspace button.
+  // Need to pick something before release!
+  // These values are passed back to the game via readkeypad() above
 }
 }
 

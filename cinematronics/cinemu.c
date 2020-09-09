@@ -19,10 +19,6 @@
 #include "inifile.h"
 #include "options.h"
 
-// cineops.c:
-extern uchar bNewFrame;
-extern void CinemaClearScreen (void);
-
 #define PROGSIZE  32768L
 static uchar ProgData[PROGSIZE];	// static memory for CPU data
 
@@ -33,12 +29,13 @@ static char TempBfr[SCRASIZE];		// just a general use temporary buffer
 
 void main (int argc, char **argv)
 {
+   int Game = 0;
    int err;
 
    vectrexinit (1);
    v_init ();
    usePipeline = 1;
-   v_setRefresh (60);
+   v_setRefresh (60); // need to work on 38/76 to match hardware...
 
 #ifdef FREESTANDING
    char *_argv[3];
@@ -51,8 +48,8 @@ void main (int argc, char **argv)
 #endif
 
    static char hdr[] =
-    "CINEMU - Cinematronics Emulator. " VERSION
-    "\n(c) Copyright 1997, Zonn Moore.  All rights reserved.\n";
+    "CINEMU - Cinematronics Emulator. " VERSION "\n"
+    "(c) Copyright 1997, Zonn Moore.  All rights reserved.\n";
 
    if ((argc == 2) && (strcmp(argv[1], "-V") == 0)) 
    {
@@ -65,7 +62,6 @@ void main (int argc, char **argv)
       fprintf (stderr, "syntax: cinemu [-h | -V | <game>]  where the supported games are:\n");
       fprintf (stderr, "  armorattack  boxingbugs   demon  ripoff      spacewars   starcastle  sundance    waroftheworlds\n");
       fprintf (stderr, "  barrier      cosmicchasm  qb3    solarquest  speedfreak  starhawk    tailgunner  warrior\n");
-  
       fprintf (stderr, "\n");
       exit (1);
    }
@@ -79,24 +75,39 @@ void main (int argc, char **argv)
    * Armor Attack, Barrier, Boxing Bugs, Demon, Ripoff, Solar Quest,
    * Spacewar, Speed Freak, Star Castle, Star Hawk, Sundance, Tail Gunner
    * War of the worlds, Warrior
-   * (There is another, but it has not been made available yet)
    */
    if (strcasecmp (argv[1], "tailgunner") == 0) {
+     Game = GAME_TAILGUNNER;
    } else if (strcasecmp (argv[1], "ripoff") == 0) {
+     Game = GAME_RIPOFF;
    } else if (strcasecmp (argv[1], "spacewars") == 0) {
+     Game = GAME_SPACEWARS;
    } else if (strcasecmp (argv[1], "boxingbugs") == 0) {
+     Game = GAME_BOXINGBUGS;
    } else if (strcasecmp (argv[1], "armorattack") == 0) {
-   } else if (strcasecmp (argv[1], "qb3") == 0) {
+     Game = GAME_ARMORATTACK;
    } else if (strcasecmp (argv[1], "starcastle") == 0) {
+     Game = GAME_STARCASTLE;
    } else if (strcasecmp (argv[1], "starhawk") == 0) {
+     Game = GAME_STARHAWK;
    } else if (strcasecmp (argv[1], "speedfreak") == 0) {
+     Game = GAME_SPEEDFREAK;
    } else if (strcasecmp (argv[1], "demon") == 0) {
+     Game = GAME_DEMON;
    } else if (strcasecmp (argv[1], "solarquest") == 0) {
+     Game = GAME_SOLARQUEST;
    } else if (strcasecmp (argv[1], "cosmicchasm") == 0) {
+     Game = GAME_COSMICCHASM;
    } else if (strcasecmp (argv[1], "waroftheworlds") == 0) {
+     Game = GAME_WAROFTHEWORLDS;
    } else if (strcasecmp (argv[1], "warrior") == 0) {
+     Game = GAME_WARRIOR;
    } else if (strcasecmp (argv[1], "barrier") == 0) {
+     Game = GAME_BARRIER;
    } else if (strcasecmp (argv[1], "sundance") == 0) {
+     Game = GAME_SUNDANCE;
+   } else if (strcasecmp (argv[1], "qb3") == 0) {
+     Game = GAME_QB3;
    } else {
       fprintf (stderr, "The supported games are:\n");
       fprintf (stderr, "  armorattack  boxingbugs   demon  ripoff      spacewars   starcastle  sundance    waroftheworlds\n");
@@ -105,7 +116,7 @@ void main (int argc, char **argv)
       exit (1);
    }
 
-   cineSetGameName (argv[1]);
+   cineSetGame (argv[1], Game);
 
    sprintf (TempBfr, "ini/%s.ini", argv[1]);
 
@@ -152,15 +163,245 @@ void main (int argc, char **argv)
    // #################################################################################
    cineInit (ProgData, OptKeyMap);	// setup segment pointer, reset breakpoints
    cineReset ();		// called after ini file has been read.
-   for (;;) {
-      cineExec ();		/* either run one instruction or a lot ending in a vsync */
-      if (bNewFrame != 0) 
-      {	                        // vsync
-        bNewFrame = 0;
-        CinemaClearScreen ();	// This has to enforce execution speed of
-                                //  (eg) 1/38 sec to generate a frame
-                                // potentially could be sparated from drawing, eg at 50Hz for Vectrex
-      }
+
+   switch (Game) {
+
+   case GAME_RIPOFF:     
+     {
+       static int parity = 0;
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           parity ^= 1;
+           if (parity) startFrame_ripoff();
+         }
+       }
+     }
+     return;
+
+   case GAME_SPACEWARS:     
+     {
+       static int parity = 0;
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           parity ^= 1;
+           if (parity) startFrame_spacewars();
+         }
+       }
+     }
+     return;
+
+   case GAME_BOXINGBUGS:     
+     {
+       static int parity = 0;
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           parity ^= 1;
+           if (parity) startFrame_boxingbugs();
+         }
+       }
+     }
+     return;
+
+   case GAME_ARMORATTACK:     
+     {
+       static int parity = 0;
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           parity ^= 1;
+           if (parity) startFrame_armorattack();
+         }
+       }
+     }
+     return;
+
+   case GAME_STARCASTLE:     
+     {
+       static int parity = 0;
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           parity ^= 1;
+           if (parity) startFrame_starcastle();
+         }
+       }
+     }
+     return;
+
+   case GAME_STARHAWK:     
+     {
+       static int parity = 0;
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           parity ^= 1;
+           if (parity) startFrame_starhawk();
+         }
+       }
+     }
+     return;
+
+   case GAME_SOLARQUEST:     
+     {
+       static int parity = 0;
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           parity ^= 1;
+           if (parity) startFrame_solarquest();
+         }
+       }
+     }
+     return;
+
+   case GAME_COSMICCHASM:     
+     {
+       static int parity = 0;
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           parity ^= 1;
+           if (parity) startFrame_cosmicchasm();
+         }
+       }
+     }
+     return;
+
+   case GAME_WAROFTHEWORLDS:     
+     {
+       static int parity = 0;
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           parity ^= 1;
+           if (parity) startFrame_waroftheworlds();
+         }
+       }
+     }
+     return;
+
+   case GAME_WARRIOR:     
+     {
+       static int parity = 0;
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           parity ^= 1;
+           if (parity) startFrame_warrior();
+         }
+       }
+     }
+     return;
+
+   case GAME_BARRIER:     
+     {
+       static int parity = 0;
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           parity ^= 1;
+           if (parity) startFrame_barrier();
+         }
+       }
+     }
+     return;
+
+   case GAME_SUNDANCE:
+     {
+       static int parity = 0;
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           parity ^= 1;
+           if (parity) startFrame_sundance();
+         }
+       }
+     }
+     return;
+
+     
+   case GAME_QB3:
+     {
+       static int parity = 0;
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           parity ^= 1;
+           if (parity) startFrame_qb3();
+         }
+       }
+     }
+     return;
+     
+
+   case GAME_TAILGUNNER:
+     {
+       static int parity = 0;
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           parity ^= 1;
+           if (parity) startFrame_tailgunner(); // Tailgunner calls the instruction that we use to determine vsync twice in a row without intervening drawing code.
+         }
+       }
+     }
+     return;
+
+   case GAME_DEMON:
+     {
+       static int parity = 0;
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           parity ^= 1;
+           if (parity) startFrame_demon(); // Demon calls the instruction that we use to determine vsync twice in a row without intervening drawing code.
+         }
+       }
+     }
+     return;
+
+   case GAME_SPEEDFREAK:
+     {
+       static int parity = 0;
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           parity ^= 1;
+           if (parity) startFrame_speedfreak(); // Speedfreak calls the instruction that we use to determine vsync twice in a row without intervening drawing code.
+         }
+       }
+     }
+     return;
+
+   default:
+     {
+       for (;;) {
+         cineExec ();		/* either run one instruction or a lot ending in a vsync */
+         if (bNewFrame != 0) {
+           bNewFrame = 0;
+           startFrame();
+         }
+       }
+     }
    }
    exit(0); // probably never reached.
 }

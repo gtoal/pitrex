@@ -24,7 +24,7 @@ dirCheck:
 	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
 
 $(BUILD_DIR)options.o: options.c inifile.h options.h cines.h
-	$(CC) $(CFLAGS) -DO_BINARY=c -c -o $(BUILD_DIR)options.o options.c
+	$(CC) $(CFLAGS) -DO_BINARY=0 -c -o $(BUILD_DIR)options.o options.c
 
 $(BUILD_DIR)inifile.o: inifile.c inifile.h
 	$(CC) $(CFLAGS) -DO_BINARY=0 -c -o $(BUILD_DIR)inifile.o inifile.c

@@ -1,5 +1,5 @@
 #!/bin/bash
-0;136;0ctrap ctrl_c INT
+trap ctrl_c INT
 
 function ctrl_c() {
     echo "** Trapped CTRL-C"

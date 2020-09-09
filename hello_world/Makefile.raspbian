@@ -69,6 +69,9 @@ bootmsg: $(BUILD_DIR)bootmsg.o pitrexLib
 $(BUILD_DIR)window.o: window.c
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)window.o -c window.c
 
+$(BUILD_DIR)windowmain.o: window.c
+	$(CC) $(CFLAGS) -DMAIN -o $(BUILD_DIR)windowmain.o -c window.c
+
 $(BUILD_DIR)maze.o: maze.c
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)maze.o -c maze.c
 
@@ -115,10 +118,10 @@ gimms: gimms.c $(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
 	$(RM) gimms
 	$(CC) $(CFLAGS) -o gimms $(PITREX_DIR)$(BUILD_DIR)bcm2835.o $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o gimms.c
 
-window: window.c  $(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+window: $(BUILD_DIR)windowmain.o $(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
        		   $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
 	       	   $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
-	$(CC) $(CFLAGS) -o window -DMAIN window.c $(PITREX_DIR)$(BUILD_DIR)bcm2835.o $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
+	$(CC) $(CFLAGS) -o window $(BUILD_DIR)windowmain.o $(PITREX_DIR)$(BUILD_DIR)bcm2835.o $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
 
 $(BUILD_DIR)drawships.o: drawships.c
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)drawships.o -c drawships.c

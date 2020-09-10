@@ -189,6 +189,7 @@ int myDebug;
 #include <stdio.h>
 #include <stddef.h> // these are fresstanding includes!
 #include <stdint.h> // also "available":  <float.h>, <iso646.h>, <limits.h>, <stdarg.h>
+#include <string.h>
 
 #include <pitrex/pitrexio-gpio.h>
 #include <pitrex/bcm2835.h>
@@ -361,8 +362,7 @@ VectorPipeline *pl;
 int pipelineAlt;
 
 
-char *knownName = "";
-char *defaultName;
+char knownName[100];
 unsigned char *knownBlob;
 int knownBlobSize;
 
@@ -542,7 +542,6 @@ void v_init()
   // calibrate if button 1 is pressed on startup
   if ((currentButtonState&0x08) == (0x08)) inCalibration=1;
 
-  defaultName = "default";
   knownBlob = (unsigned char*)0;
   knownBlobSize = 0;
 
@@ -3099,9 +3098,10 @@ void prepareSaveSettings()
 
 /* Set the name of the running game (used for settings file if ONE_FILE_CONFIG
  * isn't defined. */
-void v_setName(char *name)
+void v_setName(char name[MAX_NAME_LENGTH])
 {
  knownName = name;
+ printf("program is: %s\n",knownName);
 }
 
 // if defined each "game" has a complete config file
@@ -3112,37 +3112,33 @@ void v_setName(char *name)
 
 // Expects to be in root directData.
 // Expects filesystem to be initialized.
-// Saves to default settings file if name is blank.
-int v_loadSettings(char *name, unsigned char *blob, int blobSize)
+// Saves to file "default" if name is blank.
+int v_loadSettings(char name[100], unsigned char *blob, int blobSize)
 {
 
   knownBlob = blob;
   knownBlobSize = blobSize;
-  FILE *fileRead;
+
   char *settingsDir = SETTINGS_DIR;
 
   int err=0;
   err = chdir (settingsDir);
   if (err)
   {
-    printf("No settings directory found...(%i)!\r\n", errno);
+    printf("NO settings directory found...(%i)!\r\n", errno);
     return 0;
   }
 
-  if (name[0] != (char) 0)
-  {
-    printf("Loading settings file: %s!\r\n", name);
-    fileRead = fopen(name, "rb");
-  }
-  else
-  {
-    printf("Loading settings file: %s!\r\n", defaultName);
-    fileRead = fopen(defaultName, "rb");
-  }
+  if (name[0] == (char) 0)
+    name = "default";
 
+  printf("Loading settings for: %s!\r\n", name);
+
+  FILE *fileRead;
+  fileRead = fopen(name, "rb");
   if (fileRead == 0)
   {
-    printf("Could not open settings file (%i) \r\n", errno);
+    printf("Could not open file %s (%i) \r\n", name, errno);
     err = chdir("..");
     return 0;
   }
@@ -3151,13 +3147,12 @@ int v_loadSettings(char *name, unsigned char *blob, int blobSize)
   lenLoaded = fread(v_settingsBlob, V_SETTINGS_SIZE, 1, fileRead);
   if (1 != lenLoaded)
   {
-    printf("Read(1) fails (len loaded: %i) (Error: %i)\r\n", lenLoaded, errno);
+    printf("Read(1) of %s fails (len loaded: %i) (Error: %i)\r\n", name, lenLoaded, errno);
     fclose(fileRead);
     err = chdir("..");
     return 0;
   }
   applyLoadedSettings();
-/*
   if (knownName[0] != (char) 0)
   {
     fileRead = fopen(knownName, "rb");
@@ -3180,20 +3175,18 @@ int v_loadSettings(char *name, unsigned char *blob, int blobSize)
     }
     fclose(fileRead);
   }
-*/
+
   err = chdir("..");
   return 1;
 }
 
-// Expects to be in root directData.
-// Expects filesystem to be initialized.
-// Saves to default settings file if name is blank.
+
 int v_saveSettings(char *name, unsigned char *blob, int blobSize)
 {
-
+  knownName = name;
   knownBlob = blob;
   knownBlobSize = blobSize;
-  FILE *fileWrite;
+
   char *settingsDir = SETTINGS_DIR;
 
   int err=0;
@@ -3204,24 +3197,19 @@ int v_saveSettings(char *name, unsigned char *blob, int blobSize)
     return 0;
   }
 
-  if (name[0] != (char) 0)
-  {
-    printf("Saving settings file: %s!\r\n", name);
-    // always as a "new file"
-    fileWrite = fopen(name, "wb");
-  }
-  else
-  {
-    printf("Saving settings file: %s!\r\n", defaultName);
-    // always as a "new file"
-    fileWrite = fopen(defaultName, "wb");
-  }
+  if (name[0] == (char) 0)
+    name = "default";
+
+  printf("Saving settings for: %s!\r\n", name);
 
   prepareSaveSettings();
 
+  FILE *fileWrite;
+  // always as a "new file"
+  fileWrite = fopen(name, "wb");
   if (fileWrite == 0)
   {
-    printf("Could not open file (%i) \r\n", errno);
+    printf("Could not open file %s (%i) \r\n", name, errno);
     err = chdir("..");
     return 0;
   }
@@ -3235,7 +3223,6 @@ int v_saveSettings(char *name, unsigned char *blob, int blobSize)
     return 0;
   }
   fclose(fileWrite);
-/*
   if (knownName[0] != (char) 0)
   {
     fileWrite = fopen(knownName, "wb");
@@ -3258,7 +3245,6 @@ int v_saveSettings(char *name, unsigned char *blob, int blobSize)
     }
     fclose(fileWrite);
   }
-*/
   err = chdir("..");
   return 1;
 }
@@ -3307,7 +3293,7 @@ int v_loadSettings(char *name, unsigned char *blob, int blobSize)
     return 0;
   }
   applyLoadedSettings();
-  if (knownName[0] != (char) 0)
+/*  if (knownName[0] != (char) 0)
   {
     if (blobSize != 0)
     {
@@ -3321,12 +3307,11 @@ int v_loadSettings(char *name, unsigned char *blob, int blobSize)
       }
     }
   }
+*/
   fclose(fileRead);
   err  = chdir("..");
   return 1;
 }
-
-
 int v_saveSettings(char *name, unsigned char *blob, int blobSize)
 {
   knownName = name;

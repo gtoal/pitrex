@@ -1,3 +1,6 @@
+#ifdef AVOID_TICKS
+#include <string.h>
+#endif
 /*
 From Vectrex BIOS:
 

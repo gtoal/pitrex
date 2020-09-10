@@ -1,5 +1,5 @@
 /* Translation of SVGAlib function calls into calls to the Vector drawing library for the PiTrex Vectrex interface cartridge.
-   Version 0.1.1 - only bare minimum of functions implemented to get something working.
+   Version 0.3 - only bare minimum of functions implemented to get something working.
    Kevin Koster, 2020 */
 
 #ifndef VGA_VECTREX_H

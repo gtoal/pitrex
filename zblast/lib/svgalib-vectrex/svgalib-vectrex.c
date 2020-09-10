@@ -1,7 +1,8 @@
 /* Translation of SVGAlib function calls into calls to the Vector drawing library for the PiTrex Vectrex interface cartridge.
-   Version 0.2 - only bare minimum of functions implemented to get something working.
+   Version 0.3 - only bare minimum of functions implemented to get something working.
    Changes:
     2020-06-16 V. 0.2 - Added colour to intensity translation.
+    2020-09-10 V. 0.3 - Additions for xhyperoid. Tells Vectrex Interface lib. the program name before v_init.
 
    Kevin Koster, 2020 */
 
@@ -18,6 +19,8 @@ int vgamode;
 char beamintensity;
 char svgalib_initialised = 0;
 #include "intensitypalette.h"
+
+extern char *program_invocation_short_name; /* Linux only */
 
 struct info infotable[] =
 {
@@ -205,6 +208,7 @@ extern int vga_init(void)
 	  printf("Could Not Initialise Vectrex Connection\n");
 	  return -1;
 	 }
+	 v_setName(program_invocation_short_name);
 	 v_init();
 	 svgalib_initialised = 1;
 	}
@@ -256,6 +260,7 @@ void __svgalib_vectrex_recalcheck(void)
 	if (GET (VIA_int_flags) & 0x20)
 	{
 	 v_WaitRecal();
+	 keyboard_update();
 /*	 v_readJoystick1Digital();
 	 printf ("joystick state X,Y: %d,%d\n",currentJoy1X,currentJoy1Y);
 	 printf ("button state: 0x%x\n",currentButtonState);

@@ -1,3 +1,6 @@
+#ifdef AVOID_TICKS
+#include <string.h>
+#endif
 /*
 From Vectrex BIOS:
 
@@ -111,6 +114,9 @@ unsigned char *rasterlines[7]=
 	rasterline1,rasterline2,rasterline3,rasterline4,rasterline5,rasterline6,rasterline7
 };
 
+void disableLinuxInterrupts(unsigned int minOffset);
+void enableLinuxInterrupts();
+
 // positions using scale $7f
 // position in 8bit vectrex format
 // zeroes before positioning
@@ -144,6 +150,10 @@ int v_printStringRaster(int8_t x, int8_t y, char* _string, int8_t xSize, int8_t 
 	{
 	  halfOffset = 1;
 	}
+#define RASTER_WAIT 17
+#ifdef AVOID_TICKS
+	disableLinuxInterrupts(strlen(_string)*RASTER_WAIT + ST_GAP_END );
+#endif
 	for (int i=0; i<7; i++)
 	{
 		ZERO_AND_WAIT();
@@ -179,7 +189,6 @@ int v_printStringRaster(int8_t x, int8_t y, char* _string, int8_t xSize, int8_t 
 		  SET(VIA_port_a, 0x00);
 		  DELAY_XSH();
 		}
-#define RASTER_WAIT 17
 		// disable ramp and set y moevemtn to 0
 		SET(VIA_port_b, 0x80); // disable ramp, mux = y integrator, enable mux
 		DELAY_YSH();
@@ -226,6 +235,9 @@ int v_printStringRaster(int8_t x, int8_t y, char* _string, int8_t xSize, int8_t 
 	SET(VIA_shift_reg, 0);
 //	ZERO_AND_WAIT();
 	ZERO_AND_CONTINUE();
+#ifdef AVOID_TICKS
+	enableLinuxInterrupts();
+#endif
 	return cycles;
 }
 
@@ -245,6 +257,10 @@ void v_printStringRaster_here(char* _string, int8_t xSize, int8_t ySize, unsigne
 {
 	// prepare for raster output
 	SET(VIA_aux_cntl, 0x18);
+#define RASTER_HERE_WAIT 15
+#ifdef AVOID_TICKS
+	disableLinuxInterrupts(strlen(_string)*RASTER_HERE_WAIT + ST_GAP_END );
+#endif
 	for (int i=0; i<7; i++)
 	{
 		unsigned char* string = (unsigned char*)_string;
@@ -271,7 +287,7 @@ void v_printStringRaster_here(char* _string, int8_t xSize, int8_t ySize, unsigne
 		// print this rasterline!
 		do 
 		{
-			DELAY_CYCLES(15); // wait for enable ramp, and printing the last letter
+			DELAY_CYCLES(RASTER_HERE_WAIT); // wait for enable ramp, and printing the last letter
 			// draw one char bitmap
 			unsigned char charBitmap	= currentRasterline[*string-0x20];
 			string++;
@@ -328,5 +344,9 @@ void v_printStringRaster_here(char* _string, int8_t xSize, int8_t ySize, unsigne
 #endif
 #ifdef BEAM_LIGHT_BY_CNTL
 	SET (VIA_aux_cntl, 0x80); // Shift reg mode = 000 free disable, T1 PB7 enabled 
+#endif
+
+#ifdef AVOID_TICKS
+	enableLinuxInterrupts();
 #endif
 }

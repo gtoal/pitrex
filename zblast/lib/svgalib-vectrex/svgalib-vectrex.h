@@ -1,5 +1,5 @@
 /* Translation of SVGAlib function calls into calls to the Vector drawing library for the PiTrex Vectrex interface cartridge.
-   Version 0.1 - only bare minimum of functions implemented to get something working.
+   Version 0.3 - only bare minimum of functions implemented to get something working.
    Kevin Koster, 2020 */
 
 #ifndef VGA_VECTREX_H
@@ -193,6 +193,8 @@ int keyboard_init(void);
 int keyboard_keypressed(int scancode);
 void keyboard_translatekeys(int mask);
 int keyboard_update(void);
+
+extern int vga_setpalvec(int start, int num, int *pal);
 
 extern void vga_disabledriverreport(void);
 extern int vga_drawline(int x1, int y1, int x2, int y2);

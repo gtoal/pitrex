@@ -43,8 +43,8 @@ void v_setScale(uint16_t s);
 void v_moveToImmediate8(int8_t xLen, int8_t yLen);
 void v_drawToImmediate8(int8_t xLen, int8_t yLen);
 
+void v_setName(char *name);
 int v_loadSettings(char *name, unsigned char *blob, int blobSize);
-
 
 uint32_t v_millis(); // only using low counters!
 uint32_t v_micros(); // only using low counters!
@@ -569,4 +569,4 @@ typedef struct {
 
 extern GlobalMemSettings *settings;
 
-
+#define SETTINGS_DIR	"settings"

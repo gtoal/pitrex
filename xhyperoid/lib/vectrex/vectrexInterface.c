@@ -189,6 +189,7 @@ int myDebug;
 #include <stdio.h>
 #include <stddef.h> // these are fresstanding includes!
 #include <stdint.h> // also "available":  <float.h>, <iso646.h>, <limits.h>, <stdarg.h>
+#include <string.h>
 
 #include <pitrex/pitrexio-gpio.h>
 #include <pitrex/bcm2835.h>
@@ -259,6 +260,7 @@ rpi_sys_timer_t* rpiSystemTimer;
 
 #ifdef AVOID_TICKS
 unsigned int scaleTotal = 0;
+uint32_t gpu_ier1=0, gpu_ier2=0, cpu_ier=0, fiqtemp=0;
 #define MAP_FAILED	((void *) -1)
 volatile uint32_t *bcm2835_int		= (uint32_t *)MAP_FAILED;
 #endif
@@ -346,7 +348,7 @@ float sizeY;
 uint8_t calibrationValue; // tut calibration
 
 int currentMarkedMenu = 0;
-int menuOffset = 0;  
+int menuOffset = 0;
 
 
 CrankyFlags crankyFlag; // cranky should be checked during calibration! In "VecFever" terms cranky off = burst modus
@@ -360,7 +362,8 @@ VectorPipeline *pl;
 int pipelineAlt;
 
 
-char *knownName;
+char *knownName = "";
+char *defaultName;
 unsigned char *knownBlob;
 int knownBlobSize;
 
@@ -540,7 +543,7 @@ void v_init()
   // calibrate if button 1 is pressed on startup
   if ((currentButtonState&0x08) == (0x08)) inCalibration=1;
 
-  knownName = "";
+  defaultName = "default";
   knownBlob = (unsigned char*)0;
   knownBlobSize = 0;
 
@@ -1142,9 +1145,9 @@ void v_WaitRecal()
   }
 
     */
-    
-    
-    
+
+
+
     displayPipeline();
     handleUARTInterface();
     // wait for Via T2 to expire
@@ -1223,6 +1226,7 @@ void v_WaitRecal_buffered(int buildBuffer)
   if (currentButtonState ==0xf) // button 1+ 2 + 3+4 -> go menu
   {
     #ifndef FREESTANDING
+    v_noSound();
     exit(0); // pressing all four buttons exits
     #else
     printf("Restarting kernel...%08x %08x\r\n",(int)settings->loader, (int)*settings->loader);
@@ -1414,7 +1418,7 @@ void v_readJoystick1Digital()
   SET(VIA_port_b, 0x83); // set VIA port B mux
   DELAY_PORT_B_BEFORE_PORT_A();
   SET(VIA_port_a, 0x40); // load a with test value (positive y), test value to DAC
-  DELAY_CYCLES(1);
+  DELAY_CYCLES(4);
   if ((GET(VIA_port_b) & 0x20) == 0x20)
   {
     currentJoy1Y = 1; //up
@@ -3094,47 +3098,52 @@ void prepareSaveSettings()
   currentSettings->beamOffBetweenConsecutiveDraws = beamOffBetweenConsecutiveDraws;
 }
 
+/* Set the name of the running game (used for settings file if ONE_FILE_CONFIG
+ * isn't defined. */
+void v_setName(char *name)
+{
+ knownName = name;
+}
+
 // if defined each "game" has a complete config file
-#define ONE_FILE_CONFIG
+//#define ONE_FILE_CONFIG
 
 
 #ifndef ONE_FILE_CONFIG
 
-// expects to be in root directData
-// expects filesystem to be initialized
-
-
-// expects to be in root directData
-// expects filesystem to be initialized
+// Expects to be in root directData.
+// Expects filesystem to be initialized.
+// Saves to default settings file if name is blank.
 int v_loadSettings(char *name, unsigned char *blob, int blobSize)
 {
 
-  knownName = name;
   knownBlob = blob;
   knownBlobSize = blobSize;
-
-  name = "default";
-
-  if (knownName[0] != (char) 0)
-    printf("Loading settings for: %s!\r\n", knownName);
-  else
-    printf("Loading settings for: %s!\r\n", name);
-
-  char *settingsDir = "settings";
+  FILE *fileRead;
+  char *settingsDir = SETTINGS_DIR;
 
   int err=0;
   err = chdir (settingsDir);
   if (err)
   {
-    printf("NO settings directory found...(%i)!\r\n", errno);
+    printf("No settings directory found...(%i)!\r\n", errno);
     return 0;
   }
 
-  FILE *fileRead;
-  fileRead = fopen(name, "rb");
+  if (name[0] != (char) 0)
+  {
+    printf("Loading settings file: %s!\r\n", name);
+    fileRead = fopen(name, "rb");
+  }
+  else
+  {
+    printf("Loading settings file: %s!\r\n", defaultName);
+    fileRead = fopen(defaultName, "rb");
+  }
+
   if (fileRead == 0)
   {
-    printf("Could not open file %s (%i) \r\n", name, errno);
+    printf("Could not open settings file (%i) \r\n", errno);
     err = chdir("..");
     return 0;
   }
@@ -3143,12 +3152,13 @@ int v_loadSettings(char *name, unsigned char *blob, int blobSize)
   lenLoaded = fread(v_settingsBlob, V_SETTINGS_SIZE, 1, fileRead);
   if (1 != lenLoaded)
   {
-    printf("Read(1) of %s fails (len loaded: %i) (Error: %i)\r\n", name, lenLoaded, errno);
+    printf("Read(1) fails (len loaded: %i) (Error: %i)\r\n", lenLoaded, errno);
     fclose(fileRead);
     err = chdir("..");
     return 0;
   }
   applyLoadedSettings();
+/*
   if (knownName[0] != (char) 0)
   {
     fileRead = fopen(knownName, "rb");
@@ -3171,25 +3181,21 @@ int v_loadSettings(char *name, unsigned char *blob, int blobSize)
     }
     fclose(fileRead);
   }
+*/
   err = chdir("..");
   return 1;
 }
+
+// Expects to be in root directData.
+// Expects filesystem to be initialized.
+// Saves to default settings file if name is blank.
 int v_saveSettings(char *name, unsigned char *blob, int blobSize)
 {
-  knownName = name;
+
   knownBlob = blob;
   knownBlobSize = blobSize;
-
-  name = "default";
-
-  if (knownName[0] != (char) 0)
-    printf("Saving settings for: %s!\r\n", knownName);
-  else
-    printf("Saving settings for: %s!\r\n", name);
-
-  char *settingsDir = "settings";
-
-
+  FILE *fileWrite;
+  char *settingsDir = SETTINGS_DIR;
 
   int err=0;
   err = chdir (settingsDir);
@@ -3198,14 +3204,25 @@ int v_saveSettings(char *name, unsigned char *blob, int blobSize)
     printf("NO settings directory found...(%i)!\r\n", errno);
     return 0;
   }
+
+  if (name[0] != (char) 0)
+  {
+    printf("Saving settings file: %s!\r\n", name);
+    // always as a "new file"
+    fileWrite = fopen(name, "wb");
+  }
+  else
+  {
+    printf("Saving settings file: %s!\r\n", defaultName);
+    // always as a "new file"
+    fileWrite = fopen(defaultName, "wb");
+  }
+
   prepareSaveSettings();
 
-  FILE *fileWrite;
-  // always as a "new file"
-  fileWrite = fopen(name, "wb");
   if (fileWrite == 0)
   {
-    printf("Could not open file %s (%i) \r\n", name, errno);
+    printf("Could not open file (%i) \r\n", errno);
     err = chdir("..");
     return 0;
   }
@@ -3219,6 +3236,7 @@ int v_saveSettings(char *name, unsigned char *blob, int blobSize)
     return 0;
   }
   fclose(fileWrite);
+/*
   if (knownName[0] != (char) 0)
   {
     fileWrite = fopen(knownName, "wb");
@@ -3241,14 +3259,11 @@ int v_saveSettings(char *name, unsigned char *blob, int blobSize)
     }
     fclose(fileWrite);
   }
+*/
   err = chdir("..");
   return 1;
 }
 #else // ONE_FILE_CONFIG
-
-// expects to be in root directData
-// expects filesystem to be initialized
-
 
 // expects to be in root directData
 // expects filesystem to be initialized
@@ -3264,7 +3279,7 @@ int v_loadSettings(char *name, unsigned char *blob, int blobSize)
   }
   printf("Loading settings for: %s!\r\n", name);
 
-  char *settingsDir = "settings";
+  char *settingsDir = SETTINGS_DIR;
 
   int err=0;
   err = chdir (settingsDir);
@@ -3311,6 +3326,8 @@ int v_loadSettings(char *name, unsigned char *blob, int blobSize)
   err  = chdir("..");
   return 1;
 }
+
+
 int v_saveSettings(char *name, unsigned char *blob, int blobSize)
 {
   knownName = name;
@@ -3321,7 +3338,7 @@ int v_saveSettings(char *name, unsigned char *blob, int blobSize)
     name = "default";
   printf("Saving settings for: %s!\r\n", name);
 
-  char *settingsDir = "settings";
+  char *settingsDir = SETTINGS_DIR;
 
 
   int err=0;
@@ -4303,17 +4320,12 @@ void handlePipeline()
           printf(__VA_ARGS__); \
         }
 
-
-void displayPipeline()
+/* Waits until the specified minimum cycles before the next system timer
+ * interrupt, then disables all Linux system interrupts. */
+void disableLinuxInterrupts(unsigned int minOffset)
 {
-  int c = 0;
-  VectorPipeline *dpl = _P[pipelineAlt?0:1];
-  int delayedBeamOff=0;
-  if (myDebug) printf("Display pipeline started...!\r\n");
-
 #ifdef AVOID_TICKS
 	volatile uint32_t* paddr;
-	uint32_t fiqtemp;
 	uint32_t clk;
 	uint32_t gap0;
 //	uint32_t gap1;
@@ -4323,9 +4335,6 @@ void displayPipeline()
 //	uint32_t comp1;
 	uint32_t comp2;
 	uint32_t comp3;
-	uint32_t gpu_ier1=0, gpu_ier2=0, cpu_ier=0;
-
-	scaleTotal = (scaleTotal * DELAY_PI_CYCLE_EQUIVALENT) + ST_GAP_END;
 
 	/* Wait until no timer interrupts are due within the expected drawing time,
 	   otherwise the system clock will get messed up: */
@@ -4345,7 +4354,7 @@ void displayPipeline()
 //	 gap1 = (comp1 - clk);
 	 gap2 = (comp2 - clk);
 	 gap3 = (comp3 - clk);
-	} while ( gap0 < scaleTotal || gap2 < scaleTotal || gap3 < scaleTotal);
+	} while ( gap0 < minOffset || gap2 < minOffset || gap3 < minOffset);
 
 	/* Save interrupt configuration and disable interrupts */
 	if (bcm2835_int != MAP_FAILED)
@@ -4379,6 +4388,49 @@ void displayPipeline()
 	{
 	 printf("Interrupt address mapping failed\r\n");
 	}
+#endif
+}
+
+/* Restores interrupt configuration as it was when disabled. */
+void enableLinuxInterrupts()
+{
+#ifdef AVOID_TICKS
+	volatile uint32_t* paddr;
+//	printf("clk: %u | comp0: %u, comp2: %u, comp3: %u\nGap0: %u, Gap2: %u, Gap3: %u\n"
+//	 ,clk,comp0,comp2,comp3,gap0,gap2,gap3);
+
+	/* Re-enable interrupts with the previous settings */
+	if (bcm2835_int != MAP_FAILED)
+	{
+	 paddr = bcm2835_int + BCM2835_INT_GPU_IER1/4;
+	 bcm2835_peri_write(paddr,gpu_ier1);
+	 paddr = bcm2835_int + BCM2835_INT_GPU_IER2/4;
+	 bcm2835_peri_write(paddr,gpu_ier2);
+	 paddr = bcm2835_int + BCM2835_INT_CPU_IER/4;
+	 bcm2835_peri_write(paddr,cpu_ier);
+
+#ifdef DISABLE_FIQ
+	 /* Enable Fast Interrupt Requests: */
+	 paddr = bcm2835_int + BCM2835_INT_FIQ/4;
+	 fiqtemp = bcm2835_peri_read(paddr); // read FIQ control register 0x20C
+	 fiqtemp |= (1 << 7);               // set FIQ enable bit
+	 bcm2835_peri_write(paddr,fiqtemp);// write back to register
+#endif
+//	 printf("GPU IER1: 0x%X | GPU IER2: 0x%X | CPU IER: 0x%X\n",gpu_ier1,gpu_ier2,cpu_ier);
+	}
+#endif
+}
+
+void displayPipeline()
+{
+  int c = 0;
+  VectorPipeline *dpl = _P[pipelineAlt?0:1];
+  int delayedBeamOff=0;
+  if (myDebug) printf("Display pipeline started...!\r\n");
+
+#ifdef AVOID_TICKS
+  scaleTotal = (scaleTotal * DELAY_PI_CYCLE_EQUIVALENT) + ST_GAP_END;
+  disableLinuxInterrupts(scaleTotal);
 #endif
 
   if (browseMode)
@@ -4749,31 +4801,10 @@ void displayPipeline()
   // safety only
   SWITCH_BEAM_OFF();
   ZERO_AND_CONTINUE();
-  
-#ifdef AVOID_TICKS
-//	printf("clk: %u | comp0: %u, comp2: %u, comp3: %u\nGap0: %u, Gap2: %u, Gap3: %u\n"
-//	 ,clk,comp0,comp2,comp3,gap0,gap2,gap3);
 
-	/* Re-enable interrupts with the previous settings */
-	if (bcm2835_int != MAP_FAILED)
-	{
-	 paddr = bcm2835_int + BCM2835_INT_GPU_IER1/4;
-	 bcm2835_peri_write(paddr,gpu_ier1);
-	 paddr = bcm2835_int + BCM2835_INT_GPU_IER2/4;
-	 bcm2835_peri_write(paddr,gpu_ier2);
-	 paddr = bcm2835_int + BCM2835_INT_CPU_IER/4;
-	 bcm2835_peri_write(paddr,cpu_ier);
-	 
-#ifdef DISABLE_FIQ
-	 /* Enable Fast Interrupt Requests: */
-	 paddr = bcm2835_int + BCM2835_INT_FIQ/4;
-	 fiqtemp = bcm2835_peri_read(paddr); // read FIQ control register 0x20C
-	 fiqtemp |= (1 << 7);               // set FIQ enable bit
-	 bcm2835_peri_write(paddr,fiqtemp);// write back to register
-#endif
-//	 printf("GPU IER1: 0x%X | GPU IER2: 0x%X | CPU IER: 0x%X\n",gpu_ier1,gpu_ier2,cpu_ier);
-	}
-	scaleTotal = 0;
+#ifdef AVOID_TICKS
+ enableLinuxInterrupts();
+ scaleTotal = 0;
 #endif
 }
 
@@ -4880,25 +4911,32 @@ void v_directMove32n(int32_t xEnd, int32_t yEnd)
   WAIT_T1_END();
 }
 
+// This is broken in current release. I've added in some of the code from the last working version that
+// I can identify, but haven't been able to make it work again.
+
+// test program is hello_world/pacman.c
+
 // 8 bit for now
-void v_printBitmapUni(unsigned char *bitmapBlob, int width, int height, int size, int x, int y)
+void v_printBitmapUni(unsigned char *bitmapBlob, int width, int height, int sizeX, int x, int y)
 {
-  v_readButtons();
-  bitmapBlob=uniDirectional;
-  width = 0x09;
-  height = 0x50;
-  x = -(9*4);
-  y = 0x28;
+//  v_readButtons(); 
+//  bitmapBlob=uniDirectional;
+//  width = 0x09;
+//  height = 0x50;
+//  x = -(9*4);
+//  y = 0x28;
+//    v_setBrightness(64);
   
 	int patternAnds[] = {128,64,32,16,8,4,2,1};
-	v_setBrightness(64);
 	// uni directional
     
 	for (int yy=0;yy<height;yy++)
 	{
     currentYSH=currentPortA=0x100;
 
-      v_directMove32n(x*128,(y-yy-yy)*128);
+        // ? v_directMove32n(x*128,(y-yy)*128);
+        v_directMove32n(x*128,(y-yy-yy)*128);
+
 ////////////////
 // Prepare line print
 
@@ -4926,8 +4964,12 @@ void v_printBitmapUni(unsigned char *bitmapBlob, int width, int height, int size
 
         SET(VIA_port_b, 0x81);
         DELAY_PORT_B_BEFORE_PORT_A();
+
+//      SET(VIA_port_a, sizeX);
         SET(VIA_port_a, 120);
-////////////////
+//      SET(VIA_port_a, sizeX*2); // GT:
+
+	////////////////
         // prepare for raster output
 
         SET(VIA_aux_cntl, 0x00);
@@ -4935,7 +4977,7 @@ void v_printBitmapUni(unsigned char *bitmapBlob, int width, int height, int size
 		// now print one line pattern
 
 		SET(VIA_port_b, 0x01); // enable ramp, mux = y integrator, disable mux
-		for (int xx=0;xx<width;xx++)
+        for (int xx=0;xx<width;xx++)
 		{
 			for (int bit=0;bit<8;bit++)
 			{
@@ -4953,6 +4995,13 @@ void v_printBitmapUni(unsigned char *bitmapBlob, int width, int height, int size
 			}
 			bitmapBlob++;
 		}
+
+#ifdef NEVER
+	        // switch off, if last bit was on!
+                if (*bitmapBlob & 1)
+	                vectrexwrite_short(VIA_cntl, 0xce); /* off by 1 error on final bit of bitmap? Just turn off regardless? */
+#endif		
+		
 		SET(VIA_port_b, 0x81); // disable ramp, mux = y integrator, disable mux
 		// assume lightning is done CNTL
 		SET (VIA_aux_cntl, 0x80); // Shift reg mode = 000 free disable, T1 PB7 enabled

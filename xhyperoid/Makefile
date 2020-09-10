@@ -3,7 +3,14 @@
 # You need an ANSI C compiler, e.g. gcc.
 CC=gcc
 
-CFLAGS=-Ofast -Wall -I./lib -DUART0 -DPIZERO -DRPI0 -DAVOID_TICKS -DDISABLE_FIQ
+#Pitrex Build environment:
+BUILD_DIR_PURE := build.raspbian
+BUILD_DIR := $(BUILD_DIR_PURE)/
+
+PITREX_DIR := ../pitrex/pitrex/
+VECTREX_DIR := ../pitrex/vectrex/
+
+CFLAGS=-Ofast -Wall -I./lib -I../pitrex/ -DUART0 -DPIZERO -DRPI0 -DAVOID_TICKS -DDISABLE_FIQ
 # -DRTSCHED
 
 # You'll need to comment this out on most non-Linux systems to disable
@@ -38,12 +45,15 @@ SOUNDSDIR=$(PREFIX)/games/lib/xhyperoid
 
 CFLAGS+=-DSOUNDSDIR=\"$(SOUNDSDIR)\"
 
+.PHONY: pitrexLib
 
-OBJS=bcm2835.o pitrexio-gpio.o vectrexInterface.o \
+OBJS = $(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
 	svgalib-vectrex.o vectrextokeyboard.o intensitypalette.o \
 	hyperoid.o roidsupp.o sound.o svga.o
 
-XOBJS=hyperoid.o roidsupp.o sound.o gtk.o
+XOBJS = hyperoid.o roidsupp.o sound.o gtk.o
 
 all: vga
 
@@ -51,16 +61,20 @@ x: xhyperoid
 
 vga: vhyperoid
 
-bcm2835.o: lib/pitrex/bcm2835.c lib/pitrex/bcm2835.h
-	$(CC) $(CFLAGS) -c lib/pitrex/bcm2835.c -o bcm2835.o
+pitrexLib:
+	$(MAKE) -C $(PITREX_DIR) -f Makefile.raspbian all
+	$(MAKE) -C $(VECTREX_DIR) -f Makefile.raspbian all
 
-pitrexio-gpio.o: lib/pitrex/pitrexio-gpio.c lib/pitrex/pitrexio-gpio.h lib/pitrex/bcm2835.h
-	$(CC) $(CFLAGS) -c lib/pitrex/pitrexio-gpio.c -o pitrexio-gpio.o
+#bcm2835.o: lib/pitrex/bcm2835.c lib/pitrex/bcm2835.h
+#	$(CC) $(CFLAGS) -c lib/pitrex/bcm2835.c -o bcm2835.o
+
+#pitrexio-gpio.o: lib/pitrex/pitrexio-gpio.c lib/pitrex/pitrexio-gpio.h lib/pitrex/bcm2835.h
+#	$(CC) $(CFLAGS) -c lib/pitrex/pitrexio-gpio.c -o pitrexio-gpio.o
 
 #pitrex.10
-vectrexInterface.o: lib/vectrex/vectrexInterface.c lib/vectrex/vectrexInterface.h \
-	lib/vectrex/commands.i lib/vectrex/rasterFont.i lib/vectrex/vectorFont.i
-	$(CC) $(CFLAGS) -c lib/vectrex/vectrexInterface.c -o vectrexInterface.o
+#vectrexInterface.o: lib/vectrex/vectrexInterface.c lib/vectrex/vectrexInterface.h \
+#	lib/vectrex/commands.i lib/vectrex/rasterFont.i lib/vectrex/vectorFont.i
+#	$(CC) $(CFLAGS) -c lib/vectrex/vectrexInterface.c -o vectrexInterface.o
 
 vectrextokeyboard.o: lib/svgalib-vectrex/vectrextokeyboard.c lib/svgalib-vectrex/vectrextokeyboard.h \
 	lib/svgalib-vectrex/vectrexcontrollermap.h
@@ -70,7 +84,7 @@ intensitypalette.o: lib/svgalib-vectrex/intensitypalette.c \
 	lib/svgalib-vectrex/intensitypalette.h
 	$(CC) $(CFLAGS) -c lib/svgalib-vectrex/intensitypalette.c -o intensitypalette.o
 
-svgalib-vectrex.o: lib/svgalib-vectrex/svgalib-vectrex.c lib/svgalib-vectrex/svgalib-vectrex.h \
+svgalib-vectrex.o: pitrexLib lib/svgalib-vectrex/svgalib-vectrex.c lib/svgalib-vectrex/svgalib-vectrex.h \
 	lib/svgalib-vectrex/vectrextokeyboard.h lib/svgalib-vectrex/intensitypalette.h
 	$(CC) $(CFLAGS) -c lib/svgalib-vectrex/svgalib-vectrex.c -o svgalib-vectrex.o
 

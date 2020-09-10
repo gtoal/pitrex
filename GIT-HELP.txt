@@ -108,3 +108,6 @@ UNDO all changes (locally from last commit)
 git reset --hard
 
 
+
+This avoids needing to re-enter the GitHub password (stores it in plaintext though):
+git config credential.helper store

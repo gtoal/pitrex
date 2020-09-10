@@ -3097,18 +3097,11 @@ void prepareSaveSettings()
   currentSettings->beamOffBetweenConsecutiveDraws = beamOffBetweenConsecutiveDraws;
 }
 
-/* Set the name of the running game (used for settings file if ONE_FILE_CONFIG
- * isn't defined. */
+/* Set the name of the running game */
 void v_setName(char *name)
 {
  knownName = name;
 }
-
-// if defined each "game" has a complete config file
-//#define ONE_FILE_CONFIG
-
-
-#ifndef ONE_FILE_CONFIG
 
 // Expects to be in root directData.
 // Expects filesystem to be initialized.
@@ -3157,30 +3150,6 @@ int v_loadSettings(char *name, unsigned char *blob, int blobSize)
     return 0;
   }
   applyLoadedSettings();
-/*
-  if (knownName[0] != (char) 0)
-  {
-    fileRead = fopen(knownName, "rb");
-    if (fileRead == 0)
-    {
-      printf("Could not open file %s (%i) \r\n", knownName, errno);
-      err = chdir("..");
-      return 0;
-    }
-    if (blobSize != 0)
-    {
-      lenLoaded = fread(blob, blobSize, 1, fileRead);
-      if (1 != lenLoaded)
-      {
-        printf("Read(2) of %s fails (len loaded: %i) (Error: %i)\r\n", knownName, lenLoaded, errno);
-        fclose(fileRead);
-        err = chdir("..");
-        return 0;
-      }
-    }
-    fclose(fileRead);
-  }
-*/
   err = chdir("..");
   return 1;
 }
@@ -3235,162 +3204,10 @@ int v_saveSettings(char *name, unsigned char *blob, int blobSize)
     return 0;
   }
   fclose(fileWrite);
-/*
-  if (knownName[0] != (char) 0)
-  {
-    fileWrite = fopen(knownName, "wb");
-    if (fileWrite == 0)
-    {
-      printf("Could not open file %s (%i) \r\n", knownName, errno);
-      err = chdir("..");
-      return 0;
-    }
-    if (blobSize != 0)
-    {
-      lenSaved = fwrite(blob, blobSize, 1, fileWrite);
-      if ( lenSaved != 1)
-      {
-        printf("File not saved (2) (size written = %i) (error: %i)\r\n", lenSaved, errno);
-        fclose(fileWrite);
-        err = chdir("..");
-        return 0;
-      }
-    }
-    fclose(fileWrite);
-  }
-*/
+
   err = chdir("..");
   return 1;
 }
-#else // ONE_FILE_CONFIG
-
-// expects to be in root directData
-// expects filesystem to be initialized
-int v_loadSettings(char *name, unsigned char *blob, int blobSize)
-{
-  knownName = name;
-  knownBlob = blob;
-  knownBlobSize = blobSize;
-
-  if (knownName[0] == (char) 0)
-  {
-    name = "default";
-  }
-  printf("Loading settings for: %s!\r\n", name);
-
-  char *settingsDir = SETTINGS_DIR;
-
-  int err=0;
-  err = chdir (settingsDir);
-  if (err)
-  {
-    printf("NO settings directory found...(%i)!\r\n", errno);
-    return 0;
-  }
-
-  FILE *fileRead;
-  fileRead = fopen(name, "rb");
-  if (fileRead == 0)
-  {
-    printf("Could not open file %s (%i) \r\n", name, errno);
-    err = chdir("..");
-    return 0;
-  }
-
-  unsigned int lenLoaded=0;
-  lenLoaded = fread(v_settingsBlob, V_SETTINGS_SIZE, 1, fileRead);
-  if (1 != lenLoaded)
-  {
-    printf("Read(1) of %s fails (len loaded: %i) (Error: %i)\r\n", name, lenLoaded, errno);
-    fclose(fileRead);
-    err = chdir("..");
-    return 0;
-  }
-  applyLoadedSettings();
-  if (knownName[0] != (char) 0)
-  {
-    if (blobSize != 0)
-    {
-      lenLoaded = fread(blob, blobSize, 1, fileRead);
-      if (1 != lenLoaded)
-      {
-        printf("Read(2) of %s fails (len loaded: %i) (Error: %i)\r\n", name, lenLoaded, errno);
-        fclose(fileRead);
-        err = chdir("..");
-        return 0;
-      }
-    }
-  }
-  fclose(fileRead);
-  err  = chdir("..");
-  return 1;
-}
-
-
-int v_saveSettings(char *name, unsigned char *blob, int blobSize)
-{
-  knownName = name;
-  knownBlob = blob;
-  knownBlobSize = blobSize;
-
-  if (knownName[0] == (char) 0)
-    name = "default";
-  printf("Saving settings for: %s!\r\n", name);
-
-  char *settingsDir = SETTINGS_DIR;
-
-
-  int err=0;
-  err = chdir (settingsDir);
-  if (err)
-  {
-    printf("NO settings directory found...(%i)!\r\n", errno);
-    return 0;
-  }
-  prepareSaveSettings();
-
-  FILE *fileWrite;
-  // always as a "new file"
-  fileWrite = fopen(name, "wb");
-  if (fileWrite == 0)
-  {
-    printf("Could not open file %s (%i) \r\n", name, errno);
-    err = chdir("..");
-    return 0;
-  }
-  unsigned int lenSaved=0;
-  lenSaved = fwrite(v_settingsBlob, V_SETTINGS_SIZE, 1, fileWrite);
-  if ( lenSaved != 1)
-  {
-    printf("File not saved (1) (size written = %i) (error: %i)\r\n", lenSaved, errno);
-    fclose(fileWrite);
-    err = chdir("..");
-    return 0;
-  }
-  if (knownName[0] != (char) 0)
-  {
-    if (blobSize != 0)
-    {
-      lenSaved = fwrite(blob, blobSize, 1, fileWrite);
-      if ( lenSaved != 1)
-      {
-        printf("File not saved (2) (size written = %i) (error: %i)\r\n", lenSaved, errno);
-        fclose(fileWrite);
-        err = chdir("..");
-        return 0;
-      }
-    }
-  }
-  fclose(fileWrite);
-  err = chdir("..");
-  return 1;
-}
-
-
-#endif
-
-
-
 
 
 

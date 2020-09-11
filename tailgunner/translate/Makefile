@@ -9,27 +9,35 @@ matronics/roms/tailgunner/tailg.r7
 	@cp `md5sum \`locate -i tailg.r7\` 2>/dev/null | fgrep 1d93d2e15e85ae30c9e2d850e3f3aae9 | head -1 | tr ' ' '\n' | tail -1` ../../cinematronics/roms/tailgunner/tailg.r7 2> /dev/null || ( echo You need to follow the instructions in README-ROMS.txt in the main directory && exit 1 )
 
 ../../cinematronics/roms/tailgunner/tailg.t7:
+	@echo ""
 	@echo "If you already have tailg.t7 on this system (and use locate),"
 	@echo "you can copy the files to the appropriate directory by"
 	@echo "typing:  make -f Makefile.raspbian roms"
+	@echo ""
 	@exit 1
 
 ../../cinematronics/roms/tailgunner/tailg.p7:
+	@echo ""
 	@echo "If you already have tailg.p7 on this system (and use locate),"
 	@echo "you can copy the files to the appropriate directory by"
 	@echo "typing:  make -f Makefile.raspbian roms"
+	@echo ""
 	@exit 1
 
 ../../cinematronics/roms/tailgunner/tailg.u7:
+	@echo ""
 	@echo "If you already have tailg.u7 on this system (and use locate),"
 	@echo "you can copy the files to the appropriate directory by"
 	@echo "typing:  make -f Makefile.raspbian roms"
+	@echo ""
 	@exit 1
 
 ../../cinematronics/roms/tailgunner/tailg.r7:
+	@echo ""
 	@echo "If you already have tailg.r7 on this system (and use locate),"
 	@echo "you can copy the files to the appropriate directory by"
 	@echo "typing:  make -f Makefile.raspbian roms"
+	@echo ""
 	@exit 1
 
 tailgunr.rom: convert ../../cinematronics/roms/tailgunner/tailg.t7 ../../cinematronics/roms/tailgunner/tailg.p7 ../../cinematronics/roms/tailgunner/tailg.u7 ../../cinematronics/roms/tailgunner/tailg.r7

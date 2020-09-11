@@ -13,7 +13,7 @@ CC := gcc
 .PHONY: dirCheck
 
 
-all:	dirCheck pitrexLib tailgunner
+all:	tailgunner
 
 dirCheck:
 	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
@@ -36,7 +36,7 @@ tailgunr-ops.c:
 $(BUILD_DIR)ops.o: ops.c tailgunr-ops.c
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)ops.o -c ops.c
 
-tailgunner: $(BUILD_DIR)tailgunner.o $(BUILD_DIR)ops.o pitrexLib
+tailgunner: dirCheck pitrexLib $(BUILD_DIR)tailgunner.o $(BUILD_DIR)ops.o
 	$(RM) tailgunner
 	$(CC) $(CFLAGS) -o tailgunner \
 	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \

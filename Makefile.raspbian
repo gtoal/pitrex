@@ -1,4 +1,4 @@
-all:	vecx.emulated/vecx vecx.direct/vecx gyrocks/gyrocks battlezone/battlezone gravitar/gravitar spaceduel/spaceduel tempest/tempest blackwidow/blackwidow deluxe/deluxe lunar/lunar cinematronics/cinemu helloWorld redbaron/redbaron linmenu/linmenu VMMenu/vmmenu xhyperoid/vhyperoid zblast/zblast # tailgunner/tailgunner asteroids_sbt/asteroids
+all:	vecx.emulated/vecx vecx.direct/vecx gyrocks/gyrocks battlezone/battlezone gravitar/gravitar spaceduel/spaceduel tempest/tempest blackwidow/blackwidow deluxe/deluxe lunar/lunar cinematronics/cinemu helloWorld redbaron/redbaron linmenu/linmenu VMMenu/vmmenu xhyperoid/vhyperoid zblast/zblast tailgunner/tailgunner asteroids_sbt/asteroids
 
 lunar/lunar:
 	cd lunar; make -f Makefile.raspbian

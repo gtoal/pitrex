@@ -9,7 +9,11 @@ CC := gcc
 .PHONY: pitrexLib
 .PHONY: dirCheck
 
-all:	dirCheck pitrexLib vecx
+all:	vecx
+
+pitrexLib:
+	$(MAKE) -C $(PITREX_DIR) -f Makefile.raspbian all
+	$(MAKE) -C $(VECTREX_DIR) -f Makefile.raspbian all
 
 dirCheck:
 	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
@@ -32,7 +36,7 @@ $(BUILD_DIR)edac.o: edac.c edac.h e6522.h
 $(BUILD_DIR)vecx.o: vecx.c vecx.h e6809.h e6522.h e8910.h edac.h bios.i
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)vecx.o -c vecx.c
 
-vecx: pitrexLib \
+vecx: pitrexLib dirCheck \
 	$(BUILD_DIR)e6809.o \
 	$(BUILD_DIR)main.o \
 	$(BUILD_DIR)e6522.o \

@@ -1,58 +1,58 @@
-all:	tailgunner vecx vecx2 asteroids gyrocks battlezone gravitar spaceduel tempest blackwidow deluxe lunar Cine helloWorld redbaron linmenu VMMenu xhyperoid zblast
+all:	vecx.emulated/vecx vecx.direct/vecx gyrocks/gyrocks battlezone/battlezone gravitar/gravitar spaceduel/spaceduel tempest/tempest blackwidow/blackwidow deluxe/deluxe lunar/lunar cinematronics/cinemu helloWorld redbaron/redbaron linmenu/linmenu VMMenu/vmmenu xhyperoid/vhyperoid zblast/zblast # tailgunner/tailgunner asteroids_sbt/asteroids
 
-lunar:
+lunar/lunar:
 	cd lunar; make -f Makefile.raspbian
 	cd ..
 
-redbaron:
+redbaron/redbaron:
 	cd redbaron; make -f Makefile.raspbian
 	cd ..
 
-deluxe:
+deluxe/deluxe:
 	cd deluxe; make -f Makefile.raspbian
 	cd ..
 
-blackwidow:
+blackwidow/blackwidow:
 	cd blackwidow; make -f Makefile.raspbian
 	cd ..
 
-tailgunner:
+tailgunner/tailgunner:
 	cd tailgunner; make -f Makefile.raspbian
 	cd ..
 
-vecx:
+vecx.emulated/vecx:
 	cd vecx.emulated; make -f Makefile.raspbian
 	cd ..
 
-vecx2:
+vecx.direct/vecx:
 	cd vecx.direct; make -f Makefile.raspbian
 	cd ..
 
-asteroids:
+asteroids_sbt/asteroids:
 	cd asteroids_sbt; make -f Makefile.raspbian
 	cd ..
 
-gyrocks:
+gyrocks/gyrocks:
 	cd gyrocks; make -f Makefile.raspbian
 	cd ..
 
-battlezone:
+battlezone/battlezone:
 	cd battlezone; make -f Makefile.raspbian
 	cd ..
 
-gravitar:
+gravitar/gravitar:
 	cd gravitar; make -f Makefile.raspbian
 	cd ..
 
-spaceduel:
+spaceduel/spaceduel:
 	cd spaceduel; make -f Makefile.raspbian
 	cd ..
 
-tempest:
+tempest/tempest:
 	cd tempest; make -f Makefile.raspbian
 	cd ..
 
-Cine:
+cinematronics/cinemu:
 	cd cinematronics; make -f Makefile.raspbian
 	cd ..
 
@@ -60,19 +60,19 @@ helloWorld:
 	cd hello_world; make -f Makefile.raspbian
 	cd ..
 
-linmenu:
+linmenu/linmenu:
 	cd linmenu; make -f Makefile
 	cd ..
 
-VMMenu:
+VMMenu/vmmenu:
 	cd VMMenu; make -f Makefile.raspbian
 	cd ..
 	
-xhyperoid:
+xhyperoid/vhyperoid:
 	cd xhyperoid; make -f Makefile
 	cd ..
 	
-zblast:
+zblast/zblast:
 	cd zblast; make -f Makefile
 	cd ..
 

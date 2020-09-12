@@ -1,5 +1,6 @@
 # pitrex
-Support for driving Vectrex display from Raspberry Pi Zero WH.
+
+Support for driving a Vectrex display from a Raspberry Pi Zero WH.
 
 PiTrex is a open source/open hardware project.
 
@@ -8,10 +9,27 @@ This repository is currently aimed only at users of the PiTrex hardware - 'Devel
 Our intention is that everything you need to develop software for the PiTrex will be in this
 repository and that you should fetch the entire repository from git.
 
+sudo apt-get install -y gcc-arm-none-eabi git-core libsdl2-dev libsdl2-2.0 libsdl2-mixer-2.0-0 libsdl2-mixer-dev locate screen emacs
+mkdir ~/src
+cd ~/src
+git clone https://github.com/gtoal/pitrex.git
+cd ~/src/pitrex
+make -f Makefile.raspbian
+# if you intend to use the bare metal environment as well:
+make -f Makefile.baremetal
+
 We realise that there are some imported projects here from other repositories which we have
 duplicated, but for the moment it is simpler just to have everything together.  When we have
-more experience with git and packaging software, we'll reduce the overhead here and supply scripts
-to install the external code.
+more experience with git and packaging software, we'll remove the redundant copies and link
+to the original repositories.
+
+You'll need to add these to /boot/config.txt and reboot before using the linux executables:
+
+gpio=0-5,16-24,26-29=ip
+gpio=6-13,25=op
+gpio=24=np
+dtoverlay=dwc2,dr_mode=host
+
 
 PiTrex Links:
 Wiki: http://computernerdkev.heliohost.org/pitrex/wiki/

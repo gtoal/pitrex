@@ -1,10 +1,11 @@
 #!/bin/bash
-# parameters not properly implemented yet - it fails and puts up a menu on the Vectrex
-if [ ! -f ./vectrex/$1.BIN ] ; then
-    echo 'vecx: file vectrex/$1.BIN does not exist. \(current directory: `pwd`\)'
+if [ $# != 0 ] ; then
+  # parameters not properly implemented yet - it fails and puts up a menu on the Vectrex
+  if [ ! -f ./vectrex/$1.BIN ] ; then
+    echo "vecx: file vectrex/$1.BIN does not exist. (current directory: `pwd`)"
     exit 0
+  fi
 fi
-
 trap ctrl_c INT
 
 function ctrl_c() {
@@ -28,7 +29,11 @@ function ctrl_c() {
 
 echo -n performance | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor > /dev/null
 sudo tvservice --off
-sudo ./vecx ./vectrex/$1.BIN
+if [ $# != 0 ] ; then
+    sudo ./vecx ./vectrex/$1.BIN
+else
+    sudo ./vecx
+fi
 sudo tvservice -p
 sudo chvt 2                      # change to different virtual terminal
 sudo chvt 1                      # change back to the previous virtual terminal

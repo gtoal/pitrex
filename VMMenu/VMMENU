@@ -21,7 +21,8 @@ function ctrl_c() {
 }
 
 echo -n performance | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor > /dev/null
-(sleep 3; sudo tvservice --off ) &
+# OK, this is a race condition, I will find something better soon...
+(sleep 1; sudo tvservice --off ) &
 sudo ./vmmenu
 sudo tvservice -p
 sudo chvt 2                      # change to different virtual terminal

@@ -17,8 +17,18 @@
 #include <fcntl.h>
 #include <termios.h>
 
+#include <pitrex/pitrexio-gpio.h>
+#include <vectrex/vectrexInterface.h>
+
+#include "window.h"
+
 #include "graphics.h"
 #include "timer.h"
+
+#ifndef TRUE
+#define TRUE (0==0)
+#define FALSE (!TRUE)
+#endif
 
 #define ARRAY_SIZE(a)   (sizeof(a)/sizeof((a)[0]))
 #define CMD_BUF_SIZE    0x20000
@@ -35,8 +45,8 @@
 
 #define CONVX(x)        ((((x) - X_MIN) * DVG_RES_MAX) / (X_MAX - X_MIN))
 #define CONVY(y)        ((((y) - Y_MIN) * DVG_RES_MAX) / (Y_MAX - Y_MIN))
-#define MAX(x, y) (((int)(x) > (int)(y)) ? (int)(x) : (int)(y))
-#define MIN(x, y) (((int)(x) < (int)(y)) ? (int)(x) : (int)(y))
+#define gMAX(x, y) (((int)(x) > (int)(y)) ? (int)(x) : (int)(y))
+#define gMIN(x, y) (((int)(x) < (int)(y)) ? (int)(x) : (int)(y))
 
 
 
@@ -91,12 +101,28 @@ static void cmd_reset()
     s_last_r = s_last_g = s_last_b = 0;
 }
 
+static int PiTrex_init = 0;
+void PiTrexInit(void)
+{
+      vectrexinit(1);
+      v_init();
+      v_setRefresh(60);
+      v_window(0, 0, 0x1000, 0x1000, TRUE);
+}
 
 /******************************************************************
    Open the serial port and initialise it
 *******************************************************************/
 static int serial_open()
 {
+#ifdef PITREX
+   if (PiTrex_init == 0) {
+      //fprintf(stderr, "INIT in serial_open\n");
+      PiTrex_init = 1;
+      PiTrexInit();
+   }
+   return 0;
+#else
    int result = errOpenDevice;
    struct termios attr;
 
@@ -117,6 +143,7 @@ static int serial_open()
    result = 0;
    cmd_reset();
    return result;
+#endif
 }
 
 
@@ -125,12 +152,16 @@ static int serial_open()
 *******************************************************************/
 static int serial_write(void *buf, uint32_t size)
 {
+#ifdef PITREX
+   return TRUE;
+#else
    int result = -1;
    result = write(s_serial_fd, buf, size);
    if (result != (int)size) {
       printf("DVG: write error %d \n", result);
    }
    return result > 0;
+#endif
 }
 
 
@@ -139,6 +170,9 @@ static int serial_write(void *buf, uint32_t size)
 *******************************************************************/
 static int serial_close()
 {
+#ifdef PITREX
+   return 0;
+#else
    int result = -1;
    uint32_t cmd;
    if (s_serial_fd != INVALID_HANDLE_VALUE)
@@ -156,6 +190,7 @@ static int serial_close()
    }
    s_serial_fd = INVALID_HANDLE_VALUE;
    return result;
+#endif
 }
 
 
@@ -164,6 +199,9 @@ static int serial_close()
 *******************************************************************/
 static int serial_send()
 {
+#ifdef PITREX
+   return 0;
+#else
    int      result = -1;
    uint32_t cmd, chunk, size, offset;
 
@@ -188,13 +226,14 @@ static int serial_send()
    offset = 0;
    while (size)
    {
-      chunk   = MIN(size, 1024);
+      chunk   = gMIN(size, 1024);
       result  = serial_write(&s_cmd_buf[offset], chunk);
       size   -= chunk;
       offset += chunk;
    }
    cmd_reset();
    return result;
+#endif
 }
 
 
@@ -323,7 +362,11 @@ void zvgBanner( uint32_t speeds, void *id)
 {
    (void)speeds;
    (void)id;
+#ifdef PITREX
+   printf("PiTrex Hardware <<<\n");
+#else
    printf("USB DVG Hardware, using port: %s <<<\n",DVGPort);
+#endif
 }
 
 
@@ -332,7 +375,11 @@ void zvgBanner( uint32_t speeds, void *id)
 *******************************************************************/
 void zvgError(uint32_t err)
 {
+#ifdef PITREX
+   printf("PiTrex: ");
+#else
    printf("DVG: ");
+#endif
 
    switch (err)
    {
@@ -351,6 +398,9 @@ void zvgError(uint32_t err)
    case errOpenDevice:
       printf("Error - Could not open the USB-DVG");
       break;
+   default:
+      printf("Error %u", (unsigned int)err);
+      break;
    }
    printf("\n");
 }
@@ -361,6 +411,9 @@ void zvgError(uint32_t err)
 *******************************************************************/
 int zvgFrameOpen(void)
 {
+#ifdef PITREX
+   return 0;
+#else
    int result = errOpenDevice;
    tmrInit();                     // initialize timers
    //tmrSetFrameRate(60);         // set the frame rate
@@ -368,6 +421,7 @@ int zvgFrameOpen(void)
    s_serial_dev[ARRAY_SIZE(s_serial_dev) - 1] = 0;
    result = serial_open();
    return result;
+#endif
 }
 
 
@@ -376,7 +430,11 @@ int zvgFrameOpen(void)
 *******************************************************************/
 void zvgFrameClose( void)
 {
+#ifdef PITREX
+    /* */
+#else
     serial_close();
+#endif
 }
 
 
@@ -396,6 +454,8 @@ void zvgFrameSetClipWin( int xMin, int yMin, int xMax, int yMax)
 *******************************************************************/
 void zvgFrameSetRGB15( uint8_t red, uint8_t green, uint8_t blue)
 {
+#ifdef PITREX
+#else
    uint32_t cmd;
    uint16_t r, g, b;
 
@@ -418,6 +478,7 @@ void zvgFrameSetRGB15( uint8_t red, uint8_t green, uint8_t blue)
       s_cmd_buf[s_cmd_offs++] = cmd >>  8;
       s_cmd_buf[s_cmd_offs++] = cmd >>  0;
    }
+#endif
 }
 
 
@@ -460,6 +521,9 @@ uint32_t zvgFrameVector( int xStart, int yStart, int xEnd, int yEnd)
       {
          blank = 1;
          cmd = (FLAG_XY << 29) | ((blank & 0x1) << 28) | ((xs & 0x3fff) << 14) | (ys & 0x3fff);
+#ifdef PITREX
+	 // v_directDraw32(-10000, -10000,  -10000,  10000, 64);
+#else
          if (s_cmd_offs <= (CMD_BUF_SIZE - 8))
          {
             s_cmd_buf[s_cmd_offs++] = cmd >> 24;
@@ -467,10 +531,20 @@ uint32_t zvgFrameVector( int xStart, int yStart, int xEnd, int yEnd)
             s_cmd_buf[s_cmd_offs++] = cmd >>  8;
             s_cmd_buf[s_cmd_offs++] = cmd >>  0;
          }
+#endif
       }
 
       blank = ((s_last_r == 0) && (s_last_g == 0) && (s_last_b == 0));
       cmd   = (FLAG_XY << 29) | ((blank & 0x1) << 28) | ((xe & 0x3fff) << 14) | (ye & 0x3fff);
+#ifdef PITREX
+      //fprintf(stderr, "line(%d,%d, %d,%d) bl=%d  max %d\n", xs & 0x3fff,ys & 0x3fff, xe & 0x3fff,ye & 0x3fff, blank & 0x1, 0x3fff);
+      if (PiTrex_init == 0) {
+	//fprintf(stderr, "INIT in zvg_frame_vector\n");
+         PiTrex_init = 1;
+         PiTrexInit();
+      }
+      v_line(xs & 0x3fff,ys & 0x3fff, xe & 0x3fff,ye & 0x3fff, 64); // early days, quick hack to test
+#else
       if (s_cmd_offs <= (CMD_BUF_SIZE - 8))
       {
          s_cmd_buf[s_cmd_offs++] = cmd >> 24;
@@ -478,6 +552,7 @@ uint32_t zvgFrameVector( int xStart, int yStart, int xEnd, int yEnd)
          s_cmd_buf[s_cmd_offs++] = cmd >>  8;
          s_cmd_buf[s_cmd_offs++] = cmd >>  0;
       }
+#endif
       s_last_x = xe;
       s_last_y = ye;
    }
@@ -490,6 +565,20 @@ uint32_t zvgFrameVector( int xStart, int yStart, int xEnd, int yEnd)
 *****************************************************************************/
 uint32_t zvgFrameSend(void)
 {
+#ifdef PITREX
+    if (PiTrex_init == 0) {
+      //fprintf(stderr, "INIT in zvgFrameSend\n");
+      PiTrex_init = 1;
+      PiTrexInit();
+      //fprintf(stderr, "PITREX INITIALISED!\n");
+    }
+    //fprintf(stderr, "NEW FRAME\n");
+    v_WaitRecal();
+    v_readButtons();
+    v_readJoystick1Analog();
+    v_setBrightness(60);
+#else
     serial_send();
+#endif
     return 0;
 }

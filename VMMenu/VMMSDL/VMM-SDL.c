@@ -86,11 +86,15 @@ void startZVG(void)
    #endif
 
    InitialiseSDL(1);
+#ifdef PITREX
+      printf(">>> PiTrex Hardware Version <<<");
+#else
    #ifdef _DVGTIMER_H_
       printf(">>> DVG Hardware Version using port: %s <<<\n",DVGPort);
    #else
       printf(">>> ZVG Hardware Version <<<");
    #endif
+#endif
    error = zvgFrameOpen();         // initialize ZVG/DVG
    if (error)
    {
@@ -444,15 +448,21 @@ int sendframe(void)
    if (ZVGPresent)
    {
       //tmrWaitForFrame();      // wait for next frame time
+//fprintf(stderr, "Z1\n");
       err = zvgFrameSend();     // send next frame
+//fprintf(stderr, "Z2\n");
       if (err)
       {
+//fprintf(stderr, "Z3\n");
          zvgError( err);
          zvgFrameClose();       // fix up all the ZVG stuff
+//fprintf(stderr, "Z4\n");
          exit(1);
       }
    }
+//fprintf(stderr, "Z5\n");
    FrameSendSDL();
+//fprintf(stderr, "Z6\n");
    return err;
 }
 

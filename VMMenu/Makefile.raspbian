@@ -3,6 +3,7 @@ BUILD_DIR := $(BUILD_DIR_PURE)/
 PITREX_DIR := ../pitrex/pitrex/
 VECTREX_DIR := ../pitrex/vectrex/
 CFLAGS := -W -Wall -O2 -s -g -ggdb3 -I../pitrex/ -DPITREX -DPIZERO -DRPI0 # -Ofast
+CFLAGS := -W -Wall -s -g -I../pitrex/ -DPITREX -DPIZERO -DRPI0 # -Ofast
 CC = gcc
 LINK = gcc
 OBJ_DIR = obj
@@ -14,6 +15,7 @@ RMDIR = rm -rf
 MKDIR = mkdir -p $(1)
 OBJS = $(OBJ_DIR)/vmmenu.o \
        $(OBJ_DIR)/graphics.o \
+       $(OBJ_DIR)/window.o \
        $(OBJ_DIR)/timer.o \
        $(OBJ_DIR)/iniparser.o \
        $(OBJ_DIR)/dictionary.o \
@@ -44,7 +46,7 @@ pitrexLib:
 	$(MAKE) -C $(VECTREX_DIR) -f Makefile.raspbian all
 
 # Flags for linker
-vmmenu: $(OBJS) $(PITREX_DIR)$(BUILD_DIR)bcm2835.o $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o $(VECTREX_DIR)$(BUILD_DIR)osWrapper.o $(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o
+vmmenu: dirCheck pitrexLib $(OBJS) $(PITREX_DIR)$(BUILD_DIR)bcm2835.o $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o $(VECTREX_DIR)$(BUILD_DIR)osWrapper.o $(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o
 	@echo Building for PiTrex under Linux on Pi0
 	$(CC) $(CFLAGS) -o $@ $(LIBS) $(OBJS) \
 	      $(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
@@ -63,7 +65,10 @@ $(OBJ_DIR)/vmmenu.o: VMMSrc/vmmenu.c
 	$(CC) $(CFLAGS) -c $(INC) -o $@ VMMSrc/vmmenu.c
 
 $(OBJ_DIR)/graphics.o: PiTrex/graphics.c
-	$(CC) $(CFLAGS) -c $(INC) -o $@ PiTrex/graphics.c
+	$(CC) $(CFLAGS) -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-function -Wno-unused-variable -c $(INC) -o $@ PiTrex/graphics.c
+
+$(OBJ_DIR)/window.o: PiTrex/window.c
+	$(CC) $(CFLAGS) -c $(INC) -o $@ PiTrex/window.c
 
 $(OBJ_DIR)/timer.o: Win32/dvg/timer.c
 	$(CC) $(CFLAGS) -c $(INC) -o $@ Win32/dvg/timer.c

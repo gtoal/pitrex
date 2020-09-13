@@ -267,6 +267,7 @@ int main(int argc, char *argv[])
       printf("No mouse device driver was found.\n");
    }
 
+//fprintf(stderr, "P1\n");
    // define 20 asteroids to randomly move around screen
    for (count=0; count < NUM_ASTEROIDS; count++)
    {
@@ -276,6 +277,7 @@ int main(int argc, char *argv[])
    {
       starz[count] = make_star();
    }
+//fprintf(stderr, "P2\n");
 
    sega           = make_sega();
    cinematronics  = make_cinematronics();
@@ -284,6 +286,7 @@ int main(int argc, char *argv[])
    vbeam          = make_vbeam();
    midway         = make_midway();
    vectrex        = make_vectrex();
+//fprintf(stderr, "P3\n");
 
    if (autostart)
    {
@@ -291,9 +294,11 @@ int main(int argc, char *argv[])
       RunGame(autogame, zvgargs);
    }
    // If we exit the auto started game, or aren't autostarting, lets go with the menu intro and loop
+//fprintf(stderr, "P4\n");
 
    /*** At this point we have a blank screen. Run an intro with the mame logo ***/
    mame = intro();
+//fprintf(stderr, "P5\n");
    gamenum=1;
    // Start main loop
    while (1)
@@ -301,6 +306,7 @@ int main(int argc, char *argv[])
       if (optz[o_stars])   showstars();
 
       cc=getkey();                              // Check keys and mouse movement
+//fprintf(stderr, "P6\n");
 
       if (timeout > 1800)      // ############## screensaver mode 1800 * 1/60 = 30 seconds ##############
       {
@@ -350,6 +356,7 @@ int main(int argc, char *argv[])
       }
       else                     // ############## menu mode ##############
       {
+//fprintf(stderr, "P7\n");
          // mouse pointer
          if (mousefound && optz[o_mpoint])
          {
@@ -462,6 +469,7 @@ int main(int argc, char *argv[])
             }
          }
 
+//fprintf(stderr, "P8\n");
          if (optz[o_borders]) drawborders(-X_MAX, -Y_MAX, X_MAX, Y_MAX, 0, 2, vwhite);                            // Draw frame around the edge of the screen
 
          // print the manufacturer name
@@ -939,6 +947,7 @@ vObject intro(void)
    253,0,273,20,     273,20,288,20,    288,20,278,10,    278,10,273,10,    273,10,273,0      // R
    };
 
+//fprintf(stderr, "I0\n");
    mame.outline.array = mamelogo;
    mame.outline.size = sizeof(mamelogo) / sizeof(*mamelogo);
    mame.pos.x = 0;         // centre screen
@@ -955,24 +964,36 @@ vObject intro(void)
    mame.scale.x = 0.01;    //starting scale factor
    mame.scale.y = mame.scale.x;
 
+//fprintf(stderr, "I1\n");
    playsound(0);
-   
+
+//fprintf(stderr, "I2\n");
+
    // Zoom from 0 to x1.5 whilst rotating clockwise through 720 degrees
    for (count=0;count<150;count++)
    {
+//fprintf(stderr, "I2.1\n");
       drawshape(mame);
+//fprintf(stderr, "I2.2\n");
       mame = updateobject(mame);
+//fprintf(stderr, "I2.3\n");
       //printf("Loop: %i Angle:%d\n", count, mame.angle);
       mame.scale.x += (1.5/150);
       mame.scale.y = mame.scale.x;
+//fprintf(stderr, "I2.4\n");
       author(EDGE_BRI);
+//fprintf(stderr, "I2.5\n");
       if (optz[o_stars]) showstars();
+//fprintf(stderr, "I2.6\n");
       sendframe();
+//fprintf(stderr, "I2.7\n");
    }
 
+//fprintf(stderr, "I2.X\n");
    mame.angle = 0;         // set to normal orientation
    mame.theta = 0;         // no rotation this time
 
+//fprintf(stderr, "I3\n");
    // Brighten from NRM to BRI over 1 second
    for (count=0;count<60;count++)
    {
@@ -986,6 +1007,7 @@ vObject intro(void)
 
    mame.theta = 0;         // no rotation this time
 
+//fprintf(stderr, "I4\n");
    playsound(NewScale());
    // zoom and fade logo off screen
    bright = 30;
@@ -1002,6 +1024,7 @@ vObject intro(void)
       if (optz[o_stars]) showstars();
       sendframe();
    }
+//fprintf(stderr, "I5\n");
 
    for (count=0;count<30;count++)
    {
@@ -1009,6 +1032,7 @@ vObject intro(void)
       if (optz[o_stars]) showstars();
       sendframe();
    }
+//fprintf(stderr, "I6\n");
 
    // set mame logo settings for screen saver
    mame.inc.x = ((NewXYInc() * NewDir() ) / 4) + 0.25;
@@ -1018,6 +1042,7 @@ vObject intro(void)
    mame.scale.x = 1.0;
    mame.scale.y = 1.0;
    mame.bright = EDGE_BRI;
+//fprintf(stderr, "I7\n");
 
    return mame;
 }

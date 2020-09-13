@@ -21,6 +21,7 @@
 #include <vectrex/vectrexInterface.h>
 
 #include "window.h"
+extern int bufferType; // 0 = none, 1 = double buffer, 2 = auto buffer (if pipeline is empty -> use previous
 
 #include "graphics.h"
 #include "timer.h"
@@ -104,9 +105,17 @@ static void cmd_reset()
 static int PiTrex_init = 0;
 void PiTrexInit(void)
 {
+#define SETTINGS_SIZE 1024
+static unsigned char settingsBlob[SETTINGS_SIZE];
       vectrexinit(1);
       v_init();
+      v_set_hardware_orientation(VECTREX_DEFAULT);
       v_setRefresh(60);
+      v_loadSettings("vmmenu", settingsBlob, SETTINGS_SIZE);
+
+      usePipeline = 1;   // should create procedures for these rather than use global variables.
+                     // doesn't matter for now but should be cleaned up before we release
+      bufferType = 2;
       v_window(0, 0, 0x1000, 0x1000, TRUE);
 }
 

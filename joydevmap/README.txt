@@ -12,3 +12,11 @@ controller input and USB Joystick input.
 
 The biggest potential win from this might be in Vectrex emulators, allowing
 an expanded range of USB controllers to be used with existing Vectrex games.
+
+Personally I use an old Sidewinder with a USB adapter, which can be had relatively cheaply nowadays:
+
+  https://www.ebay.com/sch/i.html?_from=R40&_nkw=sidewinder+precision+pro&_sacat=0&_sop=15&rt=nc&LH_BIN=1
+
+  https://www.amazon.com/Belkin-Joystick-Adapter-SideWinder-F3U200-08/dp/B000067RIV/
+
+I think this one has enough axes and buttons to handle Battlezone pretty nicely.

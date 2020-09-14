@@ -618,7 +618,7 @@ int main(int argc, char *argv[])
             }
          }
 
-         
+
          do
          {
             strcpy(mytext, gamelist_root->name);                                 // mytext = name of parent game
@@ -629,7 +629,7 @@ int main(int argc, char *argv[])
                if (sel_game != sel_clone) strcpy(mytext, sel_clone->name);       // change to clone name if different
                if (sel_game->nclone)
                {
-                  setcolour(colours[c_col][c_arrow], colours[c_int][c_arrow]);
+		 setcolour(colours[c_col][c_arrow], colours[c_int][c_arrow]);  // Highlight selected game
                   PrintString(">", ((strlen(mytext)*3*gamesize)/2) + 3*gamesize, top, 0, gamesize-1, gamesize-1, 0);
                   PrintString("<", -((strlen(mytext)*3*gamesize)/2) - 6*gamesize, top, 0, gamesize-1, gamesize-1, 0);
                }
@@ -637,7 +637,7 @@ int main(int argc, char *argv[])
             }
             else
             {
-               setcolour(colours[c_col][c_glist], colours[c_int][c_glist]);
+	      setcolour(colours[c_col][c_glist], colours[c_int][c_glist]);
                if (strstr(mytext, " (") != NULL)
                   mytext[strstr(mytext, " (") - mytext] = 0;                     // ... and strip off version info
             }

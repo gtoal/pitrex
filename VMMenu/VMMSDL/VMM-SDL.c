@@ -13,6 +13,13 @@
 #include "zvgFrame.h"
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef PITREX
+#include <pitrex/pitrexio-gpio.h>
+#include <vectrex/vectrexInterface.h>
+#include "../PiTrex/window.h"
+extern int PiTrex_init;
+extern void PiTrexInit(void);
+#endif
 
 extern void   GetRGBfromColour(int, int*, int*, int*);               // Get R, G and B components of a passed colour
 
@@ -104,7 +111,9 @@ void startZVG(void)
    }
    else
    {
+#ifndef PITREX
       tmrSetFrameRate(FRAMES_PER_SEC);
+#endif
       zvgFrameSetClipWin( X_MIN, Y_MIN, X_MAX, Y_MAX);
    }
 //   #if DEBUG
@@ -314,19 +323,23 @@ void SDLvector(float x1, float y1, float x2, float y2, int clr, int bright)
 ********************************************************************/
 void FrameSendSDL()
 {
+#ifndef PITREX
    if (optz[o_dovga] || !ZVGPresent)
    {
       SDL_RenderPresent(screenRender);                    // Flip to rendered screen
       SDL_SetRenderDrawColor(screenRender, 0, 0, 0, 255); // Set render colour to black
       SDL_RenderClear(screenRender);                      // Clear screen
    }
+#endif
    timenow = SDL_GetTicks();
    duration = (timenow-timestart);
    //printf("Time now: %i Loop duration: %i Wait time:%i\n", timenow, duration, fps_ms-duration);
+#ifndef PITREX
    if (!ZVGPresent)
    {
       if ((duration < fps_ms) && ((fps_ms-duration)>0)) SDL_Delay(fps_ms-duration);
    }
+#endif
    timestart=SDL_GetTicks();
 }
 
@@ -385,8 +398,72 @@ Also updates mouse x and y movements
 *******************************************************************/
 int getkey(void)
 {
-   int key=0;
+#ifdef PITREX
+  static int bit[5] = { 0x88, 0x44, 0x22, 0x11, 0xFF };
+  static int KeyPressOn = 0, PrevMouseX = 0, PrevMouseY = 0;
+#define BUTTON1 0
+#define BUTTON2 1
+#define BUTTON3 2
+#define BUTTON4 3
+#define BUTTONS1234 4
+#define controller(code) (currentButtonState & bit[code])
+#define sgn(x) ((x) ? ((x) > 0 ? 1 : -1) : 0)
+#define JOYSTICK_CENTER_MARGIN 0x40
+  
+  MouseX = currentJoy1X;  // 0x80   0  0x7f
+  if ((currentJoy1X>0) && (currentJoy1X<JOYSTICK_CENTER_MARGIN)) MouseX = 0;
+  if ((currentJoy1X<0) && (currentJoy1X>-JOYSTICK_CENTER_MARGIN)) MouseX = 0;
+  MouseY = currentJoy1Y;  // 0x80   0  0x7f
+  if ((currentJoy1Y>0) && (currentJoy1Y<JOYSTICK_CENTER_MARGIN)) MouseY = 0;
+  if ((currentJoy1Y<0) && (currentJoy1Y>-JOYSTICK_CENTER_MARGIN)) MouseY = 0;
 
+  /*
+k_togglemenu                   = 0x002c
+k_quit                         = 0x0029
+k_options                      = 0x0035
+k_prevman                      = 0x0050
+k_nextman                      = 0x004f
+k_prevgame                     = 0x00e0
+k_nextgame                     = 0x00e2
+k_prevclone                    = 0x0050
+k_nextclone                    = 0x004f
+k_startgame                    = 0x001e
+   */
+  
+  if (sgn(MouseX) != sgn(PrevMouseX)) {
+    PrevMouseX = MouseX;
+    if (MouseX < 0) return SDL_SCANCODE_LEFT;
+    if (MouseX > 0) return SDL_SCANCODE_RIGHT;
+  } else if (sgn(MouseY) != sgn(PrevMouseY)) {
+    PrevMouseY = MouseY;
+    if (MouseY < 0) return 0x00e0; // prevgame
+    if (MouseY > 0) return 0x00e2; // nextgame
+  } else if (KeyPressOn && !controller(BUTTONS1234)) {
+    KeyPressOn = 0;
+  } else if (controller(BUTTON2)) {
+    if (KeyPressOn == 0) {
+      KeyPressOn = 1;
+      return 0x0035; // options SDL_SCANCODE_LEFT;
+    }
+  } else if (controller(BUTTON1)) {
+    if (KeyPressOn == 0) {
+      KeyPressOn = 1;
+      return 0x001e; // start game SDL_SCANCODE_RIGHT;
+    }
+  } else if (controller(BUTTON3)) {
+    if (KeyPressOn == 0) {
+      KeyPressOn = 1;
+      return 0x002c; // toggle menu SDL_SCANCODE_UP;
+    }
+  } else if (controller(BUTTON4)) {
+    if (KeyPressOn == 0) {
+      KeyPressOn = 1;
+      return 0x0029; // quit SDL_SCANCODE_DOWN;
+    }
+  }
+  return 0;
+#else
+   int key=0;
    SDL_Event event;
    while(SDL_PollEvent(&event))
    {
@@ -423,8 +500,8 @@ int getkey(void)
    if (key == keyz[k_options]) playsound(sNuke);
    if (key == keyz[k_quit])    playsound(NewScale());
    if (key == keyz[k_menu])    playsound(sNuke);
-
    return key;
+#endif
 }
 
 
@@ -491,14 +568,27 @@ void ShutdownAll(void)
 ************************************************/
 void setcolour(int clr, int bright)
 {
+#ifndef PITREX
    int r, g, b;
+#endif
    if (clr > 7) clr = vwhite;
    if (bright > 31) bright = 31;
+#ifdef PITREX
+   if (PiTrex_init == 0) {
+     //fprintf(stderr, "INIT in zvgFrameSend\n");
+     PiTrex_init = 1;
+     PiTrexInit();
+     //fprintf(stderr, "PITREX INITIALISED!\n");
+   }
+   //fprintf(stderr, "v_brightness(bright=%d*4);\n", bright);
+   v_brightness(bright*4);
+#else
    GetRGBfromColour(clr, &r, &g, &b);
    if (ZVGPresent)
    {
       zvgFrameSetRGB15(r*bright, g*bright, b*bright);
    }
+#endif
    SDL_VC = clr;      // a bit hacky, it was a late addition.
    SDL_VB = bright;   // should pass as parameters to draw functions
 }
@@ -510,7 +600,11 @@ void setcolour(int clr, int bright)
 ********************************************************************/
 void drawvector(point p1, point p2, float x_trans, float y_trans)
 {
-   // Standard - no rotation
+#ifdef PITREX
+  //fprintf(stderr, "v_brightness(SDL_VB=%d*4);\n", SDL_VB);
+  v_brightness(SDL_VB * 4);
+#endif
+  // Standard - no rotation
    if (optz[o_rot] == 0)
    {
       if (ZVGPresent)

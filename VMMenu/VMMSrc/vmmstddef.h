@@ -16,9 +16,15 @@
 #endif
 
 #define FRAMES_PER_SEC 60        // number of frames drawn in a second
+#ifdef PITREX
+#define EDGE_BRI       31        // Bright intensity
+#define EDGE_NRM       20        // Normal intensity
+#define EDGE_DIM       10        // Dim intensity
+#else
 #define EDGE_BRI       25        // Bright intensity
 #define EDGE_NRM       15        // Normal intensity
 #define EDGE_DIM       5         // Dim intensity
+#endif
 #define BORD           5         // space between edge border frames
 #define NUM_ASTEROIDS  20        // number of asteroids on screensaver and exit screen
 #define NUM_STARS      40        // number of stars

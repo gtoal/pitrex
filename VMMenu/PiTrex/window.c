@@ -22,6 +22,8 @@ typedef int bool;
 #define VECTREX_INVERTED 3
 #define VECTREX_HORIZONTAL_INVERTED 4
 
+int v_intensity = 60;
+
 static int v_hardware_orientation = VECTREX_VERTICAL;
 
 static int64_t v_ScaleXMul=1LL, v_ScaleXDiv=1LL, v_ScaleXOffsetPre=0LL, v_ScaleXOffsetPost=0LL,
@@ -55,9 +57,14 @@ void v_set_hardware_orientation(int orientation) { // called by low-level to tel
   }
 }
 
-void v_line(int xl, int yb, int xr, int yt, int col) {
+void v_brightness(int intensity) { // until integrated in a library
+  if ((intensity <= 0) || (intensity > 127)) intensity = 127;
+  v_setBrightness(v_intensity = intensity);
+}
+
+void v_line(int xl, int yb, int xr, int yt) {
   if (v_swap_xy) { int tmp; tmp = xl; xl = yb; yb = tmp; tmp = xr; xr = yt; yt = tmp; xl = v_xr-(xl-v_xl); xr = v_xr-(xr-v_xl); }
-  v_directDraw32(tx(xl),ty(yb), tx(xr),ty(yt), col);
+  v_directDraw32(tx(xl),ty(yb), tx(xr),ty(yt), v_intensity);
 }
 
 void v_window(int xl, int yb, int xr, int yt,
@@ -104,80 +111,3 @@ void v_clip(int xl, int yb, int xr, int yt) { // set explicit clipping window us
     setCustomClipping(TRUE, tx(xl), ty(yb), tx(xr), ty(yt));
   }
 }
-
-#ifdef MAIN
-void startFrame()
-{
-  v_WaitRecal();
-  //v_doSound();
-  v_setBrightness(64);        /* set intensity of vector beam... */
-  v_readButtons();
-  v_readJoystick1Analog();
-  //v_playAllSFX();
-}
-
-int main(int argc, char **argv) {
-#define SETTINGS_SIZE 1024
-  static unsigned char settingsBlob[SETTINGS_SIZE];
-  char *progname, *p;
-
-  vectrexinit(1);
-  v_init();
-
-  // orientation will be passed in by Malban. (Would be nice if done by v_init for us.)
-  // until that's done, pass 0 / 1 / 2 / 3 in on command line (raspbian testing only)
-  if (argc == 1) v_set_hardware_orientation(VECTREX_DEFAULT);
-  else if (*argv[1] == '0') v_set_hardware_orientation(VECTREX_VERTICAL); 
-  else if (*argv[1] == '1') v_set_hardware_orientation(VECTREX_HORIZONTAL);
-  else if (*argv[1] == '2') v_set_hardware_orientation(VECTREX_INVERTED);
-  else if (*argv[1] == '3') v_set_hardware_orientation(VECTREX_HORIZONTAL_INVERTED);
-  else v_set_hardware_orientation(VECTREX_DEFAULT);
-
-  progname = argv[0];
-  p = strrchr(progname, '/'); if (p) progname = p+1;
-  v_loadSettings(progname, settingsBlob, SETTINGS_SIZE);
-
-  usePipeline = 1;   // should create procedures for these rather than use global variables.
-                     // doesn't matter for now but will be needed if we invent a serial
-                     // terminal protocol and implement it using an RPC interface
-  v_setRefresh(60);
-  v_window(0,0, 360,480, NO_CLIP); // clipping currently broken except in default vertical orientation
-
-  for (;;) {
-    startFrame();
-    v_line(  0,   0,   0, 480, 96); // settings should be adjusted interactively so that this frame exactly fits the screen in vertical mode
-    v_line(  0, 480, 360, 480, 96); // Make the frame smaller than the screen (eg 2cm margin) to test clip window
-    v_line(360, 480, 360,   0, 96);
-    v_line(360,   0,   0,   0, 96);
-
-    // equilateral triangle
-    
-    //         280,340
-    // 180,313 |              height=sqrt(3)*base/2    1.73*200/2 = 173
-    //     /\  |
-    //    /  \ |
-    //   /____\|
-    //80,140  280,140
-    
-    v_line(80, 140, 280,140, 64); // upward-pointing triangle with a vertical on the right hand side
-    v_line(280,140, 280,340, 64); // to confirm chiralty
-    v_line(280,140, 180,140+173, 64);
-    v_line(80, 140, 180,140+173, 64);
-
-    // clip test
-    v_line(-100, 100, 460,100, 64);
-
-    // here is where current code leads to problems:
-    //
-    // 1) both of these should have used Malban's adjusted device coordinates in their original versions
-    //    and virtual world coordinates in a version that supports the v_window() call.
-    //
-    // 2) and they should rotate appropriately along with the v_line() calls (and anything else that will
-    //    eventually use world coordinates)
-    
-    v_printString(-16,6, "HELLO", 7, 64); // with 'hello world' in center of triangle.
-    v_setBrightness(60); v_printStringRaster(-20,-30, "WORLD", 5*8, -7, '\0');
-  }
-  return 0;
-}
-#endif

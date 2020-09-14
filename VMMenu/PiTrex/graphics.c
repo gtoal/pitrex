@@ -19,8 +19,8 @@
 
 #include <pitrex/pitrexio-gpio.h>
 #include <vectrex/vectrexInterface.h>
-
 #include "window.h"
+
 extern int bufferType; // 0 = none, 1 = double buffer, 2 = auto buffer (if pipeline is empty -> use previous
 
 #include "graphics.h"
@@ -102,7 +102,7 @@ static void cmd_reset()
     s_last_r = s_last_g = s_last_b = 0;
 }
 
-static int PiTrex_init = 0;
+int PiTrex_init = 0; // also used in VMMSrc/vmmenu.c
 void PiTrexInit(void)
 {
 #define SETTINGS_SIZE 1024
@@ -110,7 +110,7 @@ static unsigned char settingsBlob[SETTINGS_SIZE];
       vectrexinit(1);
       v_init();
       v_set_hardware_orientation(VECTREX_DEFAULT);
-      v_setRefresh(60);
+      v_setRefresh(50);
       v_loadSettings("vmmenu", settingsBlob, SETTINGS_SIZE);
 
       usePipeline = 1;   // should create procedures for these rather than use global variables.
@@ -552,7 +552,7 @@ uint32_t zvgFrameVector( int xStart, int yStart, int xEnd, int yEnd)
          PiTrex_init = 1;
          PiTrexInit();
       }
-      v_line(xs & 0x3fff,ys & 0x3fff, xe & 0x3fff,ye & 0x3fff, 64); // early days, quick hack to test
+      v_line(xs & 0x3fff,ys & 0x3fff, xe & 0x3fff,ye & 0x3fff); // early days, quick hack to test
 #else
       if (s_cmd_offs <= (CMD_BUF_SIZE - 8))
       {
@@ -585,7 +585,7 @@ uint32_t zvgFrameSend(void)
     v_WaitRecal();
     v_readButtons();
     v_readJoystick1Analog();
-    v_setBrightness(60);
+    v_brightness(60);
 #else
     serial_send();
 #endif

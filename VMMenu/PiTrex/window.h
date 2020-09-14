@@ -16,10 +16,13 @@ typedef int bool;
 #define VECTREX_INVERTED 3
 #define VECTREX_HORIZONTAL_INVERTED 4
 #define NO_CLIP FALSE
+#define CLIP TRUE
 
-void v_set_hardware_orientation(int orientation);
-void v_line(int xl, int yb, int xr, int yt, int col);
-void v_window(int xl, int yb, int xr, int yt,
+extern int v_intensity; // pending better integration with system library
+extern void v_brightness(int intensity);
+extern void v_set_hardware_orientation(int orientation);
+extern void v_line(int xl, int yb, int xr, int yt /*, int intensity*/);
+extern void v_window(int xl, int yb, int xr, int yt,
 	      bool clip_to_window);
-void v_clip(int xl, int yb, int xr, int yt);
+extern void v_clip(int xl, int yb, int xr, int yt);
 #endif

@@ -10,10 +10,19 @@ then
    echo "Command Line: ../vecx.emulated/vecx \"$1\""
    # /usr/local/bin/advmess vectrex -cart "$1"
    pushd ../vecx.emulated
-   ./vecx "$1"
+   ./vecx "roms/$1"
    popd
 else
-    echo "Mame Game Selected"
     echo "Command Line: /usr/local/bin/advmame $1 $2"
-    /usr/local/bin/advmame $1 $2
+    case "$1" in
+        tailg)
+            pushd ../tailgunner
+	    ./tailgunner
+	    popd
+            ;;
+         
+        *)
+            /usr/local/bin/advmame $1 $2
+ 
+    esac
 fi

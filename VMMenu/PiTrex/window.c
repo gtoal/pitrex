@@ -58,13 +58,23 @@ void v_set_hardware_orientation(int orientation) { // called by low-level to tel
 }
 
 void v_brightness(int intensity) { // until integrated in a library
-  if ((intensity <= 0) || (intensity > 127)) intensity = 127;
+  if (intensity < 0) intensity = 0;
+  if (intensity > 127) intensity = 127;
   v_setBrightness(v_intensity = intensity);
 }
 
 void v_line(int xl, int yb, int xr, int yt) {
+  static int oxl = 0, oyb = 0, oxr = 0, oyt = 0;
   if (v_swap_xy) { int tmp; tmp = xl; xl = yb; yb = tmp; tmp = xr; xr = yt; yt = tmp; xl = v_xr-(xl-v_xl); xr = v_xr-(xr-v_xl); }
-  v_directDraw32(tx(xl),ty(yb), tx(xr),ty(yt), v_intensity);
+  if (xl != oxl && yb != oyb && xr != oxl && yt != oyb &&
+      xl != oxr && yb != oyt && xr != oxr && yt != oyt) {
+    // doesn't join with prev vector
+    v_directDraw32Hinted(tx(xl),ty(yb), tx(xr),ty(yt), v_intensity, PL_BASE_FORCE_ZERO | PL_BASE_FORCE_RESET_ZERO_REF);
+  } else {
+    v_directDraw32(tx(xl),ty(yb), tx(xr),ty(yt), v_intensity);
+  }
+  oxl = xl; oyb = yb;
+  oxr = xr; oyt = yt; 
 }
 
 void v_window(int xl, int yb, int xr, int yt,

@@ -16,7 +16,7 @@ CFLAGS=-Ofast -Wall -I./lib -I../pitrex/ -DUART0 -DPIZERO -DRPI0 -DAVOID_TICKS -
 # You'll need to comment this out on most non-Linux systems to disable
 # the sound. Linuxers should leave it as-is.
 #
-#CFLAGS+=-DDO_SOUND
+CFLAGS+=-DDO_SOUND
 
 # Where things are installed by `make install':
 #

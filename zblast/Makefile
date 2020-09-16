@@ -27,7 +27,7 @@ OPTOPT=-Ofast -Wall -I./lib -I../pitrex/ -DPIZERO -DRPI0 -DAVOID_TICKS -DRTSCHED
 
 # comment this out if you're not compiling on Linux.
 #
-#MUSICOPT=-DMUSIC_SUPPORT
+MUSICOPT=-DMUSIC_SUPPORT
 
 # same here. You should also comment it out if you don't want joystick
 # support. :-)

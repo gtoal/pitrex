@@ -502,7 +502,7 @@ for(lp=0;lp<MAX_LINE_DEPTH;lp++)
               if(active[nf2]!=NULL && active[nf2]->pattern==tmp2)
                 active[nf2]=NULL;
 
-          default:
+/*          default: */
             /* nothing needs doing for multi mode */
           }
         }

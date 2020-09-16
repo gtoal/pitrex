@@ -36,7 +36,7 @@ extern int lines[MAX_NOTES][MAX_LINE_DEPTH];
 
 /* (some) function prototypes */
 void makecsffilename(char *new,char *org,int newsize);
-int getline(char *buf,FILE *in);
+int sod2_getline(char *buf,FILE *in);
 void check_linelen(char *buf,int bsize,int has_comma);
 void check_samplenum(int samplenum);
 void processcsf(FILE *in);
@@ -81,7 +81,7 @@ else
 }
 
 
-int getline(char *buf,FILE *in)
+int sod2_getline(char *buf,FILE *in)
 {
 char *ptr;
 
@@ -139,17 +139,17 @@ int f,g,i,mode,len;
 int sod_time,sod_down,sod_pos;
 
 /* look for '*samples' (and possibly '*tempo', '*bsize' before that) */
-getline(buf,in);
+sod2_getline(buf,in);
 if(!strncmp(buf,"*tempo",6))
   {
   tempo=atoi(buf+6);
-  getline(buf,in);
+  sod2_getline(buf,in);
   }
 
 if(!strncmp(buf,"*bsize",6))
   {
   bsize=atoi(buf+6);
-  getline(buf,in);
+  sod2_getline(buf,in);
   if(bsize>64)
     {
     fprintf(stderr,"zblast: maximum blocksize allowed is 64.\n");
@@ -165,7 +165,7 @@ if(strcmp(buf,"*samples"))
 
 /* add all the sample descriptions */
 next_sample=1;
-getline(buf,in);
+sod2_getline(buf,in);
 while(strcmp(buf,"*blocklist"))
   {
   while((ptr=strchr(buf,'\t'))!=NULL) *ptr=32;
@@ -185,7 +185,7 @@ while(strcmp(buf,"*blocklist"))
     sign();
   
   next_sample++;
-  if(getline(buf,in)==-1)
+  if(sod2_getline(buf,in)==-1)
     {
     fprintf(stderr,"zblast: missing `*blocklist' section.\n");
     exit(1);
@@ -193,7 +193,7 @@ while(strcmp(buf,"*blocklist"))
   }
 
 g=1;
-getline(buf,in);
+sod2_getline(buf,in);
 while(strcmp(buf,"*blocks"))
   {
   f=0;
@@ -211,7 +211,7 @@ while(strcmp(buf,"*blocks"))
   lines[g][f]=atoi(buf);
     
   g++;    
-  if(getline(buf,in)==-1)
+  if(sod2_getline(buf,in)==-1)
     {
     fprintf(stderr,"zblast: missing `*blocks' section.\n");
     exit(1);
@@ -229,7 +229,7 @@ last_line=g-1;
 
 /* now interpret the patterns, and write them as we go along. */
 f=1;
-while(getline(buf,in)!=-1)
+while(sod2_getline(buf,in)!=-1)
   {
   check_linelen(buf,bsize,0);
   
@@ -260,7 +260,7 @@ while(getline(buf,in)!=-1)
         sod_down=atoi(ptr);
         break;
       case 'v':
-        getline(vbuf,in);
+        sod2_getline(vbuf,in);
         check_linelen(vbuf,bsize,0);
         padline(vbuf,bsize);
         break;
@@ -270,21 +270,21 @@ while(getline(buf,in)!=-1)
         if(sod_pos>16) sod_pos=16;
         break;
       case 'S':		/* stereo position like *v */
-        getline(sbuf,in);
+        sod2_getline(sbuf,in);
         check_linelen(sbuf,bsize,0);
         padline(sbuf,bsize);
-        getline(sbuf2,in);
+        sod2_getline(sbuf2,in);
         check_linelen(sbuf2,bsize,0);
         padline(sbuf2,bsize);
         break;
       }
-    getline(buf,in);
+    sod2_getline(buf,in);
     check_linelen(buf,bsize,0);
     }
 
   padline(buf ,bsize);
-  getline(buf2,in); check_linelen(buf2,bsize,0); padline(buf2,bsize);
-  getline(buf3,in); check_linelen(buf3,bsize,1);
+  sod2_getline(buf2,in); check_linelen(buf2,bsize,0); padline(buf2,bsize);
+  sod2_getline(buf3,in); check_linelen(buf3,bsize,1);
   addline(f,mode,buf,buf2,buf3,sbuf,sbuf2,vbuf,sod_time,sod_down,sod_pos);
   f++;
   }

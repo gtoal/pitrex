@@ -89,7 +89,7 @@ svgalib-vectrex.o: pitrexLib lib/svgalib-vectrex/svgalib-vectrex.c lib/svgalib-v
 	$(CC) $(CFLAGS) -c lib/svgalib-vectrex/svgalib-vectrex.c -o svgalib-vectrex.o
 
 vhyperoid: $(OBJS)
-	$(CC) -o vhyperoid $(OBJS) -lm
+	$(CC) -o vhyperoid $(OBJS) -l:libaoss.so -lm
 
 xhyperoid: $(XOBJS)
 	$(CC) -o xhyperoid $(XOBJS) `gtk-config --libs`

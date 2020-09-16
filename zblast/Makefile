@@ -140,7 +140,7 @@ font-x.o: font.c
 	$(CC) $(CFLAGS) -DUSE_X -c font.c -o font-x.o
 
 zblast: $(ZBLASTOBJS)
-	$(CC) $(CFLAGS) -o zblast $(ZBLASTOBJS) -lm
+	$(CC) $(CFLAGS) -o zblast $(ZBLASTOBJS) -lm -l:libaoss.so
 
 xzb: $(XZBOBJS)
 	$(CC) $(CFLAGS) -o xzb $(XZBOBJS) -lX11 -lm

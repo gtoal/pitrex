@@ -358,9 +358,14 @@ extern int vga_drawpixel(int x, int y)
 #ifdef PITREX_DEBUG
 	printf("SVGAlib-vectrex: Draw Input = %d,%d.\n", x, y);
 #endif
+#ifdef WINDOW
+	v_brightness(beamintensity);
+	v_line(x, y, x+1, y);
+#else
 	x = __svgalib_vectrex_scalexcoordinate(x);
 	y = __svgalib_vectrex_scaleycoordinate(y);
 	v_directDraw32	(x, y, x+1, y, beamintensity);
+#endif
 	return 0;
 }
 

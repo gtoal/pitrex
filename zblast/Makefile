@@ -23,8 +23,9 @@ VECTREX_DIR := ../pitrex/vectrex/
 # these settings are for gcc; try just "-O" if you're using some other
 # compiler.
 #
-OPTOPT=-Ofast -Wall -I./lib -I../pitrex/ -DPIZERO -DRPI0 -DAVOID_TICKS -DRTSCHED -DDISABLE_FIQ
-
+OPTOPT=-Ofast -Wall -I./lib -I../pitrex/ -DPIZERO -DRPI0 -DAVOID_TICKS -DDISABLE_FIQ
+# -DWINDOW
+# -DRTSCHED
 # comment this out if you're not compiling on Linux.
 #
 MUSICOPT=-DMUSIC_SUPPORT
@@ -95,6 +96,7 @@ ZBLASTOBJS = $(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
 	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
 	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
 	svgalib-vectrex.o vectrextokeyboard.o intensitypalette.o \
+	window.o \
 	zblast.o font.o levels.o hiscore.o anim3d.o sod2.o grokfile.o joy.o
 
 XZBOBJS = zblast-x.o font-x.o levels.o hiscore.o anim3d.o \
@@ -119,6 +121,9 @@ pitrexLib:
 #vectrexInterface.o: ../pitrex/vectrex/vectrexInterface.c ../pitrex/vectrex/vectrexInterface.h \
 #	../pitrex/vectrex/commands.i ../pitrex/vectrex/rasterFont.i ../pitrex/vectrex/vectorFont.i
 #	$(CC) $(CFLAGS) -c ../pitrex/vectrex/vectrexInterface.c -o vectrexInterface.o
+
+window.o: pitrexLib lib/window/window.c lib/window/window.h
+	$(CC) $(CFLAGS) -c lib/window/window.c -o window.o
 
 vectrextokeyboard.o: lib/svgalib-vectrex/vectrextokeyboard.c lib/svgalib-vectrex/vectrextokeyboard.h \
 	lib/svgalib-vectrex/vectrexcontrollermap.h

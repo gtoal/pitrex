@@ -3,6 +3,7 @@
    Changes:
     2020-06-16 V. 0.2 - Added colour to intensity translation.
     2020-09-10 V. 0.3 - Additions for xhyperoid. Tells Vectrex Interface lib. the program name before v_init.
+    2020-09-16 V. 0.4 - Added support for the "window" functions
 
    Kevin Koster, 2020 */
 
@@ -12,6 +13,10 @@
 #include <vectrex/vectrexInterface.h>
 #include "svgalib-vectrex.h"
 #include "vectrextokeyboard.h"
+
+#ifdef WINDOW
+#include "window/window.h"
+#endif
 
 int vgacolor;
 int vgabackgroundcolor;
@@ -216,6 +221,9 @@ extern int vga_init(void)
 	vgacolor = 0xFF;
 	vgabackgroundcolor = 0;
 	beamintensity = 100;
+#ifdef WINDOW
+	v_window(0, infotable[vgamode].ydim, infotable[vgamode].xdim, 0, NO_CLIP);
+#endif
 	return 0;
 }
 
@@ -326,6 +334,10 @@ extern int vga_drawline(int x1, int y1, int x2, int y2)
 #ifdef PITREX_DEBUG
 	printf("SVGAlib-vectrex: Draw Input = %d,%d-%d,%d.\n", x1, y1, x2, y2);
 #endif
+#ifdef WINDOW
+	v_brightness(beamintensity);
+	v_line(x1, y1, x2, y2);
+#else
 	v_directDraw32	(
 				 __svgalib_vectrex_scalexcoordinate(x1),
 				 __svgalib_vectrex_scaleycoordinate(y1),
@@ -333,6 +345,7 @@ extern int vga_drawline(int x1, int y1, int x2, int y2)
 				 __svgalib_vectrex_scaleycoordinate(y2),
 				 beamintensity
 				);
+#endif
 	return 0;
 }
 

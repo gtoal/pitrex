@@ -109,7 +109,7 @@ check-made:
 
 install: check-made installdirs
 	if [ -f vhyperoid ]; then \
-	install -o root -m 4511 vhyperoid $(BINDIR); fi
+	install -o root -g games -m 4511 vhyperoid $(BINDIR); fi
 	if [ -f xhyperoid ]; then \
 	install -m 511 xhyperoid $(XBINDIR); fi
 	install -m 444 xhyperoid.6 $(MANDIR)

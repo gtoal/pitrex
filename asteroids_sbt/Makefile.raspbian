@@ -32,27 +32,27 @@ roms: 035127.02 035145.02 035143.02 035144.02
 	@cp `md5sum \`locate 035144.02\` 2>/dev/null | fgrep 8010044e056c7a2ba3538a8c68b773d2 | head -1 | tr ' ' '\n' | tail -1` . 2> /dev/null || ( echo You need to follow the instructions in README-ROMS.txt in the main directory && exit 1 )
 
 035127.02:
-	@echo if you have 035127.02 somewhere else on this system (and have locate installed),
-	@echo you may be able to copy it here more easily by typing:  make -f Makefile.raspbian roms
-	@echo Otherwise follow the instructions in README-ROMS.txt in the main directory.
+	@echo "if you have 035127.02 somewhere else on this system (and have locate installed),"
+	@echo "you may be able to copy it here more easily by typing:  make -f Makefile.raspbian roms"
+	@echo "Otherwise follow the instructions in README-ROMS.txt in the main directory."
 	@exit 1
 
 035145.02:
-	@echo if you have 035145.02 somewhere else on this system (and have locate installed),
-	@echo you may be able to copy it here more easily by typing:  make -f Makefile.raspbian roms
-	@echo Otherwise follow the instructions in README-ROMS.txt in the main directory.
+	@echo "if you have 035145.02 somewhere else on this system (and have locate installed),"
+	@echo "you may be able to copy it here more easily by typing:  make -f Makefile.raspbian roms"
+	@echo "Otherwise follow the instructions in README-ROMS.txt in the main directory."
 	@exit 1
 
 035143.02:
-	@echo if you have 035143.02 somewhere else on this system (and have locate installed),
-	@echo you may be able to copy it here more easily by typing:  make -f Makefile.raspbian roms
-	@echo Otherwise follow the instructions in README-ROMS.txt in the main directory.
+	@echo "if you have 035143.02 somewhere else on this system (and have locate installed),"
+	@echo "you may be able to copy it here more easily by typing:  make -f Makefile.raspbian roms"
+	@echo "Otherwise follow the instructions in README-ROMS.txt in the main directory."
 	@exit 1
 
 035144.02:
-	@echo if you have 035144.02 somewhere else on this system (and have locate installed),
-	@echo you may be able to copy it here more easily by typing:  make -f Makefile.raspbian roms
-	@echo Otherwise follow the instructions in README-ROMS.txt in the main directory.
+	@echo "if you have 035144.02 somewhere else on this system (and have locate installed),"
+	@echo "you may be able to copy it here more easily by typing:  make -f Makefile.raspbian roms"
+	@echo "Otherwise follow the instructions in README-ROMS.txt in the main directory."
 	@exit 1
 
 game.c: trans 035127.02 035145.02 035143.02 035144.02

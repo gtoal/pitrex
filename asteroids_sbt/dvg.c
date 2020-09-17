@@ -57,22 +57,16 @@
 extern unsigned char ram[0x8000];
 #define ReadMemory(x)  (ram[x])
 
-#define SETTINGS_SIZE 1024
-unsigned char settingsBlob[SETTINGS_SIZE];
+// #define SETTINGS_SIZE 1024
+// unsigned char settingsBlob[SETTINGS_SIZE];
 
 int textinit ( void )
 {
-#ifdef BROKEN
   vectrexinit(1);
-  v_init(1);
-  v_noSound();
-#else
-  vectrexinit(1);
-  v_init();
+  v_setName("asteroids_sbt"); v_init();
   usePipeline = 1;
   v_setRefresh(60);
-#endif
-  v_loadSettings("asteroids_sbt", settingsBlob, SETTINGS_SIZE);
+  // v_loadSettings("asteroids_sbt", settingsBlob, SETTINGS_SIZE);
   return 0;
 }
 void handleSound();

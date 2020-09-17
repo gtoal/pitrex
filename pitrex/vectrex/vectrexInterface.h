@@ -3,22 +3,22 @@
 #include <stddef.h>
 #include <stdint.h>
 
-void v_init(); // also mounts sd card
+void v_init(void); // also mounts sd card
 void v_init_(int i); // also mounts sd card
 void v_delayCycles(uint32_t cycles);
-void v_delayCyclesQuarter();
-void v_delayCyclesEighth();
+void v_delayCyclesQuarter(void);
+void v_delayCyclesEighth(void);
 void delayNano(uint32_t n);
 void setMarkStart(void);
 void waitMarkEnd(uint32_t offsetMicro);
 void waitMarkEndMark(uint32_t offsetMicro);
 void waitCycleMarkEnd(uint32_t cycles);
-int waitFullMicro();
-void measureTime(); // debug and measure only
+int waitFullMicro(void);
+void measureTime(void); // debug and measure only
 
 void v_setBrightness(uint8_t brightness);
 void v_directDeltaMove32start(int32_t xLen, int32_t yLen);
-void v_directDeltaMoveEnd();
+void v_directDeltaMoveEnd(void);
 void v_directMove32(int32_t xEnd, int32_t yEnd);
 void v_directDraw32(int32_t xStart, int32_t yStart, int32_t xEnd, int32_t yEnd, uint8_t brightness);
 void v_directDraw32Patterned(int32_t xStart, int32_t yStart, int32_t xEnd, int32_t yEnd, uint8_t brightness, uint8_t pattern); // only pipelined!
@@ -27,15 +27,15 @@ void v_directDraw32HintedDebug(int32_t xStart, int32_t yStart, int32_t xEnd, int
 void v_directDeltaDraw32(int32_t xLen, int32_t yLen, uint8_t brightness);
 
 
-void v_zeroWait();
-void v_deflok();
+void v_zeroWait(void);
+void v_deflok(void);
 void v_setRefresh(int hz);
-void v_WaitRecal();
-void v_resetDetection();
-void v_calibrate();
-uint8_t v_readButtons();
-void v_readJoystick1Digital();
-void v_readJoystick1Analog();
+void v_WaitRecal(void);
+void v_resetDetection(void);
+void v_calibrate(void);
+uint8_t v_readButtons(void);
+void v_readJoystick1Digital(void);
+void v_readJoystick1Analog(void);
 void v_printString(int8_t x, int8_t y, char* string, uint8_t textSize, uint8_t brightness);
 int v_printStringRaster(int8_t x, int8_t y, char* _string, int8_t xSize, int8_t ySize, unsigned char delimiter);
 
@@ -45,9 +45,10 @@ void v_drawToImmediate8(int8_t xLen, int8_t yLen);
 
 void v_setName(char *name);
 int v_loadSettings(char *name, unsigned char *blob, int blobSize);
+int v_saveSettings(char *name, unsigned char *blob, int blobSize);
 
-uint32_t v_millis(); // only using low counters!
-uint32_t v_micros(); // only using low counters!
+uint32_t v_millis(void); // only using low counters!
+uint32_t v_micros(void); // only using low counters!
 
 extern int (*executeDebugger)(int);
 
@@ -78,16 +79,16 @@ typedef enum {
 	PLAY_LOOP		///<
 } SfxMode;
 
-void v_noSound();
+void v_noSound(void);
 void v_playDirectSampleAll(char *ymBufferLoad, int fsize, int rate);
-void v_doSound();
+void v_doSound(void);
 void v_playSFXCont(unsigned char *buffer, int channel, int loop);
 void v_playSFXStop(unsigned char *buffer, int channel);
 void v_playSFXStart(unsigned char *buffer, int channel, int loop);
 
-void v_playAllSFX();
+void v_playAllSFX(void);
 void v_initYM(unsigned char *ymBuffer, uint16_t length, int loop);
-int v_playYM();
+int v_playYM(void);
 
 void v_writePSG_double_buffered(uint8_t reg, uint8_t data);
 void v_writePSG_buffered(uint8_t reg, uint8_t data);
@@ -95,10 +96,10 @@ void v_writePSG(uint8_t reg, uint8_t data);
 uint8_t v_readPSG_double_buffered(uint8_t reg);
 uint8_t v_readPSG_buffered(uint8_t reg);
 uint8_t v_readPSG(uint8_t reg);
-int play_sfx1();
-int play_sfx2();
-int play_sfx3();
-void v_PSG_writeDoubleBuffer();
+int play_sfx1(void);
+int play_sfx2(void);
+int play_sfx3(void);
+void v_PSG_writeDoubleBuffer(void);
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -120,10 +121,6 @@ extern int currentDisplayedBrowseLine;
 void v_error(char *message); // halts the program and displays an the message on the vectrex!
 void v_errori(char *message, int i);
 char *getParameter(int p);
-
-int v_saveSettings(char *name, unsigned char *blob, int blobSize);
-int v_loadSettings(char *name, unsigned char *blob, int blobSize);
-
 
 extern int32_t currentCursorX; // 32 bit positioning value X, "normal" values are 16 bit,
 						// but enlarging the screen may leed to higher values
@@ -441,6 +438,7 @@ do { \
     }asm volatile( "0:" "SUBS %[count], #2;" "SUBS %[count], #-1;" "BNE 0b;" :[count]"+r"(l) ); \
     } while(0)
 
+// need an enclosing () below? - check usages first
 #define GET_SYSTEM_TIMER_LO *(bcm2835_st + BCM2835_ST_CLO/4)
 #define SET_TIMER_MARK do{timerMark = (volatile uint32_t)*(bcm2835_st + BCM2835_ST_CLO/4);} while(0)
 

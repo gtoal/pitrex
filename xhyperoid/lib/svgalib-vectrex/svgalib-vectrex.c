@@ -1,3 +1,6 @@
+// #define PITREX_DEBUG 1
+#define VERTICAL_POSITIONING_BODGE 200 /* by inspection. short-term hack... */
+
 /* Translation of SVGAlib function calls into calls to the Vector drawing library for the PiTrex Vectrex interface cartridge.
    Version 0.3 - only bare minimum of functions implemented to get something working.
    Changes:
@@ -10,6 +13,9 @@
 #include <stdio.h>
 #include <pitrex/pitrexio-gpio.h>
 #include <vectrex/vectrexInterface.h>
+#include "../../window.h"
+extern int bufferType;
+
 #include "svgalib-vectrex.h"
 #include "vectrextokeyboard.h"
 
@@ -195,11 +201,14 @@ struct info infotable[] =
     {400, 600, 1<<16, 400*2, 2},
     {400, 600, 1<<24, 400*3, 3},
     {400, 600, 1<<24, 400*4, 4},
+
+    {640, 640*4/3, 256, 640, 1} // fake vectrex mode
 };
 
 #define MAX_MODES (sizeof(infotable) / sizeof(struct info))
 
 int single_point_of_init(void) {
+ // Ideally all of this would be placed at the start of main()
  if (!vectrexinit(1) )
  {
   printf("Could Not Initialise Vectrex Connection\n");
@@ -207,11 +216,18 @@ int single_point_of_init(void) {
  }
  v_setName(program_invocation_short_name);
  v_init();
- v_setRefresh(60); // control the frame rate here
+ v_set_hardware_orientation(VECTREX_FLIP_Y);
+ v_setRefresh(60); // control the frame rate (and game speed) here. Looks like 60hz screen update works best with 20hz world update
+ // v_loadSettings("vhyperoid", settingsBlob, SETTINGS_SIZE); // check with Kevin that his alternative actually loads previous settings?
+ usePipeline = 1;   // should create procedures for these rather than use global variables.
+                    // doesn't matter for now but should be cleaned up before we release
+ bufferType = 2;
+ v_window(0,0, 640,640*4/3, NO_CLIP); // changed to match vectrex display aspect ratio (4x3 vertical)
+
  return 0;
 }
 
-extern int vga_init(void)
+int vga_init(void)
 {
     if (!svgalib_initialised)
 	{
@@ -225,13 +241,13 @@ extern int vga_init(void)
 	return 0;
 }
 
-extern void vga_disabledriverreport(void)
+void vga_disabledriverreport(void)
 {
 
 }
 
 /* Could use this to limit to optimal resolutions? */
-extern int vga_hasmode(int mode)
+int vga_hasmode(int mode)
 {
 	if (mode == TEXT)
 	 return 1;
@@ -241,14 +257,14 @@ extern int vga_hasmode(int mode)
 }
 
 /* Need to note the resolution set here */
-extern int vga_setmode(int mode)
+int vga_setmode(int mode)
 {
 	vgamode = mode;
 	return 0;
 }
 
 /* Colour turns into beam intensity setting from intensitypalette.c */
-extern int vga_setcolor(int color)
+int vga_setcolor(int color)
 {
  beamintensity=intensityPal[color];
  return 0;
@@ -266,8 +282,8 @@ void __svgalib_vectrex_recalcheck(void)
 {
 	if (GET (VIA_int_flags) & 0x20)
 	{
-	 v_WaitRecal();
-	 keyboard_update();
+	  v_WaitRecal();     // These are better done 
+	  keyboard_update(); // in main()
 /*	 v_readJoystick1Digital();
 	 printf ("joystick state X,Y: %d,%d\n",currentJoy1X,currentJoy1Y);
 	 printf ("button state: 0x%x\n",currentButtonState);
@@ -326,7 +342,7 @@ int __svgalib_vectrex_scaleycoordinate(int coordinate)
  * TODO: Allow for erasing lines by drawing pixels/lines/filled-shapes over them in the same colour
  *  -None of these things actually seem to be required for either of the known vector SVGAlib games though, so not much point.
  */
-extern int vga_drawline(int x1, int y1, int x2, int y2)
+int vga_drawline(int x1, int y1, int x2, int y2)
 {
 	if (beamintensity <= 0) return 0;
 
@@ -336,18 +352,18 @@ extern int vga_drawline(int x1, int y1, int x2, int y2)
 #ifdef PITREX_DEBUG
 	printf("SVGAlib-vectrex: Draw Input = %d,%d-%d,%d.\n", x1, y1, x2, y2);
 #endif
-	v_directDraw32	(
-				 __svgalib_vectrex_scalexcoordinate(x1),
-				 __svgalib_vectrex_scaleycoordinate(y1),
-				 __svgalib_vectrex_scalexcoordinate(x2),
-				 __svgalib_vectrex_scaleycoordinate(y2),
-				 beamintensity
-				);
+	v_brightness(beamintensity);
+	v_line(x1, y1+VERTICAL_POSITIONING_BODGE, x2, y2+VERTICAL_POSITIONING_BODGE);
+	//			 __svgalib_vectrex_scalexcoordinate(x1),
+	//			 __svgalib_vectrex_scaleycoordinate(y1),
+	//			 __svgalib_vectrex_scalexcoordinate(x2),
+	//			 __svgalib_vectrex_scaleycoordinate(y2)
+	//			);
 	return 0;
 }
 
 /* Scale to vector drawing library co-ordinates */
-extern int vga_drawpixel(int x, int y)
+int vga_drawpixel(int x, int y)
 {
 	if (beamintensity <= 0) return 0;
 #ifdef NEVER
@@ -356,9 +372,10 @@ extern int vga_drawpixel(int x, int y)
 #ifdef PITREX_DEBUG
 	printf("SVGAlib-vectrex: Draw Input = %d,%d.\n", x, y);
 #endif
-	x = __svgalib_vectrex_scalexcoordinate(x);
-	y = __svgalib_vectrex_scaleycoordinate(y);
-	v_directDraw32	(x, y, x+1, y, beamintensity);
+	//x = __svgalib_vectrex_scalexcoordinate(x);
+	//y = __svgalib_vectrex_scaleycoordinate(y);
+	v_brightness(beamintensity);
+	v_line(x, y+VERTICAL_POSITIONING_BODGE, x+1, y+VERTICAL_POSITIONING_BODGE); // probably just x is OK for points
 	return 0;
 }
 
@@ -406,7 +423,7 @@ void gl_setpixel(int x, int y, int c)
  vga_drawpixel(x, y);
 }
 
-extern int vga_setpalvec(int start, int num, int *pal)
+int vga_setpalvec(int start, int num, int *pal)
 {
  return num;
 }

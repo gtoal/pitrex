@@ -1462,6 +1462,7 @@ wait(NULL);
 
 int main(int argc,char *argv[])
 {
+static int skipflag = 0;
 int quit=0;
 
 graphics_init(argc,argv,palrgb);
@@ -1484,10 +1485,14 @@ while(!quit)
   keyboard_update();
   
   graphics_update();
-  if (restart_timer_count > (RESTART_DELAY_FRAMES / 1.8) )
-    CheckScore();
-  DrawObjects();
-  
+
+  if (!skipflag) {
+    if (restart_timer_count > (RESTART_DELAY_FRAMES / 1.8) )
+      CheckScore();
+    DrawObjects();
+  }
+  skipflag += 1;
+  if (skipflag == 3) skipflag = 0;
   if(bRestart)
     {
     restart_timer_count--;

@@ -51,7 +51,7 @@ OBJS = $(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
 	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
 	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
 	svgalib-vectrex.o vectrextokeyboard.o intensitypalette.o \
-	hyperoid.o roidsupp.o sound.o svga.o
+	hyperoid.o roidsupp.o sound.o svga.o window.o
 
 XOBJS = hyperoid.o roidsupp.o sound.o gtk.o
 
@@ -75,6 +75,9 @@ pitrexLib:
 #vectrexInterface.o: lib/vectrex/vectrexInterface.c lib/vectrex/vectrexInterface.h \
 #	lib/vectrex/commands.i lib/vectrex/rasterFont.i lib/vectrex/vectorFont.i
 #	$(CC) $(CFLAGS) -c lib/vectrex/vectrexInterface.c -o vectrexInterface.o
+
+window.o: window.c
+	$(CC) $(CFLAGS) -c window.c -o window.o
 
 vectrextokeyboard.o: lib/svgalib-vectrex/vectrextokeyboard.c lib/svgalib-vectrex/vectrextokeyboard.h \
 	lib/svgalib-vectrex/vectrexcontrollermap.h

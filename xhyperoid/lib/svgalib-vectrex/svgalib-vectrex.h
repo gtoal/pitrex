@@ -181,7 +181,9 @@
 #define G400x600x16M 143
 #define G400x600x16M32 144
 
-#define __GLASTMODE G400x600x16M32
+#define G640x854x128 145 /* a special fake mode for vectrex */
+
+#define __GLASTMODE G640x854x128
 #define GLASTMODE vga_lastmodenumber()
 
 #define infotable __svgalib_infotable

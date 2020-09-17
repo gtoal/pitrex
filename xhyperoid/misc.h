@@ -137,4 +137,14 @@ typedef struct
 	((r)->top = ((p).y-(s))), ((r)->bottom = ((p).y+(s))))
 
 /* this seems to be what MulDiv does -rjm */
+/* muldiv is supposed to be x*y/z but with a double-precision intermediate result
+   so that it is not possible to have overflow.  For example if x,y,z are 32 bit
+   integers then x*y should be calculated as a 64-bit integer and that divided
+   by z is then expected to fit in a 32 bit result.  - GT */
 #define MulDiv(x,y,z) ((x)*(y)/(z))
+/* so... assuming always called with ints, on a 32-bit system where long is also 32
+   bits, perhaps a better macro would be:
+#define MulDiv(x,y,z) ((int)((long long)(x) * (long long)(y) / (long long)(z)))
+   Before long long was invented, this was traditionally implemented as a procedure
+   written in assembly language.
+*/

@@ -59,8 +59,13 @@ unsigned char *bitmaps[NUM_BITMAPS];
 
 static int current_x=0,current_y=0;
 
+#ifdef PITREX
+/* this leaves 16 lines at the top for score etc. */
+static int width=640,height=(640*4)/3,mindimhalf=((640*4)/3)/2 - 16;
+#else
 /* this leaves 16 lines at the top for score etc. */
 static int width=640,height=464,mindimhalf=232;
+#endif
 
 /* this oddity is needed to simulate the mapping the original used a
  * Windows call for. MAX_COORD is a power of 2, so when optimised
@@ -170,7 +175,7 @@ void score_graphics(int level,int score,int lives,int shield,int bomb)
 char scoreLine[35];
 sprintf(scoreLine, "LEV %2.2d  %7.7d   L%1.1d S%1.1d B%1.1d", level, score, lives, shield, bomb);
 //v_printStringRaster(-8, -4, scoreLine, 5 * 8, -7, '\0'); /* - looks bad with Linux glitches */
-v_printString(-127, 127, scoreLine, 10, 85);
+v_printString(-127, 127, scoreLine, 10, 85); // NEEDS TO BE SCALED ETC BY window.c
 
 /* -SVGAvec - unsupported -- Possible to draw xpms via Vectrex raster routines?
 static char szScore[40];
@@ -237,11 +242,14 @@ int f;
 vga_init();
 /* conv_xpms(palrgb); -SVGAvec - unsupported */
 
+#ifdef PITREX
+ vga_setmode(G640x854x128); // approximate vectrex capabilities
+#else
 if(vga_hasmode(G640x480x256))
   vga_setmode(G640x480x256);
 else
   vga_setmode(G640x480x16);
-
+#endif
 for(f=0;f<16*3;f++) palrgb[f]>>=2;
 vga_setpalvec(0,16,palrgb);
 

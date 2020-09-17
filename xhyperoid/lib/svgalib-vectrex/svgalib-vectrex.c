@@ -375,7 +375,7 @@ int vga_drawpixel(int x, int y)
 	//x = __svgalib_vectrex_scalexcoordinate(x);
 	//y = __svgalib_vectrex_scaleycoordinate(y);
 	v_brightness(beamintensity);
-	v_line(x, y+VERTICAL_POSITIONING_BODGE, x+1, y+VERTICAL_POSITIONING_BODGE); // probably just x is OK for points
+	v_line(x, y+VERTICAL_POSITIONING_BODGE, x/*+1*/, y+VERTICAL_POSITIONING_BODGE); // probably just x is OK - only used for thrust exhaust
 	return 0;
 }
 

@@ -1,5 +1,5 @@
 // #define PITREX_DEBUG 1
-#define VERTICAL_POSITIONING_BODGE 200 /* by inspection. short-term hack... */
+#define VERTICAL_POSITIONING_BODGE 190 /* by inspection. short-term hack... */
 
 /* Translation of SVGAlib function calls into calls to the Vector drawing library for the PiTrex Vectrex interface cartridge.
    Version 0.3 - only bare minimum of functions implemented to get something working.

@@ -172,10 +172,17 @@ int SetIndicator( char * npBuff, char bitmap, int nQuant )
 
 void score_graphics(int level,int score,int lives,int shield,int bomb)
 {
-char scoreLine[35];
-sprintf(scoreLine, "LEV %2.2d  %7.7d   L%1.1d S%1.1d B%1.1d", level, score, lives, shield, bomb);
+static char scoreLine1[128];
+static char scoreLine2[128];
+static char scoreLine3[128];
+sprintf(scoreLine1, "LEV %2.2d", level);
+sprintf(scoreLine2, "%7.7d", score);
+sprintf(scoreLine3, "LIVES %1.1d  SHIELDS %1.1d  BOMBS %1.1d", lives, shield, bomb);
 //v_printStringRaster(-8, -4, scoreLine, 5 * 8, -7, '\0'); /* - looks bad with Linux glitches */
-v_printString(-127, 127, scoreLine, 10, 85); // NEEDS TO BE SCALED ETC BY window.c
+//v_printString(-127, 127, scoreLine, 10, 85); // NEEDS TO BE SCALED ETC BY window.c
+ v_printString(-110 /* x */, 110 /* y */, scoreLine1, 8 /* size */, 70 /* brightness */); // NEEDS TO BE SCALED ETC BY window.c
+ v_printString(50 /* x */, 110 /* y */, scoreLine2, 8 /* size */, 80 /* brightness */); // NEEDS TO BE SCALED ETC BY window.c
+ v_printString(-90 /* x */, -127 /* y */, scoreLine3, 6 /* size */, 40 /* brightness */); // NEEDS TO BE SCALED ETC BY window.c
 
 /* -SVGAvec - unsupported -- Possible to draw xpms via Vectrex raster routines?
 static char szScore[40];

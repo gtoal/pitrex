@@ -251,7 +251,7 @@ keyboard_init();
 
 void graphics_update(void)
 {
-keyboard_update();
+  // keyboard_update(); only needs to done once per frame at top level next to waitrecal
 }
 
 

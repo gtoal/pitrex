@@ -39,7 +39,10 @@
 #include "graphics.h"
 
 #include "hyperoid.h"
+#include <pitrex/pitrexio-gpio.h>
+#include <vectrex/vectrexInterface.h>
 
+#include "lib/svgalib-vectrex/vectrextokeyboard.h"
 
 static int palrgb[16*3]=
   {
@@ -1428,6 +1431,8 @@ setitimer(ITIMER_REAL,&itv,NULL);
 
 void wait_for_timer(void)
 {
+#ifdef PITREX
+#else
 sigset_t mask,oldmask;
 
 sigemptyset(&mask);
@@ -1441,7 +1446,7 @@ if(!timer_flag)
   while(!timer_flag)
     sigsuspend(&oldmask);
 sigprocmask(SIG_UNBLOCK,&mask,NULL);
-
+#endif
 timer_flag=0;
 }
 
@@ -1472,7 +1477,11 @@ start_timer();
 
 while(!quit)
   {
+#ifdef NEVER
   wait_for_timer();
+#endif
+  v_WaitRecal();
+  keyboard_update();
   
   graphics_update();
   if (restart_timer_count > (RESTART_DELAY_FRAMES / 1.8) )

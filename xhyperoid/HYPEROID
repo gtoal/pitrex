@@ -22,7 +22,8 @@ function ctrl_c() {
 
 echo -n performance | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor > /dev/null
 sudo tvservice --off
-sudo ./vhyperoid
+sudo /usr/local/games/vhyperoid
+# sudo aoss ./vhyperoid -nomusic
 sudo tvservice -p
 sudo chvt 2                      # change to different virtual terminal
 sudo chvt 1                      # change back to the previous virtual terminal

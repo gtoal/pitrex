@@ -199,18 +199,24 @@ struct info infotable[] =
 
 #define MAX_MODES (sizeof(infotable) / sizeof(struct info))
 
+int single_point_of_init(void) {
+ if (!vectrexinit(1) )
+ {
+  printf("Could Not Initialise Vectrex Connection\n");
+  return -1;
+ }
+ v_setName(program_invocation_short_name);
+ v_init();
+ v_setRefresh(60); // control the frame rate here
+ return 0;
+}
+
 extern int vga_init(void)
 {
     if (!svgalib_initialised)
 	{
-	 if (!vectrexinit(1) )
-	 {
-	  printf("Could Not Initialise Vectrex Connection\n");
-	  return -1;
-	 }
-	 v_setName(program_invocation_short_name);
-	 v_init();
-	 svgalib_initialised = 1;
+	  if ((single_point_of_init()) == -1) return -1;
+	  svgalib_initialised = 1;
 	}
 
 	vgacolor = 0xFF;
@@ -255,6 +261,7 @@ extern int vga_setcolor(int color)
  * Based on v_WaitRecal(), if it works maybe add the button/reset checks as well,
  * and preferably get it integrated into the vector drawing library.   
  */
+#ifdef NEVER
 void __svgalib_vectrex_recalcheck(void)
 {
 	if (GET (VIA_int_flags) & 0x20)
@@ -301,6 +308,7 @@ void __svgalib_vectrex_recalcheck(void)
 */
 	}
 }
+#endif
 
 int __svgalib_vectrex_scalexcoordinate(int coordinate)
 {
@@ -322,7 +330,9 @@ extern int vga_drawline(int x1, int y1, int x2, int y2)
 {
 	if (beamintensity <= 0) return 0;
 
-	__svgalib_vectrex_recalcheck();
+#ifdef NEVER
+	__svgalib_vectrex_recalcheck(); // should be in main top-level game loop
+#endif
 #ifdef PITREX_DEBUG
 	printf("SVGAlib-vectrex: Draw Input = %d,%d-%d,%d.\n", x1, y1, x2, y2);
 #endif
@@ -340,8 +350,9 @@ extern int vga_drawline(int x1, int y1, int x2, int y2)
 extern int vga_drawpixel(int x, int y)
 {
 	if (beamintensity <= 0) return 0;
-
+#ifdef NEVER
 	__svgalib_vectrex_recalcheck();
+#endif
 #ifdef PITREX_DEBUG
 	printf("SVGAlib-vectrex: Draw Input = %d,%d.\n", x, y);
 #endif

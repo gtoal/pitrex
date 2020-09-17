@@ -269,16 +269,17 @@ struct info {
     
 extern struct info infotable[];
 
-void gl_clearscreen(int c);
-void gl_copyscreen(GraphicsContext * gc);
-void gl_enableclipping(void);
-void gl_line(int x1, int y1, int x2, int y2, int c);
-int gl_setcontextvga(int m);
-int gl_setcontextvgavirtual(int m);
-void gl_setpalettecolor(int c, int r, int b, int g);
-void gl_setpixel(int x, int y, int c);
+extern void gl_clearscreen(int c);
+extern void gl_copyscreen(GraphicsContext * gc);
+extern void gl_enableclipping(void);
+extern void gl_line(int x1, int y1, int x2, int y2, int c);
+extern int gl_setcontextvga(int m);
+extern int gl_setcontextvgavirtual(int m);
+extern void gl_setpalettecolor(int c, int r, int b, int g);
+extern void gl_setpixel(int x, int y, int c);
 
 /* SVGAlib-Vectrex Declarations: */
+extern int single_point_of_init(void); // temp name while restructuring
 extern char svgalib_initialised;
 
 #endif /* VGA_VECTREX_H */

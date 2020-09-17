@@ -18,14 +18,9 @@ int keyboard_init(void)
 {   /* This will all have been done already if vga_init has been called */
 	if (!svgalib_initialised)
 	{
-	 if (!vectrexinit(1) )
-	 {
-	  printf("Could Not Initialise Vectrex Connection\n");
-	  return -1;
-	 }
-	 v_init();
-	 svgalib_initialised = 1;
-	 return 0;
+	  if (single_point_of_init() == -1) return -1;
+	  svgalib_initialised = 1;
+	  return 0;
 	}
 	else
 	 return 0;

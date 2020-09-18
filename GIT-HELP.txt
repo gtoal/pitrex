@@ -111,3 +111,11 @@ git reset --hard
 
 This avoids needing to re-enter the GitHub password (stores it in plaintext though):
 git config credential.helper store
+
+Show past commits:
+git log
+
+Return everything to a previous commit (one way to do it):
+git reset --hard <commit>
+
+ Then "git pull" to go back to the present again.

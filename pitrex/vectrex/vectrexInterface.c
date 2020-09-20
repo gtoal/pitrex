@@ -3126,18 +3126,21 @@ int v_loadSettings(char *name, unsigned char *blob, int blobSize)
   {
     printf("Loading settings file: %s!\r\n", name);
     fileRead = fopen(name, "rb");
+   if (fileRead == 0)
+     printf("Could not open settings file (%i) \r\n", errno);
   }
-  else
+
+  if ( name[0] == (char) 0 || fileRead == 0)
   {
     printf("Loading settings file: %s!\r\n", defaultName);
     fileRead = fopen(defaultName, "rb");
-  }
 
-  if (fileRead == 0)
-  {
-    printf("Could not open settings file (%i) \r\n", errno);
-    err = chdir("..");
-    return 0;
+   if (fileRead == 0)
+   {
+     printf("Could not open settings file (%i) \r\n", errno);
+     err = chdir("..");
+     return 0;
+   }
   }
 
   unsigned int lenLoaded=0;

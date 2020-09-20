@@ -56,12 +56,12 @@ XROOT=/usr/X11R6
 # more `modern' setup, but you may have trouble with directories like
 # /usr/share/games not existing.
 #
-PREFIX=/usr/local
+PREFIX=/opt/pitrex
 
-BINDIR=$(PREFIX)/games
+BINDIR=$(PREFIX)/bin
 XBINDIR=$(BINDIR)
 MANDIR=$(PREFIX)/man/man6
-SOUNDSDIR=$(PREFIX)/games/lib/zblast
+SOUNDSDIR=$(PREFIX)/share/zblast
 SCORESFILE=$(SOUNDSDIR)/zblast.scores
 
 # alternatively, you may prefer more FHS-friendly locations :-)

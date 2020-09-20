@@ -566,5 +566,3 @@ typedef struct {
 } GlobalMemSettings;
 
 extern GlobalMemSettings *settings;
-
-#define SETTINGS_DIR	"settings"

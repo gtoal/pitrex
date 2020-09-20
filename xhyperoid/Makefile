@@ -20,11 +20,11 @@ CFLAGS+=-DDO_SOUND
 
 # Where things are installed by `make install':
 #
-PREFIX=/usr/local
-BINDIR=$(PREFIX)/games
+PREFIX=/opt/pitrex
+BINDIR=$(PREFIX)/bin
 XBINDIR=$(BINDIR)
 MANDIR=$(PREFIX)/man/man6
-SOUNDSDIR=$(PREFIX)/games/lib/xhyperoid
+SOUNDSDIR=$(PREFIX)/share/xhyperoid
 #
 # if you want the X version to be installed in the usual X executables
 # directory, uncomment this:

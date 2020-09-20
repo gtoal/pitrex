@@ -182,7 +182,7 @@ sprintf(scoreLine3, "LIVES %1.1d  SHIELDS %1.1d  BOMBS %1.1d", lives, shield, bo
 //v_printString(-127, 127, scoreLine, 10, 85); // NEEDS TO BE SCALED ETC BY window.c
  v_printString(-110 /* x */, 110 /* y */, scoreLine1, 8 /* size */, 70 /* brightness */); // NEEDS TO BE SCALED ETC BY window.c
  v_printString(50 /* x */, 110 /* y */, scoreLine2, 8 /* size */, 80 /* brightness */); // NEEDS TO BE SCALED ETC BY window.c
- v_printString(-90 /* x */, -127 /* y */, scoreLine3, 6 /* size */, 40 /* brightness */); // NEEDS TO BE SCALED ETC BY window.c
+ v_printString(-60 /* x */, -127 /* y */, scoreLine3, 4 /* size */, 55 /* brightness */); // NEEDS TO BE SCALED ETC BY window.c
 
 /* -SVGAvec - unsupported -- Possible to draw xpms via Vectrex raster routines?
 static char szScore[40];

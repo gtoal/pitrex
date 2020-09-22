@@ -108,13 +108,14 @@ UNDO all changes (locally from last commit)
 git reset --hard
 
 
-
+---
 This avoids needing to re-enter the GitHub password (stores it in plaintext though):
 git config credential.helper store
-
+---
 Show past commits:
 git log
 
+---
 Return everything to a previous commit (one way to do it):
 git reset --hard <commit>
 
@@ -127,3 +128,12 @@ git reset --hard <commit>
 #!/bin/sh
 git diff `git log --oneline | head -2 | tac | sed -n -e 's/^\([0-9a-fA-F]*\) .*$/\1/p'`
 
+-----
+
+READ THIS: got passwords may be going away, should transition to ssh keys?
+
+https://hackaday.com/2020/09/15/githubs-move-away-from-passwords-a-sign-of-things-to-come/
+
+  (read the comments too...)
+
+---

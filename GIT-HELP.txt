@@ -119,3 +119,11 @@ Return everything to a previous commit (one way to do it):
 git reset --hard <commit>
 
  Then "git pull" to go back to the present again.
+
+---
+
+/usr/local/bin/gitdiff:
+
+#!/bin/sh
+git diff `git log --oneline | head -2 | tac | sed -n -e 's/^\([0-9a-fA-F]*\) .*$/\1/p'`
+

@@ -249,6 +249,7 @@ int icos(int x)
 
 // relative functions are not clipped anymore "here"
 // clipping could be done in vectrex support
+static int old_x=0, old_y=0, new_x=0,new_y=0;
 void movetoRelative(int x, int y)
 {
   int16_t px, py;
@@ -257,8 +258,12 @@ void movetoRelative(int x, int y)
 
   py = py*16 ;
   px = px*16 ;
+#ifdef NEVER
   v_directDeltaMove32start(px, py);
   v_directDeltaMoveEnd();
+#else
+  v_directMove32(new_x = old_x + px, new_y = old_y + py); old_x = new_x; old_y = new_y;
+#endif
 }
 
 void linetoRelative(int x, int y)
@@ -269,7 +274,13 @@ void linetoRelative(int x, int y)
   py = y;
   py = py*16 ;
   px = px*16 ;
+#ifdef NEVER
+  // delta draw calls don't yet have support for interrupt avoidance (ie glitchy)
+  // so code has been modified to use absolute coordinates.
   v_directDeltaDraw32(px, py, currentZSH);
+#else
+  v_directDraw32(old_x, old_y, new_x = old_x + px, new_y = old_y + py, currentZSH); old_x = new_x; old_y = new_y;
+#endif
 }
 
 // absolut from 0,0 (center)
@@ -288,7 +299,7 @@ void moveto(int x, int y)
 
   py = py*16 -32768;
   px = px*16 -32768;
-  v_directMove32(px,py);
+  v_directMove32(new_x = px, new_y = py); old_x = new_x; old_y = new_y;
 }
 
 int draw_character(char c, int x, int y, int size)
@@ -733,9 +744,12 @@ void setup()
 {
   vectrexinit(1);
   v_init();
-
+  usePipeline = 2; //usePipeline = 0 => no size adjustment, glitches
   v_loadSettings("gyrocks", settingsBlob, SETTINGS_SIZE);
-
+  v_setRefresh(60);
+  // needs to have scaling added - these sizes fix it for average screen:
+  // stretch x,y: 0.54 0.65
+  // but can handle that later
   initVars();
   init_stars(s);
 }
@@ -744,7 +758,7 @@ void startFrame()
 {
     v_readButtons();
     v_readJoystick1Analog();
-    v_WaitRecal();
+    v_WaitRecal(); old_x = 0; old_y = 0; new_x = 0; new_y = 0;
     v_setBrightness(64);        /* set intensity of vector beam... */
 }
 

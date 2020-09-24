@@ -1,9 +1,9 @@
 #!/bin/bash
 if [ $# != 0 ] ; then
   # parameters not properly implemented yet - it fails and puts up a menu on the Vectrex
-  if [ ! -f ./vectrex/$1.BIN ] ; then
-    echo "vecx: file vectrex/$1.BIN does not exist. (current directory: `pwd`)"
-    exit 0
+  if [ ! -f /opt/pitrex/roms/vectrex/$1.BIN ] ; then
+    echo "vecx: file /opt/pitrex/roms/vectrex/$1.BIN does not exist. (current directory: `pwd`)"
+    exit 1
   fi
 fi
 trap ctrl_c INT
@@ -30,8 +30,10 @@ function ctrl_c() {
 echo -n performance | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor > /dev/null
 sudo tvservice --off
 if [ $# != 0 ] ; then
-    sudo ./vecx ./vectrex/$1.BIN
+    echo "WARNING: at the moment, vecx.direct does not accept a rom file as a parameter"
+    sudo ./vecx /opt/pitrex/roms/vectrex/$1.BIN
 else
+    # choose the game from the menu...
     sudo ./vecx
 fi
 sudo tvservice -p

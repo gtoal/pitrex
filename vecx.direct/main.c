@@ -78,14 +78,15 @@ static void load_overlay()
 
 }
 
-#define SETTINGS_SIZE 1024
-unsigned char settingsBlob[SETTINGS_SIZE];
+//#define SETTINGS_SIZE 1024
+//unsigned char settingsBlob[SETTINGS_SIZE];
 static int init(void)
 {
 	vectrexinit(1);
 	v_init();
-          v_loadSettings("vecxDirect", settingsBlob, SETTINGS_SIZE);
-          return 1;
+        //v_loadSettings("vecxDirect", settingsBlob, SETTINGS_SIZE);
+	v_setName("vecxDirect"); // not sure if this does anything with the direct emulator!
+        return 1;
 }
 
 static void quit(void)
@@ -129,8 +130,12 @@ void loadSelected(int selected);
 int maxInDir = 0;
 void initEmulator()
 {
+#ifdef FREESTANDING
     char *vectrexDir = "vectrex";
-    if (chdir(vectrexDir)<0)
+#else
+    char *vectrexDir = "/opt/pitrex/roms/vectrex";
+#endif
+    if (chdir(vectrexDir)<0) // this isn't an ideal mechanism, it was expedient because bare metal library did not support paths
     {
 	    printf("NO vectrex directory found...!\r\n");
 	    return;

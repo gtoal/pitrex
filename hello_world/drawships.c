@@ -427,8 +427,8 @@ static void startFrame()
 }
 
 int main(int argc, char **argv) {
-  #define SETTINGS_SIZE 1024
-  static unsigned char settingsBlob[SETTINGS_SIZE];
+  //#define SETTINGS_SIZE 1024
+  //static unsigned char settingsBlob[SETTINGS_SIZE];
   int x,y,z, dist;
   char *progname, *p;
 
@@ -438,7 +438,8 @@ int main(int argc, char **argv) {
 
   progname = argv[0];
   p = strrchr(progname, '/'); if (p) progname = p+1;
-  v_loadSettings(progname, settingsBlob, SETTINGS_SIZE);
+  //v_loadSettings(progname, settingsBlob, SETTINGS_SIZE);
+  v_setName(progname);
 
   usePipeline = 1;   // should create procedures for these rather than use global variables.
                      // doesn't matter for now but should be cleaned up before we release

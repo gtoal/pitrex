@@ -3118,7 +3118,7 @@ int v_loadSettings(char *name, unsigned char *blob, int blobSize)
   err = chdir (settingsDir);
   if (err)
   {
-    printf("No settings directory found...(%i)!\r\n", errno);
+    printf("NO settings directory found (%i) at \"%s\"!\r\n", errno, settingsDir);
     return 0;
   }
 
@@ -3172,7 +3172,7 @@ int v_saveSettings(char *name, unsigned char *blob, int blobSize)
   err = chdir (settingsDir);
   if (err)
   {
-    printf("NO settings directory found...(%i)!\r\n", errno);
+    printf("NO settings directory found (%i) at \"%s\"!\r\n", errno, settingsDir);
     return 0;
   }
 

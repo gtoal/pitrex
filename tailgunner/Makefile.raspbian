@@ -48,5 +48,5 @@ tailgunner: dirCheck pitrexLib $(BUILD_DIR)tailgunner.o $(BUILD_DIR)ops.o
 	$(BUILD_DIR)tailgunner.o
 
 clean:
-	$(RM) $(BUILD_DIR)*.*
-	$(RM) tailgunner
+	$(RM) $(BUILD_DIR)*.* tailgunr-ops.c tailgunner-data.i tailgunner
+	$(MAKE) -C ./translate -f Makefile clean

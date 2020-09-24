@@ -1,18 +1,32 @@
 In order to build the static binary translations or use some of the emulators, you will need to install your rom images.
 
-The vectrex 
-roms belonging to GCE have been made public, in a letter from the owner, Jay Smith.  These are pre-installed in ${PIROOT}vecx.direct/vectrex/
+We are in the process of tidying up our filesystem laayout, getting ready for release.
 
-The cinematronics roms go in ${PIROOT}cinematronics/roms/* where * is a subdirectory using the name of the name.
+At the moment, all files that the user has to create or install are going into some directory under /opt/pitrex - these will
+not be put in place for you by fetching the github repository.
+
+Currently /opt/pitrex contains
+ /opt/pitrex/menu.ym    -- music used by bare metal menu
+ /opt/pitrex/ini        -- copy these from cinematronics/ini
+ /opt/pitrex/settings   -- initially empty, this will be used to save default as well as individual game settings
+ /opt/pitrex/roms       -- contains subdirectories for various rom images:
+   armorattack      barrier     BlackWidow  cosmicchasm  Gravitar     qb3       ripoff      SpaceDuel  speedfreak  starhawk  tailgunner  vectrex         warrior
+   AsteroidsDeluxe  Battlezone  boxingbugs  demon        LunarLander  RedBaron  solarquest  spacewars  starcastle  sundance  Tempest     waroftheworlds
+
+The vectrex roms belonging to GCE have been made public, in a letter from the owner, Jay Smith.  These should be placed in /opt/pitrex/roms/vectrex/
+- the rom names and extensions are currently expected to be in upper case.
+
 
 These are the files in our working directory. They may not all be necessary - we'll remove unnecessary ones from this list later.
 
 At the moment ${PIROOT}tailgunner/ and ${PIROOT}asteroids_sbt/ are the only ones that are given the static binary translation treatment.  The others are emulated.  The emulators all need some work to adapt the games for the Vectrex control panel.  When we started this we did not envisage having access to USB peripherals on the PiTrex's Raspberry Pi Zero, so the original controller code is unlikely to work and may have to be put back in from an older version of the emulation.
 
-a377b3b34e4a4ca8b0048ea4ba53c480  cinematronics/roms/tailgunner/tailg.t7
-96bf9adaa9d21ab5fd5ed7fc26759486  cinematronics/roms/tailgunner/tailg.p7
-df68e2d4bd5e58513cb6e3a33768483b  cinematronics/roms/tailgunner/tailg.u7
-1d93d2e15e85ae30c9e2d850e3f3aae9  cinematronics/roms/tailgunner/tailg.r7
+At the moment the static binary translations look for their roms in their local directories.  That is currently being changed so that they will be found in the common area in /opt/pitrex/roms ...
+
+a377b3b34e4a4ca8b0048ea4ba53c480  tailgunner/tailg.t7
+96bf9adaa9d21ab5fd5ed7fc26759486  tailgunner/tailg.p7
+df68e2d4bd5e58513cb6e3a33768483b  tailgunner/tailg.u7
+1d93d2e15e85ae30c9e2d850e3f3aae9  tailgunner/tailg.r7
 
 e6c34b639fe16deff0f951be63076812  asteroids_sbt/035127.02
 ca4f0146fb806f58a12e3e69d8fd7277  asteroids_sbt/035145.02

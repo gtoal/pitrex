@@ -30,7 +30,7 @@ static void quit(void);
 
 #ifdef FILESYSTEM
 /* command line arguments */
-static char *bios_filename = "bios.bin";
+static char *bios_filename = "/opt/pitrex/roms/vectrex/bios.bin"; // hard-coded path temporary for now
 static char *cart_filename = NULL;
 static char *overlay_filename = NULL;
 static char fullscreen = 0;
@@ -201,13 +201,14 @@ static void emuloop(void)
 	}
 }
 
-#define SETTINGS_SIZE 1024
-unsigned char settingsBlob[SETTINGS_SIZE];
+//#define SETTINGS_SIZE 1024
+//unsigned char settingsBlob[SETTINGS_SIZE];
 static int init(void)
 {
 	vectrexinit (1);
 	v_init();
-        v_loadSettings("vecxEmul", settingsBlob, SETTINGS_SIZE);
+        //v_loadSettings("vecxEmul", settingsBlob, SETTINGS_SIZE);
+	v_setName("vecxEmul");
         return 1;
 }
 

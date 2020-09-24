@@ -26,9 +26,23 @@ function ctrl_c() {
     echo -n ondemand | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor > /dev/null
 }
 
-echo -n performance | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor > /dev/null
-sudo tvservice --off
-sudo ./vecx ./roms/$1.BIN
+if [ -f /opt/pitrex/roms/vectrex/$1.BIN ] ; then
+    echo -n performance | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor > /dev/null
+    sudo tvservice --off
+    sudo ./vecx /opt/pitrex/roms/vectrex/$1.BIN
+elif [ -f /opt/pitrex/vectrex/$1.BIN ] ; then
+    echo -n performance | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor > /dev/null
+    sudo tvservice --off
+    sudo ./vecx /opt/pitrex/vectrex/$1.BIN
+elif [ -f ./roms/$1.BIN ] ; then
+    echo -n performance | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor > /dev/null
+    sudo tvservice --off
+    sudo ./vecx `pwd`/roms/$1.BIN
+else
+    echo "Please put the Vectrex roms \( upper case filenames\) in /opt/pitrex/roms/vectrex/"
+    exit 1
+fi
+
 sudo tvservice -p
 sudo chvt 2                      # change to different virtual terminal
 sudo chvt 1                      # change back to the previous virtual terminal

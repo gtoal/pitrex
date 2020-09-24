@@ -7044,15 +7044,16 @@ void vgSetRotateFlip (int rotate, int flipX, int flipY)
 
 void cineInit (unsigned char *progdata, unsigned char *optkeymap)
 {
-#define SETTINGS_SIZE 1024
-   static unsigned char settingsBlob[SETTINGS_SIZE];
+  //#define SETTINGS_SIZE 1024
+  // static unsigned char settingsBlob[SETTINGS_SIZE];
 
    DEBUG_OUT("cineInit( unsigned char *progdata, unsigned char *optkeymap );\n");
 
    // copy from progdata[] to rom[] NEEDS TO KNOW ROM SIZE
    {int i; for (i = 0; i < 0x8000; i++) rom[i] = progdata[i];}
    //fprintf(stderr, "Calling v_loadSettings\n");
-   v_loadSettings (ccpu_game_name, settingsBlob, SETTINGS_SIZE);
+   // v_loadSettings (ccpu_game_name, settingsBlob, SETTINGS_SIZE);
+   v_setName(ccpu_game_name);
    //fprintf(stderr, "Returned from v_loadSettings\n");
    DEBUG_OUT("v_loadSettings(\n\"%s\"\n);\n", settingsBlob);
 }

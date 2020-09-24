@@ -118,7 +118,7 @@ void main (int argc, char **argv)
 
    cineSetGame (argv[1], Game);
 
-   sprintf (TempBfr, "ini/%s.ini", argv[1]);
+   sprintf (TempBfr, "/opt/pitrex/ini/%s.ini", argv[1]); // temporarily hard-coded until we have something better such as 'pathopen()'
 
    err = openIniFile (TempBfr);
    if (err != iniErrOk)

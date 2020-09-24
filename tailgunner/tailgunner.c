@@ -538,7 +538,7 @@ int main(int argc, char **argv)
   printf("Load Param = %s\r\n", ppp);
   
   //v_loadSettings("tailgunner", settingsBlob, SETTINGS_SIZE);
-  v_setName("tailgunner");
+  v_setName("tailgunner_sbt");
   
   rom[0x03CD] = 0xff; // suppress the shield pattern - we'll redraw it ourselves...
 
@@ -560,7 +560,7 @@ int main(int argc, char **argv)
   initTailGunner();
   v_setRefresh(76); usePipeline = 2; // translated code calls wait for refresh twice per frame in rapid succession
   optimizationON = 0; // don't optimise, ie reset to 0 for every line... - game is more than fast enough to handle it
-  v_setName("tailgunner");
+  v_setName("tailgunner_sbt");
 
   // need to add refresh rate and correct double buffering option!
   

@@ -48,8 +48,8 @@ int window_width, window_height;
 
 char *ProgName = "NameUnset";
 
-#define SETTINGS_SIZE 1024
-unsigned char settingsBlob[SETTINGS_SIZE];
+//#define SETTINGS_SIZE 1024
+//unsigned char settingsBlob[SETTINGS_SIZE];
 extern int vectrexinit (char viaconfig);
 
 void gameCommand(void)
@@ -66,7 +66,8 @@ void init_graphics ( int p_smallwindow, int p_use_pixmap, int p_line_width, char
   // INIT VECTREX GRAPHICS HERE
   vectrexinit(1);
   v_init();
-  v_loadSettings(ProgName, settingsBlob, SETTINGS_SIZE);
+  //v_loadSettings(ProgName, settingsBlob, SETTINGS_SIZE);
+  v_setName(ProgName);
 #ifdef PITREX_DEBUG
   userCommandList = vecSimCommandList;
 #endif

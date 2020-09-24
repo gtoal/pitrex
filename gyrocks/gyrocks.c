@@ -736,8 +736,8 @@ void video()
 
 extern int vectrexinit (char viaconfig);
 
-#define SETTINGS_SIZE 1024
-unsigned char settingsBlob[SETTINGS_SIZE];
+//#define SETTINGS_SIZE 1024
+//unsigned char settingsBlob[SETTINGS_SIZE];
 
 /* Setup all */
 void setup()
@@ -745,7 +745,8 @@ void setup()
   vectrexinit(1);
   v_init();
   usePipeline = 2; //usePipeline = 0 => no size adjustment, glitches
-  v_loadSettings("gyrocks", settingsBlob, SETTINGS_SIZE);
+  //v_loadSettings("gyrocks", settingsBlob, SETTINGS_SIZE);
+  v_setName("gyrocks");
   v_setRefresh(60);
   // needs to have scaling added - these sizes fix it for average screen:
   // stretch x,y: 0.54 0.65

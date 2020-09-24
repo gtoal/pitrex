@@ -452,7 +452,8 @@ void cineExecuteFrame (void)
      // ie don't draw shields after the game is over
       DrawShields();
     }
-    do cineExecute(); while (bNewFrame != 1);
+    do cineExecute(); while (bNewFrame != 1); // bNewFrame is set TWICE per frame by the translated code
+                                              // hence why the refresh rate is set to 76 rather than 38.
 }
 
 void initTailGunner (void)
@@ -522,14 +523,13 @@ int startTailgunner()
 int vectrexinit (char viaconfig);
 
 #ifdef FREESTANDING
-#define SETTINGS_SIZE 1024
-unsigned char settingsBlob[SETTINGS_SIZE];
+//#define SETTINGS_SIZE 1024
+//unsigned char settingsBlob[SETTINGS_SIZE];
 
 
 
 int main(int argc, char **argv)
 {
-  
   vectrexinit(1);
   optimizationON = 0; // don't optimise, ie reset to 0 for every line...
   initTailGunner();
@@ -537,8 +537,9 @@ int main(int argc, char **argv)
   char * ppp = getLoadParameter();
   printf("Load Param = %s\r\n", ppp);
   
-  v_loadSettings("tailgunner", settingsBlob, SETTINGS_SIZE);
-
+  //v_loadSettings("tailgunner", settingsBlob, SETTINGS_SIZE);
+  v_setName("tailgunner");
+  
   rom[0x03CD] = 0xff; // suppress the shield pattern - we'll redraw it ourselves...
 
   for (;;)
@@ -554,20 +555,27 @@ int main(int argc, char **argv)
 int main(int argc, char **argv)
 {
   vectrexinit(1);
+  // v_init() is called in initGraph which is called from initTailGunner
+  // - might be better to move that here?
   initTailGunner();
+  v_setRefresh(76); usePipeline = 2; // translated code calls wait for refresh twice per frame in rapid succession
+  optimizationON = 0; // don't optimise, ie reset to 0 for every line... - game is more than fast enough to handle it
+  v_setName("tailgunner");
+
+  // need to add refresh rate and correct double buffering option!
+  
   rom[0x03CD] = 0xff; // suppress the shield pattern - we'll redraw it ourselves...
 
-for (;;)
-{
-  cineExecuteFrame ();
-}
+  for (;;) {
+    cineExecuteFrame ();
+  }
 
   exit(0);
   return 0;
 }
 
 #else
-#ifdef PI3
+#ifdef PI3 // NO LONGER USED but keep the code in case we try this again some time...
 //int i;
 
 extern void _enable_interrupts(void);

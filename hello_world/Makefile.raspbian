@@ -14,14 +14,14 @@ CC := gcc
 .PHONY: dirCheck
 
 
-all:	dirCheck pitrexLib hello window bootmsg maze perspective drawships pacman cube gimms
+all:	dirCheck pitrexLib hello calibrate window bootmsg maze perspective drawships pacman cube gimms
 	echo All up to date
 
 dirCheck:
 	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
 
 clean:
-	$(RM) $(BUILD_DIR)*.* *~ hello bootmsg window maze perspective
+	$(RM) $(BUILD_DIR)*.* *~ hello bootmsg calibrate window maze perspective
 
 pitrexLib:
 	$(MAKE) -C $(PITREX_DIR) -f Makefile.raspbian all
@@ -68,6 +68,9 @@ bootmsg: $(BUILD_DIR)bootmsg.o pitrexLib
 
 $(BUILD_DIR)window.o: window.c
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)window.o -c window.c
+
+$(BUILD_DIR)calibrate.o: calibrate.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)calibrate.o -c calibrate.c
 
 $(BUILD_DIR)windowmain.o: window.c
 	$(CC) $(CFLAGS) -DMAIN -o $(BUILD_DIR)windowmain.o -c window.c
@@ -117,6 +120,12 @@ gimms: gimms.c $(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
         	   $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
 	$(RM) gimms
 	$(CC) $(CFLAGS) -o gimms $(PITREX_DIR)$(BUILD_DIR)bcm2835.o $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o gimms.c
+
+calibrate: $(BUILD_DIR)calibrate.o $(BUILD_DIR)window.o \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
+	$(CC) $(CFLAGS) -o calibrate $(BUILD_DIR)calibrate.o $(BUILD_DIR)window.o $(PITREX_DIR)$(BUILD_DIR)bcm2835.o $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
 
 window: $(BUILD_DIR)windowmain.o $(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
        		   $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \

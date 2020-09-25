@@ -24,14 +24,14 @@ AR	= arm-none-eabi-ar
 
 #bootmsg.img doesn't make sense in baremetal
 
-all:	dirCheck pitrexLib hello.img  window.img  maze.img  perspective.img  pacman.img  cube.img
+all:	dirCheck pitrexLib hello.img calibrate.img window.img  maze.img  perspective.img  pacman.img  cube.img
 	echo All up to date
 
 dirCheck:
 	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
 
 clean:
-	$(RM) $(BUILD_DIR)*.* *~ hello.img window.img maze.img perspective.img cube.img pacman.img
+	$(RM) $(BUILD_DIR)*.* *~ hello.img calibrate.img window.img maze.img perspective.img cube.img pacman.img
 
 pitrexLib:
 	$(MAKE) -C $(PITREX_DIR) -f Makefile.baremetal all
@@ -81,6 +81,32 @@ pacman.img: $(BUILD_DIR)pacman.o # pitrexLib
 	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
 	$(BUILD_DIR)pacman.o -lm -lff12c  -ldebug  -lhal -lutils -lconsole -lff12c -lbob -li2c -lbcm2835 -larm $(LIB_DIR)/linkerHeapDefBoot.ld
 	arm-none-eabi-objcopy $(BUILD_DIR)pacman.elf.img -O binary pacman.img
+
+$(BUILD_DIR)window.o: window.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)window.o -c window.c
+
+$(BUILD_DIR)calibrate.o: calibrate.c
+	$(CC) -DMAIN $(CFLAGS) -o $(BUILD_DIR)calibrate.o -c calibrate.c
+
+calibrate.img: $(BUILD_DIR)calibrate.o $(BUILD_DIR)window.o # pitrexLib
+	$(RM) calibrate.img
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)calibrate.elf.img \
+	$(LOADER_DIR)$(BUILD_DIR)baremetalEntry.o \
+	$(LOADER_DIR)$(BUILD_DIR)bareMetalMain.o \
+	$(LOADER_DIR)$(BUILD_DIR)cstubs.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-armtimer.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-aux.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-gpio.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-interrupts.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-systimer.o \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)window.o \
+	$(BUILD_DIR)calibrate.o -lm -lff12c  -ldebug  -lhal -lutils -lconsole -lff12c -lbob -li2c -lbcm2835 -larm $(LIB_DIR)/linkerHeapDefBoot.ld
+	arm-none-eabi-objcopy $(BUILD_DIR)calibrate.elf.img -O binary calibrate.img
 
 $(BUILD_DIR)windowmain.o: window.c
 	$(CC) -DMAIN $(CFLAGS) -o $(BUILD_DIR)windowmain.o -c window.c

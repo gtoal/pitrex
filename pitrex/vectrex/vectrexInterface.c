@@ -3114,11 +3114,34 @@ int v_loadSettings(char *name, unsigned char *blob, int blobSize)
   FILE *fileRead;
   char *settingsDir = SETTINGS_DIR;
 
+/* Figure out current path in Linux, where settings are at an absolute path */
+#ifndef FREESTANDING
+  long pwdmax;
+  char *defaultpwd = "..";
+  char *pwd;
+
+  pwdmax = pathconf(".", _PC_PATH_MAX);
+  pwd = malloc(pwdmax * sizeof(*pwd));
+
+  if (getcwd(pwd, pwdmax) == NULL)
+  {
+   printf("Couldn't retrieve current directory path!\r\n");
+   free(pwd);
+   pwd = defaultpwd;
+  }
+//printf("Path is: %s\n", pwd);
+#else
+  char *pwd = "..";
+#endif
+
   int err=0;
   err = chdir (settingsDir);
   if (err)
   {
     printf("NO settings directory found (%i) at \"%s\"!\r\n", errno, settingsDir);
+#ifndef FREESTANDING
+    free(pwd);
+#endif
     return 0;
   }
 
@@ -3138,7 +3161,10 @@ int v_loadSettings(char *name, unsigned char *blob, int blobSize)
    if (fileRead == 0)
    {
      printf("Could not open settings file (%i) \r\n", errno);
-     err = chdir("..");
+     err = chdir(pwd);
+#ifndef FREESTANDING
+     free(pwd);
+#endif
      return 0;
    }
   }
@@ -3149,11 +3175,17 @@ int v_loadSettings(char *name, unsigned char *blob, int blobSize)
   {
     printf("Read(1) fails (len loaded: %i) (Error: %i)\r\n", lenLoaded, errno);
     fclose(fileRead);
-    err = chdir("..");
+    err = chdir(pwd);
+#ifndef FREESTANDING
+    free(pwd);
+#endif
     return 0;
   }
   applyLoadedSettings();
-  err = chdir("..");
+  err = chdir(pwd);
+#ifndef FREESTANDING
+  free(pwd);
+#endif
   return 1;
 }
 
@@ -3168,11 +3200,34 @@ int v_saveSettings(char *name, unsigned char *blob, int blobSize)
   FILE *fileWrite;
   char *settingsDir = SETTINGS_DIR;
 
+/* Figure out current path in Linux, where settings are at an absolute path */
+#ifndef FREESTANDING
+  long pwdmax;
+  char *defaultpwd = "..";
+  char *pwd;
+
+  pwdmax = pathconf(".", _PC_PATH_MAX);
+  pwd = malloc(pwdmax * sizeof(*pwd));
+
+  if (getcwd(pwd, pwdmax) == NULL)
+  {
+   printf("Couldn't retrieve current directory path!\r\n");
+   free(pwd);
+   pwd = defaultpwd;
+  }
+//printf("Path is: %s\n", pwd);
+#else
+  char *pwd = "..";
+#endif
+
   int err=0;
   err = chdir (settingsDir);
   if (err)
   {
     printf("NO settings directory found (%i) at \"%s\"!\r\n", errno, settingsDir);
+#ifndef FREESTANDING
+    free(pwd);
+#endif
     return 0;
   }
 
@@ -3194,7 +3249,10 @@ int v_saveSettings(char *name, unsigned char *blob, int blobSize)
   if (fileWrite == 0)
   {
     printf("Could not open file (%i) \r\n", errno);
-    err = chdir("..");
+    err = chdir(pwd);
+#ifndef FREESTANDING
+    free(pwd);
+#endif
     return 0;
   }
   unsigned int lenSaved=0;
@@ -3203,12 +3261,18 @@ int v_saveSettings(char *name, unsigned char *blob, int blobSize)
   {
     printf("File not saved (1) (size written = %i) (error: %i)\r\n", lenSaved, errno);
     fclose(fileWrite);
-    err = chdir("..");
+    err = chdir(pwd);
+#ifndef FREESTANDING
+    free(pwd);
+#endif
     return 0;
   }
   fclose(fileWrite);
 
-  err = chdir("..");
+  err = chdir(pwd);
+#ifndef FREESTANDING
+  free(pwd);
+#endif
   return 1;
 }
 

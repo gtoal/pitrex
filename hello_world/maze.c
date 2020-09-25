@@ -232,6 +232,7 @@ int main(int argc, char **argv) {
   ScreenPosX = -240; ScreenPosY = -180; // center
   Size_X = ScreenSizeX / 10; Size_Y = ScreenSizeY / 10;
   vectrexinit(1);
+  v_setName("maze");
   v_init();
   usePipeline = 1;
   v_setRefresh(60);

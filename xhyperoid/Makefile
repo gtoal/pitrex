@@ -10,7 +10,7 @@ BUILD_DIR := $(BUILD_DIR_PURE)/
 PITREX_DIR := ../pitrex/pitrex/
 VECTREX_DIR := ../pitrex/vectrex/
 
-CFLAGS=-Ofast -Wall -I./lib -I../pitrex/ -DUART0 -DPIZERO -DRPI0 -DAVOID_TICKS -DDISABLE_FIQ
+CFLAGS=-Ofast -I./lib -I../pitrex/ -DUART0 -DPIZERO -DRPI0 -DAVOID_TICKS -DDISABLE_FIQ
 # -DRTSCHED
 
 # You'll need to comment this out on most non-Linux systems to disable

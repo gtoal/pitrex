@@ -60,6 +60,7 @@ main (int argc, char **argv)
   float rotz = 0;		// starting amount of z rotation
 
   vectrexinit (1);
+  v_setName("cube");
   v_init ();
   v_setRefresh (60);
   for (;;)

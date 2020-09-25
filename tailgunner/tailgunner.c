@@ -532,13 +532,13 @@ int main(int argc, char **argv)
 {
   vectrexinit(1);
   optimizationON = 0; // don't optimise, ie reset to 0 for every line...
+  v_setName("tailgunner_sbt");
   initTailGunner();
 
   char * ppp = getLoadParameter();
   printf("Load Param = %s\r\n", ppp);
   
   //v_loadSettings("tailgunner", settingsBlob, SETTINGS_SIZE);
-  v_setName("tailgunner_sbt");
   
   rom[0x03CD] = 0xff; // suppress the shield pattern - we'll redraw it ourselves...
 
@@ -558,12 +558,12 @@ int main(int argc, char **argv)
   vectrexinit(1);
   // v_init() is called in initGraph which is called from initTailGunner
   // - might be better to move that here?
+  v_setName("tailgunner_sbt");
   initTailGunner();
   v_setRefresh(76);
   usePipeline = 1; // translated code calls wait for refresh twice per frame in rapid succession
   bufferType = 2; // 0 = none, 1 = double buffer, 2 = auto buffer (if pipeline is empty -> use previous
   optimizationON = 0; // don't optimise, ie reset to 0 for every line... - game is more than fast enough to handle it
-  v_setName("tailgunner_sbt");
 
   // need to add refresh rate and correct double buffering option!
   

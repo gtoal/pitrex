@@ -203,6 +203,7 @@ void Ghosts(void) {
 
 int main(int argc, char **argv) {
   vectrexinit(1);
+  v_setName("pacman");
   v_init();
   optimizationON = 1;
   v_setRefresh(50);

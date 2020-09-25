@@ -432,14 +432,15 @@ int main(int argc, char **argv) {
   int x,y,z, dist;
   char *progname, *p;
 
+  progname = argv[0];
+  p = strrchr(progname, '/'); if (p) progname = p+1;
+
   vectrexinit(1);
+  v_setName(progname);
   v_init();
   v_set_hardware_orientation(VECTREX_DEFAULT);
 
-  progname = argv[0];
-  p = strrchr(progname, '/'); if (p) progname = p+1;
   //v_loadSettings(progname, settingsBlob, SETTINGS_SIZE);
-  v_setName(progname);
 
   usePipeline = 1;   // should create procedures for these rather than use global variables.
                      // doesn't matter for now but should be cleaned up before we release

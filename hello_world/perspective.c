@@ -55,6 +55,7 @@ void DrawFrame(void) {
 
 int main(int argc, char **argv) {
   vectrexinit(1);
+  v_setName("perspective");
   v_init();
   usePipeline = 1;
   v_setRefresh(60);

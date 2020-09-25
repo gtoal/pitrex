@@ -1872,6 +1872,7 @@ void gimms_string(char *s, int x, int y, int spacing, int scaleMUL, int scaleDIV
 int main(int argc, char **argv) {
   int x, y;
   vectrexinit(1);
+  v_setName("gimms");
   v_init();
   optimizationON = 1;
   v_setRefresh(60);

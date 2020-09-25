@@ -743,10 +743,10 @@ extern int vectrexinit (char viaconfig);
 void setup()
 {
   vectrexinit(1);
+  v_setName("gyrocks");
   v_init();
   usePipeline = 2; //usePipeline = 0 => no size adjustment, glitches
   //v_loadSettings("gyrocks", settingsBlob, SETTINGS_SIZE);
-  v_setName("gyrocks");
   v_setRefresh(60);
   // needs to have scaling added - these sizes fix it for average screen:
   // stretch x,y: 0.54 0.65

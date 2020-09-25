@@ -8,8 +8,8 @@
 
 #include <pitrex/pitrexio-gpio.h>
 #include <vectrex/vectrexInterface.h>
-#define BINPATH "/opt/pitrex/"
-#define SOUNDPATH "/opt/pitrex/"
+#define BINPATH "/opt/pitrex/bin/"
+#define SOUNDPATH "/opt/pitrex/share/linmenu/"
 
 void loadAndStart(char FILE_NAME[], char *parameter)
 {
@@ -127,6 +127,7 @@ void main()
 //    selectionStart
 
     loadAndPlayRAW();
+    v_setName("linux_menu");
     v_init(); // vectrex interface
     usePipeline = 1;
     

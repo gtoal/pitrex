@@ -83,9 +83,9 @@ static void load_overlay()
 static int init(void)
 {
 	vectrexinit(1);
+	v_setName("vecxDirect"); // not sure if this does anything with the direct emulator!
 	v_init();
         //v_loadSettings("vecxDirect", settingsBlob, SETTINGS_SIZE);
-	v_setName("vecxDirect"); // not sure if this does anything with the direct emulator!
         return 1;
 }
 

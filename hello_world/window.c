@@ -121,7 +121,11 @@ int main(int argc, char **argv) {
   //static unsigned char settingsBlob[SETTINGS_SIZE];
   char *progname, *p;
 
+  progname = argv[0];
+  p = strrchr(progname, '/'); if (p) progname = p+1;
+
   vectrexinit(1);
+  v_setName(progname);
   v_init();
 
   // orientation will be passed in by Malban. (Would be nice if done by v_init for us.)
@@ -133,10 +137,7 @@ int main(int argc, char **argv) {
   else if (*argv[1] == '3') v_set_hardware_orientation(VECTREX_HORIZONTAL_INVERTED);
   else v_set_hardware_orientation(VECTREX_DEFAULT);
 
-  progname = argv[0];
-  p = strrchr(progname, '/'); if (p) progname = p+1;
   //v_loadSettings(progname, settingsBlob, SETTINGS_SIZE);
-  v_setName(progname);
 
   usePipeline = 1;   // should create procedures for these rather than use global variables.
                      // doesn't matter for now but will be needed if we invent a serial

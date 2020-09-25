@@ -108,11 +108,11 @@ void PiTrexInit(void)
   //#define SETTINGS_SIZE 1024
   //static unsigned char settingsBlob[SETTINGS_SIZE];
     vectrexinit(1);
+    v_setName("vmmenu");
     v_init();
     v_set_hardware_orientation(VECTREX_DEFAULT);
     v_setRefresh(50);
     //v_loadSettings("vmmenu", settingsBlob, SETTINGS_SIZE);
-    v_setName("vmmenu");
     usePipeline = 1;   // should create procedures for these rather than use global variables.
                        // doesn't matter for now but should be cleaned up before we release
     bufferType = 2;

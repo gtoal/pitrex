@@ -10,6 +10,7 @@ void startFrame()
 
 int main(int argc, char **argv) {
   vectrexinit(1);
+  v_setName("hello");
   v_init();
   v_setRefresh(60);
   for (;;)

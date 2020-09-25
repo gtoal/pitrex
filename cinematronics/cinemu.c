@@ -32,11 +32,6 @@ void main (int argc, char **argv)
    int Game = 0;
    int err;
 
-   vectrexinit (1);
-   v_init ();
-   usePipeline = 1;
-   v_setRefresh (60); // need to work on 38/76 to match hardware...
-
 #ifdef FREESTANDING
    char *_argv[3];
    _argv[0] = "cine.img";
@@ -163,6 +158,11 @@ void main (int argc, char **argv)
    // #################################################################################
    cineInit (ProgData, OptKeyMap);	// setup segment pointer, reset breakpoints
    cineReset ();		// called after ini file has been read.
+
+   vectrexinit (1);
+   v_init ();
+   usePipeline = 1;
+   v_setRefresh (60); // need to work on 38/76 to match hardware...
 
    switch (Game) {
 

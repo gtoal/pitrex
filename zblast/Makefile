@@ -23,7 +23,7 @@ VECTREX_DIR := ../pitrex/vectrex/
 # these settings are for gcc; try just "-O" if you're using some other
 # compiler.
 #
-OPTOPT=-Ofast -Wall -I./lib -I../pitrex/ -DPIZERO -DRPI0 -DAVOID_TICKS -DDISABLE_FIQ
+OPTOPT=-Ofast -I./lib -I../pitrex/ -DPIZERO -DRPI0 -DAVOID_TICKS -DDISABLE_FIQ
 # -DWINDOW
 # -DRTSCHED
 # comment this out if you're not compiling on Linux.

@@ -206,9 +206,9 @@ static void emuloop(void)
 static int init(void)
 {
 	vectrexinit (1);
+	v_setName("vecxEmul");
 	v_init();
         //v_loadSettings("vecxEmul", settingsBlob, SETTINGS_SIZE);
-	v_setName("vecxEmul");
         return 1;
 }
 

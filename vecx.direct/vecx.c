@@ -21,6 +21,11 @@
 #include "e6809.h"
 #include "bios.i"
 
+#ifdef AVOID_TICKS
+unsigned char linuxIntDisabled=0;
+unsigned int linuxIntGap=0;
+#endif
+
 uint8_t cart[64738];
 uint8_t ram[1024];
 
@@ -288,7 +293,10 @@ inline void via_write(uint16_t address, uint8_t data)
 		VIA.t1lh = data;
 		VIA.t1c = (VIA.t1lh << 8) | VIA.t1ll;
 		VIA.ifr &= 0xbf; /* remove timer 1 interrupt flag */
-
+#ifdef AVOID_TICKS
+		if (linuxIntGap == 0)
+		 linuxIntGap = VIA.t1ll;//(VIA.t1c + SCALETOTAL_OFFSET) * DELAY_PI_CYCLE_EQUIVALENT;
+#endif
 		VIA.t1on = 1; /* timer 1 starts running */
 		VIA.t1int = 1;
 		VIA.t1pb7 = 0;
@@ -320,6 +328,10 @@ inline void via_write(uint16_t address, uint8_t data)
 	case 0xa:
 		VIA.alternate = 1;
 		VIA.sr = data;
+#ifdef AVOID_TICKS
+		if (data == 0)
+		 linuxIntGap = 0;
+#endif
 		VIA.ifr &= 0xfb; /* remove shift register interrupt flag */
 		VIA.srb = 0;
 		VIA.srclk = 1;
@@ -609,6 +621,18 @@ void vecx_emu(int32_t cycles)
 			if (delayVia!=0)
 			{
 //  PMNC(CYCLE_COUNTER_ENABLE|CYCLE_COUNTER_RESET|COUNTER_ZERO);
+#ifdef AVOID_TICKS
+			  if (linuxIntGap == 0 && linuxIntDisabled > 0)
+			  {
+			   enableLinuxInterrupts();
+			   linuxIntDisabled = 0;
+			  }
+			  else if (linuxIntDisabled == 0)
+			  {
+			   disableLinuxInterrupts(linuxIntGap);
+			   linuxIntDisabled = 1;
+			  }
+#endif
 			  SET(delayVia, delayData);
 //			unsigned int waited  = get_cyclecount();
 //  printf("VIA ACCESS: %i \r\n", waited);
@@ -620,4 +644,15 @@ void vecx_emu(int32_t cycles)
 		}
 
 	}
+#ifdef AVOID_TICKS
+/* Make sure that Linux interrupts are enabled before exit when Vectrex reset pressed
+ * This probably does allow some glitches through.
+ * - Actually this doesn't work, but I don't know what else to do :(
+ */
+if (linuxIntDisabled > 0)
+{
+ enableLinuxInterrupts();
+ linuxIntDisabled = 0;
+}
+#endif
 }

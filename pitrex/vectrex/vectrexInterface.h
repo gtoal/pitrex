@@ -70,6 +70,13 @@ extern int (*executeDebugger)(int);
 #define BCM2835_INT_FIQ       0x20C
 #endif
 
+/* These are useful if programs want to do real-time reads/writes directly
+ * to the VIA via pitrexio-gpio intstead of via the Vectrex Interface
+ * library functions. eg. VecX.direct.
+ */
+void disableLinuxInterrupts(unsigned int minOffset);
+void enableLinuxInterrupts();
+
 ////////////////////////////////////////////////////////////////////////////
 // sound stuff
 ////////////////////////////////////////////////////////////////////////////

@@ -114,9 +114,6 @@ unsigned char *rasterlines[7]=
 	rasterline1,rasterline2,rasterline3,rasterline4,rasterline5,rasterline6,rasterline7
 };
 
-void disableLinuxInterrupts(unsigned int minOffset);
-void enableLinuxInterrupts();
-
 // positions using scale $7f
 // position in 8bit vectrex format
 // zeroes before positioning

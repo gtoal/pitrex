@@ -4,6 +4,7 @@ BUILD_DIR := $(BUILD_DIR_PURE)/
 PITREX_DIR := ../pitrex/pitrex/
 VECTREX_DIR := ../pitrex/vectrex/
 CFLAGS := -Ofast -I../pitrex/ -DPIZERO -DRPI0
+# -DAVOID_TICKS
 CC := gcc
 
 .PHONY: pitrexLib

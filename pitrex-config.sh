@@ -7,8 +7,6 @@
 # glitchy again).
 #
 # This script must be run under sudo.
-#
-# Kevin Koster.
 expand_tilde()
 {
     case "$1" in
@@ -23,10 +21,10 @@ expand_tilde()
 
 confirm() {
   local _prompt _default _response
- 
+
   if [ "$1" ]; then _prompt="$1"; else _prompt="Are you sure"; fi
   _prompt="$_prompt [y/n] ?"
- 
+
   # Loop forever until the user enters a valid response (Y/N or Yes/No).
   while true; do
     read -r -p "$_prompt " _response
@@ -55,6 +53,19 @@ if [ "$SUDO_USER" == "" ] ; then
     exit 1
 fi
 
+#Process command-line arguments:
+CONFIGONLY=
+YESTOALL=
+until [ -z "$1" ]
+do
+ case "$1" in
+	"-configonly")	CONFIGONLY=1 ;;
+	"-y")		YESTOALL=1 ;;
+	*)		echo "Invalid option: $1"; exit 1 ;;
+ esac
+ shift
+done
+
 echo "Adding configuration to config.txt"
 
 #Edit config.txt:
@@ -62,25 +73,22 @@ L1="`grep ^gpio=0-5,16-24,26-29=ip$ /boot/config.txt`"
 L2="`grep ^gpio=6-13,25=op$ /boot/config.txt`"
 L3="`grep ^gpio=24=np$ /boot/config.txt`"
 L4="`grep ^dtoverlay=dwc2,dr_mode=host$ /boot/config.txt`"
-L5="`grep ^dtoverlay= /boot/config.txt`"
+L5="`grep ^dtoverlay=dwc /boot/config.txt`"
 if [ "$L1" == "" ] || [ "$L2" == "" ] || [ "$L3" == "" ] ; then
     echo "[all]" >> /boot/config.txt   # just in case ...
     echo "# Configure GPIO for PiTrex" >> /boot/config.txt
 fi
 if [ "$L1" == "" ] ; then
-    echo "" >> /boot/config.txt
     echo "#Inputs" >> /boot/config.txt
     echo "gpio=0-5,16-24,26-29=ip" >> /boot/config.txt
     echo "added: gpio=0-5,16-24,26-29=ip"
 fi
 if [ "$L2" == "" ] ; then
-    echo "" >> /boot/config.txt
     echo "#Outputs"  >> /boot/config.txt
     echo "gpio=6-13,25=op" >> /boot/config.txt
     echo "added: gpio=6-13,25=op"
 fi
 if [ "$L3" == "" ] ; then
-    echo "" >> /boot/config.txt
     echo "#No pull-up/down on RDY" >> /boot/config.txt
     echo "gpio=24=np" >> /boot/config.txt
     echo "added: gpio=24=np"
@@ -89,7 +97,7 @@ fi
 if [ "$L4" == "" ] ; then
     if [ "$L5" != "" ] ; then
 	echo "WARNING: check /boot/config.txt for a potential clash between existing:"
-	echo -n "    "; grep ^dtoverlay= /boot/config.txt
+	echo -n "    "; grep ^dtoverlay=dwc /boot/config.txt
 	echo "       and the addition:"
 	echo "    dtoverlay=dwc2,dr_mode=host"
     fi
@@ -100,10 +108,13 @@ if [ "$L4" == "" ] ; then
     echo "added: dtoverlay=dwc2,dr_mode=host"
 fi
 
-echo "Creating /opt/pitrex folders"
+echo "Creating /opt/pitrex folders and linking to /boot"
 
-mkdir -p /opt/pitrex/bin /opt/pitrex/settings /opt/pitrex/roms /opt/pitrex/ini
-chown $SUDO_USER /opt/pitrex/bin /opt/pitrex/settings /opt/pitrex/roms /opt/pitrex/ini
+mkdir -p /opt/pitrex/bin /boot/roms /boot/settings /boot/ini
+[ -e /opt/pitrex/settings ] || ln -s /boot/settings /opt/pitrex/settings
+[ -e /opt/pitrex/ini ] || ln -s /boot/ini /opt/pitrex/ini
+[ -e /opt/pitrex/roms ] || ln -s /boot/roms /opt/pitrex/roms
+chown $SUDO_USER /opt/pitrex/bin
 
 # NOTE: by default this just goes into ROOT's .profile, we need a little
 # extra effort to put it in the calling user's .profile as well...
@@ -137,8 +148,10 @@ else
     echo "/opt/pitrex/bin already in path in $PRO"
 fi
 
-#Only parameter is "-configonly" so far.
-if [ "$1" ]; then
+echo "Adding pi user to bluetooth group"
+adduser pi bluetooth
+
+if [ $CONFIGONLY ]; then
  exit 0
 fi
 
@@ -151,33 +164,30 @@ if [ "$R1" != "" ] ; then
     echo "WARNING: rc.local configuration appears to have been done already."
 fi
 
-echo "Do you want to disable HDMI at boot time?"
-YN=$(confirm "Yes or No?")
+if [ -z $YESTOALL ]; then
+ echo "Do you want to disable HDMI and set performance to maximum at boot time?"
+ YN=$(confirm "Yes or No?")
+else
+ YN="y";
+fi
 
 if [ "$YN" == "y" ] ; then
 sed -i '/^exit 0$/i'' \
 #Disable HDMI/Composite video output:\
 tvservice \-o' /etc/rc.local
 echo "adding: tvservice -o to /etc/rc.local"
-fi
-
-if [ "$YN" == "n" ] ; then
+else
 sed -i '/^exit 0$/i'' \
 #Disable HDMI/Composite video output:\
 # tvservice \-o' /etc/rc.local
 fi
-
-echo "Do you want to set performance to maximum at boot time?"
-YN=$(confirm "Yes or No?")
 
 if [ "$YN" == "y" ] ; then
 sed -i '/^exit 0$/i'' \
 #Keep CPU frequency at maximum:\
 echo \-n performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor' /etc/rc.local
 echo "adding: performance mode to /etc/rc.local"
-fi
-
-if [ "$YN" == "n" ] ; then
+else
 sed -i '/^exit 0$/i'' \
 #Keep CPU frequency at maximum:\
 # echo \-n performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor' /etc/rc.local

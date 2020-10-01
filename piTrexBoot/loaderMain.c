@@ -109,6 +109,7 @@ void bootMenu(void)
   } MenuItem;
   MenuItem menuItems[] = {
     {"RASPBIAN", "kernel.img", ""},
+    {"CALIBRATE", "calibrate.img", ""},
     {"ASTEROIDS", "asteroids_sbt.img", ""},
     {"TAILGUNNER", "tailgunner.img", ""},
     {"VECX EMUL", "vecxemul.img", ""},

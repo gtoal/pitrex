@@ -131,7 +131,7 @@ int maxInDir = 0;
 void initEmulator()
 {
 #ifdef FREESTANDING
-    char *vectrexDir = "vectrex";
+    char *vectrexDir = "roms/vectrex";
 #else
     char *vectrexDir = "/opt/pitrex/roms/vectrex";
 #endif

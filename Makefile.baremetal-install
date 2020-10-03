@@ -1,0 +1,70 @@
+INSTALL=@echo sudo cp -v 
+
+# should merge this or something like it with Makefile.baremetal ?  This is a first draft...
+
+all:     /boot/asteroids.img      /boot/deluxe.img      /boot/spaceduel.img   /boot/vecxemuld.img \
+         /boot/asteroids_sbt.img  /boot/battlezone.img  /boot/gravitar.img    /boot/vecxemul.img \
+         /boot/blackwidow.img     /boot/gyrocks.img     /boot/lunar.img       /boot/tailgunner.img \
+         /boot/cine.img           /boot/hello.img       /boot/redbaron.img    /boot/tempest.img \
+	 /boot/kernel.img
+	@echo All up to date.
+
+/boot/linux.img: /boot/kernel.img
+	@file /boot/kernel.img | fgrep "Linux kernel ARM boot executable zImage" >/dev/null && ( echo "Backing up original linux kernel to /boot/linux.img"; ${INSTALL} /boot/kernel.img /boot/linux.img ) || (file /boot/linux.img | fgrep "Linux kernel ARM boot executable zImage" >/dev/null || echo "/boot/kernel.img already replaced - make sure /boot/linux.img contains a copy of the real linux kernel.img" )
+
+# /boot/kernel.img: 
+
+# /boot/loader.pit: 
+
+/boot/pitrex.img: /boot/linux.img piTrexBoot/pitrex.img
+	${INSTALL} piTrexBoot/pitrex.img /boot/pitrex.img
+
+/boot/asteroids_sbt.img: /boot/linux.img asteroids_sbt/asteroids_sbt.img
+	${INSTALL} asteroids_sbt/asteroids_sbt.img /boot/asteroids_sbt.img
+
+/boot/battlezone.img: /boot/linux.img battlezone/battlezone.img
+	${INSTALL} battlezone/battlezone.img /boot/battlezone.img
+
+/boot/blackwidow.img: /boot/linux.img blackwidow/blackwidow.img
+	${INSTALL} blackwidow/blackwidow.img /boot/blackwidow.img
+
+/boot/cine.img: /boot/linux.img cinematronics/cine.img
+	${INSTALL} cinematronics/cine.img /boot/cine.img
+
+/boot/deluxe.img: /boot/linux.img deluxe/deluxe.img
+	${INSTALL} deluxe/deluxe.img /boot/deluxe.img
+
+/boot/gravitar.img: /boot/linux.img gravitar/gravitar.img
+	${INSTALL} gravitar/gravitar.img /boot/gravitar.img
+
+/boot/gyrocks.img: /boot/linux.img gyrocks/gyrocks.img
+	${INSTALL} gyrocks/gyrocks.img /boot/gyrocks.img
+
+/boot/hello.img: /boot/linux.img hello_world/hello.img
+	${INSTALL} hello_world/hello.img /boot/hello.img
+
+/boot/lunar.img: /boot/linux.img lunar/lunar.img
+	${INSTALL} lunar/lunar.img /boot/lunar.img
+
+/boot/redbaron.img: /boot/linux.img redbaron/redbaron.img
+	${INSTALL} redbaron/redbaron.img /boot/redbaron.img
+
+/boot/spaceduel.img: /boot/linux.img spaceduel/spaceduel.img
+	${INSTALL} spaceduel/spaceduel.img /boot/spaceduel.img
+
+/boot/tailgunner.img: /boot/linux.img tailgunner/tailgunner.img
+	${INSTALL} tailgunner/tailgunner.img /boot/tailgunner.img
+
+/boot/tempest.img: /boot/linux.img tempest/tempest.img
+	${INSTALL} tempest/tempest.img /boot/tempest.img
+
+/boot/vecxemuld.img: /boot/linux.img vecx.direct/vecxemuld.img
+	${INSTALL} vecx.direct/vecxemuld.img /boot/vecxemuld.img
+
+/boot/vecxemul.img: /boot/linux.img vecx.emulated/vecxemul.img
+	${INSTALL} vecx.emulated/vecxemul.img /boot/vecxemul.img
+
+/boot/window.img: /boot/linux.img hello_world/window.img
+	${INSTALL} hello_world/window.img /boot/window.img
+
+# /boot/asteroids.img:    # superceded by other build - need to check which is the better one

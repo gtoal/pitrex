@@ -6,18 +6,20 @@ all:     /boot/asteroids.img      /boot/deluxe.img      /boot/spaceduel.img   /b
          /boot/asteroids_sbt.img  /boot/battlezone.img  /boot/gravitar.img    /boot/vecxemul.img \
          /boot/blackwidow.img     /boot/gyrocks.img     /boot/lunar.img       /boot/tailgunner.img \
          /boot/cine.img           /boot/hello.img       /boot/redbaron.img    /boot/tempest.img \
-	 /boot/kernel.img
+	 /boot/kernel.img         /boot/loader.pit
 	@echo All up to date.
 
 /boot/linux.img: /boot/kernel.img
 	@file /boot/kernel.img | fgrep "Linux kernel ARM boot executable zImage" >/dev/null && ( echo "Backing up original linux kernel to /boot/linux.img"; ${INSTALL} /boot/kernel.img /boot/linux.img ) || (file /boot/linux.img | fgrep "Linux kernel ARM boot executable zImage" >/dev/null || echo "/boot/kernel.img already replaced - make sure /boot/linux.img contains a copy of the real linux kernel.img" )
 
-# /boot/kernel.img: 
 
-# /boot/loader.pit: 
+/boot/loader.pit: /boot/linux.img piTrexBoot/loader.pit
+	${INSTALL} piTrexBoot/loader.pit /boot/loader.pit
 
+# avoid a circular dependency with /boot/kernel.img
 /boot/pitrex.img: /boot/linux.img piTrexBoot/pitrex.img
 	${INSTALL} piTrexBoot/pitrex.img /boot/pitrex.img
+	${INSTALL} piTrexBoot/pitrex.img /boot/kernel.img
 
 /boot/asteroids_sbt.img: /boot/linux.img asteroids_sbt/asteroids_sbt.img
 	${INSTALL} asteroids_sbt/asteroids_sbt.img /boot/asteroids_sbt.img

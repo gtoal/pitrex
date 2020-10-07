@@ -42,6 +42,7 @@ Some things that aren't working yet include:
 * Vectrex button mapping is poor or not working at all for some arcade emulations.
 * The Calibrate program doesn't work in Bare-Metal (nor do any other programs using the functions from the window.c example).
 * Vecx.direct is glitchy when running in Linux (can be fixed if built with -DAVOID_TICKS, but then can't exit).
+* VMMenu isn't yet able to load programs besides MAME.
 
 PiTrex Links:
 

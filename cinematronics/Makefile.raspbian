@@ -4,7 +4,9 @@ COMMON = $(BASE)pitrex/
 PITREX = $(COMMON)pitrex/
 VECTREX = $(COMMON)vectrex/
 
-CFLAGS = -DPITREX=1  -DPIZERO -DRPI0 -Ofast -I$(BASE) -I$(PITREX) -I$(VECTREX)  -I$(COMMON)
+INI_DIR = /opt/pitrex/ini
+
+CFLAGS = -DPITREX=1  -DPIZERO -DRPI0 -Ofast -I$(BASE) -I$(PITREX) -I$(VECTREX)  -I$(COMMON) -DINI_DIR="\"$(INI_DIR)\""
 
 CC := gcc
 BUILD_DIR_PURE := build.raspbian

@@ -13,6 +13,8 @@ PITREX_DIR := ../pitrex/pitrex/
 VECTREX_DIR := ../pitrex/vectrex/
 LOADER_DIR := ../piTrexBoot/
 
+INI_DIR = ini
+
 LOADER_OBJ := 	$(LOADER_DIR)$(BUILD_DIR)baremetalEntry.o \
 		$(LOADER_DIR)$(BUILD_DIR)bareMetalMain.o \
 		$(LOADER_DIR)$(BUILD_DIR)cstubs.o \
@@ -37,7 +39,7 @@ CINE_OBJ := 	$(BUILD_DIR)cineops.o \
 		$(BUILD_DIR)options.o
 
 # CFLAGS = -DPITREX=1 -DPIZERO -I$(BASE) -I$(PITREX) -I$(VECTREX)  -I$(COMMON)
-CFLAGS := -Wall -fuse-ld=bfd -Ofast -I$(INC_DIR_PITREX) -I$(INC_DIR_LIBRARY) -L$(LIB_DIR) -mfloat-abi=hard -nostartfiles -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -DRPI0 -DFREESTANDING -DPITREX_DEBUG -DMHZ1000 -DLOADER_START=0x4000000
+CFLAGS := -Wall -fuse-ld=bfd -Ofast -I$(INC_DIR_PITREX) -I$(INC_DIR_LIBRARY) -L$(LIB_DIR) -mfloat-abi=hard -nostartfiles -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -DRPI0 -DFREESTANDING -DPITREX_DEBUG -DMHZ1000 -DLOADER_START=0x4000000 -DINI_DIR="\"$(INI_DIR)\""
 CC	= arm-none-eabi-gcc
 AS	= $(CC)
 LD	= arm-none-eabi-ld

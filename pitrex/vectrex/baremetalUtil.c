@@ -5,7 +5,7 @@
 #include "baremetalUtil.h"
 #include "vectrexInterface.h"
 
-
+GlobalMemSettings *settings;
 
 // also disables data cache
 void mmu_disable(void)
@@ -63,9 +63,19 @@ void/*__attribute__ ((noinline)) */poke(unsigned int address, unsigned int value
      *((unsigned int *)address) = value;
 }
 
-char param[16];
+void setParameterAddress()
+{
+  GlobalMemSettings **settingsPointer;
+  settingsPointer = (GlobalMemSettings **)0x0000008c;
+  settings = *settingsPointer;
+
+  printf("SettingPointer: %08x, settings: %0x08", settingsPointer, settings);
+}
+
+//char param[16];
 char *getLoadParameter()
 {
+  setParameterAddress();
   return settings->parameter1;
   /*
   int adr = 0x90;

@@ -407,14 +407,9 @@ GlobalMemSettings *settings;
 GlobalMemSettings _settings;
 #endif
 void v_init()
-{ 
+{
 #ifdef FREESTANDING
-  GlobalMemSettings **settingsPointer;
-  settingsPointer = (GlobalMemSettings **)0x0000008c;
-  settings = *settingsPointer; 
-
-  printf("SettingPointer: %08x, settings: %0x08", settingsPointer, settings);
- 
+setParameterAddress();
 #else
  settings = &_settings;
 
@@ -548,19 +543,23 @@ void v_init()
 
 printf("1) Settings->flags = %02x\r\n", settings->flags);
   v_loadSettings(knownName, knownBlob, knownBlobSize);
+/*
   if ((settings->flags & GLOBAL_FLAG_IS_INIT) == 0)
   {
+*/
     printf("INIT Settings\r\n");
     // global settings not set yet
     settings->flags = settings->flags | GLOBAL_FLAG_IS_INIT;
     settings->orientation = orientation; // 0-3
     settings->lastSelection = 2; // start with tailgunner
+/*
   }
   else
   {
     printf("Settings were Init before \r\n");
     orientation = settings->orientation;
   }
+*/
 printf("2) Settings->flags = %02x\r\n", settings->flags);
 
 }

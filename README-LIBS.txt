@@ -30,7 +30,7 @@ Compiling Options:
 
 USE_EDR - This enables use of the BCM2835 Event Detection Register
           for detecting transition of the RDY signal from the PiTrex.
-UART0 - Current version of the pitrexio-gpio library automatically
+UART0 - Current versions of the pitrexio-gpio library automatically
         detect the Pi model that they are running on and configure
         the GPIO accordingly. If this fails, this causes it to
         default to using the UART0 configuration (suits the Pi Zero).
@@ -68,7 +68,7 @@ RTSCHED - Set the process priority to "real-time", or as close as we
 Consequences of, and need for, using those options may vary a lot
 depending on the Linux kernel version used. The Makefile is set for
 best compatibility with the current Raspberry Pi OS (when suitably
-pre-configured, as described on the piTrex Wiki).
+pre-configured, as described on the PiTrex Wiki).
 
 SVGAlib-Vectrex
 ===============
@@ -83,3 +83,7 @@ the PiTrex Wiki for more details.
 The files "intensitypalette.c" and "vectrextokeyboard.h" contain
 game-specific configuration of the colour to intensity translation,
 and the Vectrex controller button assignments to keyboard keys.
+
+The version used in Xhyperoid has been hacked a bit to improve
+the display. The version used by Zblast follows the original aim
+of minimising the need to modify the original game code.

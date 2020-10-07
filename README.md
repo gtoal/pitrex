@@ -9,7 +9,7 @@ This repository is currently aimed only at users of the PiTrex hardware - 'Devel
 Our intention is that everything you need to develop software for the PiTrex will be in this
 repository and that you should fetch the entire repository from git. eg.
 
-sudo apt-get install -y gcc-arm-none-eabi git-core libsdl2-dev libsdl2-2.0 libsdl2-mixer-2.0-0 libsdl2-mixer-dev locate
+sudo apt-get install -y gcc-arm-none-eabi git-core libsdl2-dev libsdl2-2.0 libsdl2-mixer-2.0-0 libsdl2-mixer-dev alsa-oss locate
 mkdir ~/src
 cd ~/src
 git clone https://github.com/gtoal/pitrex.git
@@ -38,9 +38,10 @@ More comprehensive installation instructions, along with lots of other documenta
 found at the PiTrex Wiki.
 
 Some things that aren't working yet include:
-* Tempest, and some other arcade emulations, don't display.
+* Tempest, and some Cinematronics arcade emulations, don't display (focus at the moment is on emulation with MAME instead).
 * Vectrex button mapping is poor or not working at all for some arcade emulations.
 * The Calibrate program doesn't work in Bare-Metal (nor do any other programs using the functions from the window.c example).
+* Vecx.direct is glitchy when running in Linux (can be fixed if built with -DAVOID_TICKS, but then can't exit).
 
 PiTrex Links:
 

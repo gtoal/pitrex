@@ -3,7 +3,7 @@
 #include <baremetal/rpi-gpio.h>
 #include <baremetal/rpi-aux.h>
 #include <bcm2835_vc.h>
-#include <ff.h> 
+#include <ff.h>
 
 #include <pitrex/pitrexio-gpio.h>
 #include <vectrex/vectrexInterface.h>
@@ -70,9 +70,9 @@ void loadAndStart(TCHAR FILE_NAME[], char *parameter)
             loaderSettings.parameter1[c++] =  (unsigned char) *parameter;
             parameter++;
             if (c==15) break;
-          } 
+          }
           loaderSettings.parameter1[c]= (unsigned char) 0;
-          
+
           printf("Starting loaded file... \r\n");
           isb();
           dsb();
@@ -98,7 +98,7 @@ int selectionMade;
 int selectionStart;
 
 
-// menu 
+// menu
 // todo read from disk...
 void bootMenu(void)
 {
@@ -122,7 +122,6 @@ void bootMenu(void)
     {"TEMPEST", "tempest.img", ""},
     {"LUNAR LANDER", "lunar.img", ""},
     {"BLACK WIDOW", "blackwidow.img", ""},
-    {"ASTEROIDS", "asteroids.img", ""},
     {"DELUXE", "deluxe.img", ""},
     {"RED BARON", "redbaron.img", ""},
     {"RIPOFF", "cine.img", "ripoff"},

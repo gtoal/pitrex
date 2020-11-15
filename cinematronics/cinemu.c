@@ -8,7 +8,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-  
+
 #include <pitrex/pitrexio-gpio.h>
 #include <vectrex/vectrexInterface.h>
 #include <vectrex/osWrapper.h>
@@ -113,7 +113,7 @@ void main (int argc, char **argv)
 
    cineSetGame (argv[1], Game);
 
-   sprintf (TempBfr, "/opt/pitrex/ini/%s.ini", argv[1]); // temporarily hard-coded until we have something better such as 'pathopen()'
+   sprintf (TempBfr, INI_DIR"/%s.ini", argv[1]); // temporarily hard-coded (now in header) until we have something better such as 'pathopen()'
 
    err = openIniFile (TempBfr);
    if (err != iniErrOk)

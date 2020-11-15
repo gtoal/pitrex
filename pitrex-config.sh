@@ -110,7 +110,7 @@ fi
 
 echo "Creating /opt/pitrex folders and linking to /boot"
 
-mkdir -p /opt/pitrex/bin /boot/roms /boot/settings /boot/ini
+mkdir -p /opt/pitrex/bin /opt/pitrex/share /boot/roms /boot/settings /boot/ini
 [ -e /opt/pitrex/settings ] || ln -s /boot/settings /opt/pitrex/settings
 [ -e /opt/pitrex/ini ] || ln -s /boot/ini /opt/pitrex/ini
 [ -e /opt/pitrex/roms ] || ln -s /boot/roms /opt/pitrex/roms

@@ -104,6 +104,7 @@ void vfp_deinit(void);
 int peek(unsigned int address);
 unsigned char peekByte(unsigned int address);
 void pokeByte(unsigned int address, unsigned char c);
+void setParameterAddress();
 char *getLoadParameter();
 
 void/*__attribute__ ((noinline)) */poke(unsigned int address, unsigned int value);

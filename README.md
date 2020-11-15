@@ -1,15 +1,15 @@
-# pitrex
+# PiTrex
 
-Support for driving a Vectrex display from a Raspberry Pi Zero WH.
+Support for controlling a Vectrex display and other I/O from a Raspberry Pi Zero WH.
 
 PiTrex is a open source/open hardware project.
 
 This repository is currently aimed only at users of the PiTrex hardware - 'Developer release'.
 
 Our intention is that everything you need to develop software for the PiTrex will be in this
-repository and that you should fetch the entire repository from git.
+repository and that you should fetch the entire repository from git. eg.
 
-sudo apt-get install -y gcc-arm-none-eabi git-core libsdl2-dev libsdl2-2.0 libsdl2-mixer-2.0-0 libsdl2-mixer-dev locate screen emacs
+sudo apt-get install -y gcc-arm-none-eabi git-core libsdl2-dev libsdl2-2.0 libsdl2-mixer-2.0-0 libsdl2-mixer-dev alsa-oss locate
 mkdir ~/src
 cd ~/src
 git clone https://github.com/gtoal/pitrex.git
@@ -30,7 +30,22 @@ gpio=6-13,25=op
 gpio=24=np
 dtoverlay=dwc2,dr_mode=host
 
+Add this line to boot to the PiTrex Bare-Metal menu:
+
+kernel pitrex.img
+
+More comprehensive installation instructions, along with lots of other documentation, can be
+found at the PiTrex Wiki.
+
+Some things that aren't working yet include:
+* Tempest, and some Cinematronics arcade emulations, don't display (focus at the moment is on emulation with MAME instead).
+* Vectrex button mapping is poor or not working at all for some arcade emulations.
+* The Calibrate program doesn't work in Bare-Metal (nor do any other programs using the functions from the window.c example).
+* Vecx.direct is glitchy when running in Linux (can be fixed if built with -DAVOID_TICKS, but then can't exit).
+* VMMenu isn't yet able to load programs besides MAME.
 
 PiTrex Links:
+
 Wiki: http://computernerdkev.heliohost.org/pitrex/wiki/
+
 Developer's Forum / Mailing List: https://groups.io/g/pitrex-dev

@@ -95,10 +95,15 @@ void do_keys ( void )
         WriteMemory(0x2406,0x80); else WriteMemory(0x2406,0x00); //B right or X
     if(keycode&0x00800000)
         WriteMemory(0x2405,0x80); else WriteMemory(0x2405,0x00); //volup thrust
-    if(keycode&0x00400000)
-        WriteMemory(0x2004,0x80); else WriteMemory(0x2004,0x00); //voldn fire
+    if(keycode&0x00400000) {
+        WriteMemory(0x2004,0x80);
+	WriteMemory(0x2403,0x80);
+    } else {
+        WriteMemory(0x2004,0x00); //voldn fire/start
+	WriteMemory(0x2403,0x00);
+    }
     if(keycode&0x00000100)
-        WriteMemory(0x2403,0x80); else WriteMemory(0x2403,0x00); // start
+        WriteMemory(0x2003,0x80); else WriteMemory(0x2003,0x00); // hyperspace
 }
 //------------------------------------------------------------------------
 void ADC ( unsigned char value )

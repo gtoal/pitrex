@@ -1,6 +1,10 @@
 #ifndef __VECX_H
 #define __VECX_H
 
+#ifdef FOURBANKS
+#include <stddef.h> // for size_t
+#endif
+
 enum
 {
 	VECTREX_MHZ = 1500000, /* speed of the vectrex being emulated */
@@ -34,8 +38,14 @@ typedef struct vector_type
 
 extern void(*vecx_render) (void);
 
+#ifdef FOURBANKS
+extern uint8_t bank;
+extern uint8_t bios[8192]; // not paged
+extern uint8_t cart[4][64*1024]; // support 48k eproms up to 4 banks (hopefully will allow Vectorblade to run)
+#else
 extern uint8_t rom[8192];
 extern uint8_t cart[32768];
+#endif
 extern uint8_t ram[1024];
 
 extern uint8_t snd_select;

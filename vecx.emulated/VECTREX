@@ -1,10 +1,17 @@
 #!/bin/bash
-# parameters not properly implemented yet - it fails and puts up a menu on the Vectrex
-if test -f ./vectrex/$1.BIN ; then
-    echo vecx: file roms/$1.BIN does not exist. \(current directory: `pwd`\)
+0;136;0c# parameters not properly implemented yet - it fails and puts up a menu on the Vectrex
+if [[ "$1" == "" ]] ; then
+  if [[ ! -d /opt/pitrex/roms/vectrex ]] ; then
+    echo vecx: directory /opt/pitrex/roms/vectrex does not exist. \(current directory: `pwd`\)
     exit 0
+  fi
+else
+  if [[ ! -f /opt/pitrex/roms/vectrex/$1.BIN ]] ; then
+    echo vecx: file /opt/pitrex/roms/vectrex/$1.BIN does not exist. \(current directory: `pwd`\)
+    exit 0
+  fi
 fi
-
+    
 trap ctrl_c INT
 
 function ctrl_c() {
@@ -26,20 +33,28 @@ function ctrl_c() {
     echo -n ondemand | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor > /dev/null
 }
 
-if [ -f /opt/pitrex/roms/vectrex/$1.BIN ] ; then
+if [[ "$1" == "" ]] ; then
+    echo -n performance | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor > /dev/null
+    sudo tvservice --off
+    # Minestorm.  Would be nice if vecx could put up a menu as in vecx.direct
+    sudo ./vecx
+elif [ -f /opt/pitrex/roms/vectrex/$1.BIN ] ; then
     echo -n performance | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor > /dev/null
     sudo tvservice --off
     sudo ./vecx /opt/pitrex/roms/vectrex/$1.BIN
 elif [ -f /opt/pitrex/vectrex/$1.BIN ] ; then
+    # deprecated location
     echo -n performance | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor > /dev/null
     sudo tvservice --off
     sudo ./vecx /opt/pitrex/vectrex/$1.BIN
 elif [ -f ./roms/$1.BIN ] ; then
+    # very deprecated location
     echo -n performance | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor > /dev/null
     sudo tvservice --off
     sudo ./vecx `pwd`/roms/$1.BIN
 else
-    echo "Please put the Vectrex roms \( upper case filenames\) in /opt/pitrex/roms/vectrex/"
+    echo "vecx: cannot find rom $1.BIN"
+    echo "Please put the Vectrex roms ( upper case filenames ) in /opt/pitrex/roms/vectrex/"
     exit 1
 fi
 

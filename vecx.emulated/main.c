@@ -44,7 +44,11 @@ static void load_bios(void)
 		perror(bios_filename);
 		quit();
 	}
+#ifdef FOURBANKS
+	if (fread(bios, 1, sizeof(bios), f) != sizeof(bios))
+#else
 	if (fread(rom, 1, sizeof(rom), f) != sizeof(rom))
+#endif
 	{
 		fprintf(stderr, "Invalid bios length\n");
 		quit();
@@ -52,18 +56,37 @@ static void load_bios(void)
 	fclose(f);
 }
 
-static void load_cart(void)
+static void load_cart(void)  // needs to be modified for 48K and banked cartridges
 {
 	memset(cart, 0, sizeof(cart));
 	if (cart_filename)
 	{
 		FILE *f;
+
+		// Note by happy coincidence, loading the 'big' vectorblade rom
+		// will work, since it is padded to a 4*64K image (and this code
+		// pulls out the ram and bios address space separately from the
+		// banked eprom)
+
+		// However to be more general, this code really should explicitly
+		// understand bank-switched rom images, and also should set a flag
+		// to indicate that bank-switching is in use, otherwise a change
+		// in PB6 or IRQ is liable to cause a spurious bank-switch in
+		// a non-banked rom, where there is nothing in the other bank
+		// images.
+
+		// A mask for the bank variable might be enough to do the trick. (0, 1, or 3)
+
 		if (!(f = fopen(cart_filename, "rb")))
 		{
 			perror(cart_filename);
 			return;
 		}
+#ifdef FOURBANKS
+		fread(cart[0], 1, 4*64*1024, f);
+#else
 		fread(cart, 1, sizeof(cart), f);
+#endif
 		fclose(f);
 	}
 }

@@ -1,6 +1,18 @@
+#ifdef FOURBANKS
+// The code that is conditionally included if compiled with -DFOURBANKS
+// is *under development* and is intended to support Vectorblade at
+// some point...  IT DOES NOT CURRENTLY WORK.
+
+#include <stdio.h> // for debugging bankswitch
+#endif
+
 #include <stdint.h>
 #include <pitrex/pitrexio-gpio.h>
 #include "e6522.h"
+
+#ifdef FOURBANKS
+#include "vecx.h" // for bank
+#endif
 
 VIA6522 VIA;
 
@@ -10,20 +22,50 @@ void(*via_write8_port_a) (uint8_t data);
 void(*via_write8_port_b) (uint8_t data);
 
 /* update IRQ and bit-7 of the ifr register after making an adjustment to
- * ifr.
+ * ifr.  Note that irq_i == (VIA.ifr & 0x80)
  */
 
 inline static void int_update(void)
 {
+#ifdef FOURBANKS
+  int oldbank = bank;
+        // This may be where we pick up the IRQ bit for handling 4-bank switching
+        // for vectorblade.  Update IRQ bit of 'bank' variable here?
+#endif
 	if ((VIA.ifr & 0x7f) & (VIA.ier & 0x7f))
 	{
 		VIA.ifr |= 0x80;
+#ifdef FOURBANKS
+		bank = (bank & ~2) | 2;
+#endif
 	}
 	else
 	{
 		VIA.ifr &= 0x7f;
+#ifdef FOURBANKS
+		bank = (bank & ~2) | 0;
+#endif
 	}
+#ifdef FOURBANKS
+	if (bank != oldbank) fprintf(stderr, "IRQ: Switching bank from %d to %d\n", oldbank, bank);
+#endif
 }
+
+#ifdef FOURBANKS
+inline static void setPB6FromVectrex(uint8_t orb, uint8_t ddrb, int init)
+{
+  uint8_t npb6 = orb & ddrb & 0x40; // all output (0x40)
+  uint8_t oldbank = bank;
+
+  if ((ddrb & 0x40) == 0x00) npb6 |= 0x40; // all input (0x40)
+
+  bank = (bank & ~1) | (npb6 ? 1 : 0);
+
+  if (bank != oldbank) fprintf(stderr, "PB6: Switching bank from %d to %d\n", oldbank, bank);
+
+  (void)init; // not sure what jsvecx did with this, if anything
+}
+#endif
 
 inline uint8_t via_read(uint16_t address)
 {
@@ -33,6 +75,10 @@ inline uint8_t via_read(uint16_t address)
 	{
 	case 0x0:
 		data = via_read8_port_b();
+#ifdef FOURBANKS
+		// Update PB6 bit of 'bank' variable here?
+		// However this is a read.  Do we only do that on a write?
+#endif
 		break;
 	case 0x1:
 		/* register 1 also performs handshakes if necessary */
@@ -50,6 +96,10 @@ inline uint8_t via_read(uint16_t address)
 		break;
 	case 0x2:
 		data = (uint8_t)VIA.ddrb;
+#ifdef FOURBANKS
+		// Update PB6 bit of 'bank' variable here?
+		// However this is a read.  Do we only do that on a write?
+#endif
 		break;
 	case 0x3:
 		data = (uint8_t)VIA.ddra;
@@ -132,6 +182,12 @@ inline void via_write(uint16_t address, uint8_t data)
 			 */
 			VIA.cb2h = 0;
 		}
+#ifdef FOURBANKS
+	        // See http://vide.malban.de/18th-of-march-2018-vectorblade-iii
+		//  - extracting PB6 bit is a little complicated - depends on
+		//    whether ddrb is in input or output mode.
+                setPB6FromVectrex(data, VIA.ddrb, 1); // update bankswitch
+#endif
 		break;
 	case 0x1:
 		/* register 1 also performs handshakes if necessary */
@@ -150,6 +206,9 @@ inline void via_write(uint16_t address, uint8_t data)
 		break;
 	case 0x2:
 		VIA.ddrb = data;
+#ifdef FOURBANKS
+                setPB6FromVectrex(VIA.orb, data, 0); // update bankswitch
+#endif
 		break;
 	case 0x3:
 		VIA.ddra = data;
@@ -424,6 +483,11 @@ inline void via_sstep1(void)
 
 inline void via_reset(void)
 {
+#ifdef FOURBANKS
+        bank = 0; // wild guess that it is needed here... (assuming IRQ not active)
+                  // It's possible that we start up in bank 1 (default of PB6, No IRQ??)
+	          // Perhaps this should be either bank = (3&bankmask) or bank = (1&bankmask) ?
+#endif
 	VIA.ora = 0;
 	VIA.orb = 0;
 	VIA.ddra = 0;

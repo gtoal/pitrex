@@ -17,8 +17,15 @@
 
 void(*vecx_render) (void);
 
-//uint8_t rom[8192];
+#ifdef FOURBANKS
+uint8_t bank = 0; // hard coded for vectorblade for now
+uint8_t bankmask = 3; // hard coded for vectorblade for now
+uint8_t bios[8192];
+uint8_t cart[4][64*1024];
+#else
+uint8_t rom[8192];
 uint8_t cart[32768];
+#endif
 uint8_t ram[1024];
 
 /* the sound chip registers */
@@ -136,8 +143,13 @@ static uint8_t read8(uint16_t address)
 
 	if ((address & 0xe000) == 0xe000)
 	{
+#ifdef FOURBANKS
+		/* bios rom */
+		data = bios[address & 0x1fff];
+#else
 		/* rom */
 		data = rom[address & 0x1fff];
+#endif
 	}
 	else if ((address & 0xe000) == 0xc000)
 	{
@@ -152,10 +164,18 @@ static uint8_t read8(uint16_t address)
 			data = via_read(address);
 		}
 	}
+#ifdef FOURBANKS
+	else if (address < 0xC000)
+#else
 	else if (address < 0x8000)
+#endif
 	{
 		/* cartridge */
+#ifdef FOURBANKS
+		data = cart[bank][address];
+#else
 		data = cart[address];
+#endif
 	}
 
 	return data;
@@ -181,9 +201,13 @@ static void write8(uint16_t address, uint8_t data)
 			via_write(address, data);
 		}
 	}
+#ifdef FOURBANKS
+	else if (address < 0xC000)
+#else
 	else if (address < 0x8000)
+#endif
 	{
-		/* cartridge */
+		/* cartridge (may be up to 48K) */
 	}
 }
 int lastX;

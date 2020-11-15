@@ -1,5 +1,5 @@
 #!/bin/bash
-0;136;0c# parameters not properly implemented yet - it fails and puts up a menu on the Vectrex
+
 if [[ "$1" == "" ]] ; then
   if [[ ! -d /opt/pitrex/roms/vectrex ]] ; then
     echo vecx: directory /opt/pitrex/roms/vectrex does not exist. \(current directory: `pwd`\)

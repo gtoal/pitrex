@@ -1,0 +1,4 @@
+.vagrant
+.packer.d
+packer_cache
+*.img

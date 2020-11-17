@@ -1,0 +1,44 @@
+{
+  "variables": {
+    "wifi_name":     "{{ env `WIFI_NAME` }}",
+    "wifi_password": "{{ env `WIFI_PASS` }}",
+    "ssh_pubkey":    "{{ env `SSH_PUBKEY` }}",
+    "home":          "{{env `HOME`}}"
+  },
+  "builders": [
+    {
+      "type": "arm-image",
+      "iso_url": "https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2020-08-24/2020-08-20-raspios-buster-armhf-lite.zip",
+      "iso_checksum": "sha256:4522df4a29f9aac4b0166fbfee9f599dab55a997c855702bfe35329c13334668",
+      "target_image_size": 4294967296
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "apt-get update"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "wpa_passphrase \"{{user `wifi_name`}}\" \"{{user `wifi_password`}}\" | sed -e 's/#.*$//' -e '/^$/d' >> /etc/wpa_supplicant/wpa_supplicant.conf"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "touch /boot/ssh",
+        "install -d -o pi -g pi -m 700 /home/pi/.ssh",
+        "install -m 644 -o pi -g pi /dev/null /home/pi/.ssh/authorized_keys",
+        "echo '{{user `ssh_pubkey`}}' > /home/pi/.ssh/authorized_keys"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "chmod +x {{ .Path }}; sudo {{ .Path }} -y",
+      "script": "/vagrant/pitrex-config.sh"
+    }
+  ]
+}

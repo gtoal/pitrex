@@ -1,9 +1,9 @@
 {
   "variables": {
-    "wifi_name":     "{{ env `WIFI_NAME` }}",
-    "wifi_password": "{{ env `WIFI_PASS` }}",
-    "ssh_pubkey":    "{{ env `SSH_PUBKEY` }}",
-    "home":          "{{env `HOME`}}"
+    "wifi_name":      null,
+    "wifi_password":  null,
+    "ssh_pubkey":     "",
+    "home":           "{{env `HOME`}}"
   },
   "builders": [
     {
@@ -17,18 +17,27 @@
     {
       "type": "shell",
       "inline": [
+        "echo 'wifi_name: {{user `wifi_name`}}'"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'running apt-get update'",
         "apt-get update"
       ]
     },
     {
       "type": "shell",
       "inline": [
+        "echo 'updating wpa_supplicant.conf'",
         "wpa_passphrase \"{{user `wifi_name`}}\" \"{{user `wifi_password`}}\" | sed -e 's/#.*$//' -e '/^$/d' >> /etc/wpa_supplicant/wpa_supplicant.conf"
       ]
     },
     {
       "type": "shell",
       "inline": [
+        "echo 'setting up ssh'",
         "touch /boot/ssh",
         "install -d -o pi -g pi -m 700 /home/pi/.ssh",
         "install -m 644 -o pi -g pi /dev/null /home/pi/.ssh/authorized_keys",
@@ -37,7 +46,7 @@
     },
     {
       "type": "shell",
-      "execute_command": "chmod +x {{ .Path }}; sudo {{ .Path }} -y",
+      "execute_command": "chmod +x {{ .Path }}; sudo {{ .Path }} -y -keephdmi",
       "script": "/vagrant/pitrex-config.sh"
     }
   ]

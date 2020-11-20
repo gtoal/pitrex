@@ -16,8 +16,5 @@ Vagrant.configure("2") do |config|
     privileged: false,
     env: {
       "PACKERFILE" => ENV["PACKERFILE"],
-      "WIFI_NAME"  => ENV["WIFI_NAME"],
-      "WIFI_PASS"  => ENV["WIFI_PASS"],
-      "SSH_PUBKEY" => ENV["SSH_PUBKEY"]
     }
 end

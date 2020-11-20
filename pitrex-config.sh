@@ -60,6 +60,7 @@ until [ -z "$1" ]
 do
  case "$1" in
 	"-configonly")	CONFIGONLY=1 ;;
+	"-keephdmi")	  KEEPHDMI=1 ;;
 	"-y")		YESTOALL=1 ;;
 	*)		echo "Invalid option: $1"; exit 1 ;;
  esac
@@ -171,7 +172,7 @@ else
  YN="y";
 fi
 
-if [ "$YN" == "y" ] ; then
+if [ "$YN" == "y" -a -z $KEEPHDMI ] ; then
 sed -i '/^exit 0$/i'' \
 #Disable HDMI/Composite video output:\
 tvservice \-o' /etc/rc.local

@@ -3,6 +3,7 @@
     "wifi_name":      null,
     "wifi_password":  null,
     "ssh_pubkey":     "",
+    "pitrex_git_url": "https://github.com/gtoal/pitrex.git",
     "home":           "{{env `HOME`}}"
   },
   "builders": [
@@ -48,6 +49,33 @@
       "type": "shell",
       "execute_command": "chmod +x {{ .Path }}; sudo {{ .Path }} -y -keephdmi",
       "script": "/vagrant/pitrex-config.sh"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'installing pitrex build env'",
+        "apt-get install -y gcc-arm-none-eabi git-core libsdl2-dev libsdl2-2.0 libsdl2-mixer-2.0-0 libsdl2-mixer-dev alsa-oss locate",
+        "echo DONE"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'installing pitrex src'",
+        "install -d -o pi -g pi -m 755 /home/pi/src",
+        "cd /home/pi/src",
+        "sudo -u pi git clone {{ user `pitrex_git_url` }}",
+        "echo DONE"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'building pitrex'",
+        "cd /home/pi/src/pitrex",
+        "#TODO sudo -u pi make -f Makefile.raspbian",
+        "echo DONE"
+      ]
     }
   ]
 }

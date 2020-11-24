@@ -4,6 +4,8 @@
     "wifi_password":  null,
     "ssh_pubkey":     "",
     "pitrex_git_url": "https://github.com/gtoal/pitrex.git",
+    "pitrex_prebuild": "https://github.com/gtoal/pitrex/releases/download/beta1/pitrex_beta1.tar.gz",
+    "basedir":        "/vagrant",
     "home":           "{{env `HOME`}}"
   },
   "builders": [
@@ -48,7 +50,23 @@
     {
       "type": "shell",
       "execute_command": "chmod +x {{ .Path }}; sudo {{ .Path }} -y -keephdmi",
-      "script": "/vagrant/pitrex-config.sh"
+      "script": "{{ user `basedir` }}/pitrex-config.sh"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'downloading and installing pitrex prebuilt baremetal system'",
+        "cd /tmp",
+        "mkdir -p /tmp/prebuild",
+        "wget -O /tmp/prebuild.tgz {{ user `pitrex_prebuild` }}",
+        "tar -zxf /tmp/prebuild.tgz -C /tmp/prebuild/",
+        "cp /tmp/prebuild/pitrex*/to_baremetal/roms/vectrex/* /boot/roms/",
+        "cp /tmp/prebuild/pitrex*/to_baremetal/ini/* /boot/ini/",
+        "cp /tmp/prebuild/pitrex*/to_baremetal/*.img /boot/",
+        "cp /tmp/prebuild/pitrex*/to_baremetal/*.pit /boot/",
+        "echo 'kernel=pitrex.img' >> /boot/config.txt",
+        "echo DONE"
+      ]
     },
     {
       "type": "shell",
@@ -71,9 +89,11 @@
     {
       "type": "shell",
       "inline": [
-        "echo 'building pitrex'",
+        "echo 'building & installing latest pitrex menu'",
         "cd /home/pi/src/pitrex",
-        "#TODO sudo -u pi make -f Makefile.raspbian",
+        "sudo -u pi make -f Makefile.baremetal loader",
+        "cp piTrexBoot/loader.pit /boot/",
+        "cp piTrexBoot/pitrex.img /boot/",
         "echo DONE"
       ]
     }

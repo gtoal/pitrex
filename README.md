@@ -6,17 +6,21 @@ PiTrex is a open source/open hardware project.
 
 This repository is currently aimed only at users of the PiTrex hardware - 'Developer release'.
 
+## Developing on PiTrex
+
 Our intention is that everything you need to develop software for the PiTrex will be in this
 repository and that you should fetch the entire repository from git. eg.
 
-sudo apt-get install -y gcc-arm-none-eabi git-core libsdl2-dev libsdl2-2.0 libsdl2-mixer-2.0-0 libsdl2-mixer-dev alsa-oss locate
-mkdir ~/src
-cd ~/src
-git clone https://github.com/gtoal/pitrex.git
-cd ~/src/pitrex
-make -f Makefile.raspbian
-# if you intend to use the bare metal environment as well:
-make -f Makefile.baremetal
+    sudo apt-get install -y gcc-arm-none-eabi git-core libsdl2-dev libsdl2-2.0 \
+                            libsdl2-mixer-2.0-0 libsdl2-mixer-dev alsa-oss locate
+    mkdir ~/src
+    cd ~/src
+    git clone https://github.com/gtoal/pitrex.git
+    cd ~/src/pitrex
+    make -f Makefile.raspbian
+
+    # if you intend to use the bare metal environment as well:
+    make -f Makefile.baremetal
 
 We realise that there are some imported projects here from other repositories which we have
 duplicated, but for the moment it is simpler just to have everything together.  When we have
@@ -25,26 +29,29 @@ to the original repositories.
 
 You'll need to add these to /boot/config.txt and reboot before using the linux executables:
 
-gpio=0-5,16-24,26-29=ip
-gpio=6-13,25=op
-gpio=24=np
-dtoverlay=dwc2,dr_mode=host
+    gpio=0-5,16-24,26-29=ip
+    gpio=6-13,25=op
+    gpio=24=np
+    dtoverlay=dwc2,dr_mode=host
 
 Add this line to boot to the PiTrex Bare-Metal menu:
 
-kernel pitrex.img
+    kernel pitrex.img
 
 More comprehensive installation instructions, along with lots of other documentation, can be
-found at the PiTrex Wiki.
+found at the [PiTrex Wiki](http://computernerdkev.heliohost.org/pitrex/wiki/).
+
+## Known Issues
 
 Some things that aren't working yet include:
+
 * Tempest, and some Cinematronics arcade emulations, don't display (focus at the moment is on emulation with MAME instead).
 * Vectrex button mapping is poor or not working at all for some arcade emulations.
 * The Calibrate program doesn't work in Bare-Metal (nor do any other programs using the functions from the window.c example).
 * Vecx.direct is glitchy when running in Linux (can be fixed if built with -DAVOID_TICKS, but then can't exit).
 * VMMenu isn't yet able to load programs besides MAME.
 
-PiTrex Links:
+## PiTrex Links:
 
 Wiki: http://computernerdkev.heliohost.org/pitrex/wiki/
 

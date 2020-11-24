@@ -1,0 +1,101 @@
+{
+  "variables": {
+    "wifi_name":      null,
+    "wifi_password":  null,
+    "ssh_pubkey":     "",
+    "pitrex_git_url": "https://github.com/gtoal/pitrex.git",
+    "pitrex_prebuild": "https://github.com/gtoal/pitrex/releases/download/beta1/pitrex_beta1.tar.gz",
+    "basedir":        "/vagrant",
+    "home":           "{{env `HOME`}}"
+  },
+  "builders": [
+    {
+      "type": "arm-image",
+      "iso_url": "https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2020-08-24/2020-08-20-raspios-buster-armhf-lite.zip",
+      "iso_checksum": "sha256:4522df4a29f9aac4b0166fbfee9f599dab55a997c855702bfe35329c13334668",
+      "target_image_size": 4294967296
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'wifi_name: {{user `wifi_name`}}'"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'running apt-get update'",
+        "apt-get update"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'updating wpa_supplicant.conf'",
+        "wpa_passphrase \"{{user `wifi_name`}}\" \"{{user `wifi_password`}}\" | sed -e 's/#.*$//' -e '/^$/d' >> /etc/wpa_supplicant/wpa_supplicant.conf"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'setting up ssh'",
+        "touch /boot/ssh",
+        "install -d -o pi -g pi -m 700 /home/pi/.ssh",
+        "install -m 644 -o pi -g pi /dev/null /home/pi/.ssh/authorized_keys",
+        "echo '{{user `ssh_pubkey`}}' > /home/pi/.ssh/authorized_keys"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "chmod +x {{ .Path }}; sudo {{ .Path }} -y -keephdmi",
+      "script": "{{ user `basedir` }}/pitrex-config.sh"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'downloading and installing pitrex prebuilt baremetal system'",
+        "cd /tmp",
+        "mkdir -p /tmp/prebuild",
+        "wget -O /tmp/prebuild.tgz {{ user `pitrex_prebuild` }}",
+        "tar -zxf /tmp/prebuild.tgz -C /tmp/prebuild/",
+        "cp /tmp/prebuild/pitrex*/to_baremetal/roms/vectrex/* /boot/roms/",
+        "cp /tmp/prebuild/pitrex*/to_baremetal/ini/* /boot/ini/",
+        "cp /tmp/prebuild/pitrex*/to_baremetal/*.img /boot/",
+        "cp /tmp/prebuild/pitrex*/to_baremetal/*.pit /boot/",
+        "echo 'kernel=pitrex.img' >> /boot/config.txt",
+        "echo DONE"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'installing pitrex build env'",
+        "apt-get install -y gcc-arm-none-eabi git-core libsdl2-dev libsdl2-2.0 libsdl2-mixer-2.0-0 libsdl2-mixer-dev alsa-oss locate",
+        "echo DONE"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'installing pitrex src'",
+        "install -d -o pi -g pi -m 755 /home/pi/src",
+        "cd /home/pi/src",
+        "sudo -u pi git clone {{ user `pitrex_git_url` }}",
+        "echo DONE"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'building & installing latest pitrex menu'",
+        "cd /home/pi/src/pitrex",
+        "sudo -u pi make -f Makefile.baremetal loader",
+        "cp piTrexBoot/loader.pit /boot/",
+        "cp piTrexBoot/pitrex.img /boot/",
+        "echo DONE"
+      ]
+    }
+  ]
+}

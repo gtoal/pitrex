@@ -165,14 +165,14 @@ if [ "$R1" != "" ] ; then
     echo "WARNING: rc.local configuration appears to have been done already."
 fi
 
-if [ -z $YESTOALL ]; then
+if [ -z "$YESTOALL" ]; then
  echo "Do you want to disable HDMI and set performance to maximum at boot time?"
  YN=$(confirm "Yes or No?")
 else
  YN="y";
 fi
 
-if [ "$YN" == "y" -a -z $KEEPHDMI ] ; then
+if [ "$YN" == "y" -a -z "$KEEPHDMI" ] ; then
 sed -i '/^exit 0$/i'' \
 #Disable HDMI/Composite video output:\
 tvservice \-o' /etc/rc.local

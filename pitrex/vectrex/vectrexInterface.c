@@ -7,15 +7,12 @@ why does that not work for small SMS:
 
         v_directMove32keepScale(x*128,(y-yy)*128);
 
-
-
 "go"
 go cycles
 go till
 "dis xxx-yyy"
 show regs
 set breakpoint
-
 
 CLUSTER
 A cluster is 1 or more vectors (preferable more), which are drawn
@@ -26,14 +23,13 @@ Additional attributes may be:
 
 In battle zone the score - the last "digit" should be moved in front of the "score" cluster
 
-
 SFX with priority - so no "forced" channel is needed.
 
-NULL Waiter konfigurable
+NULL Wait configurable
 
 Raster routine (image) with CNTL in 2 cycles
 
-Vector print with clipps...
+Vector print with clipping...
 
 // isn't that double?
 		if (crankyFlag & CRANKY_BETWEEN_VIA_B)
@@ -48,23 +44,16 @@ Vector print with clipps...
 			afterYDelay += CRANKY_DELAY_Y_TO_NULL_VALUE;
 		}
 
-
-
 /*
 possible hint for drift calibration value / or slot...
 
-
-
 calibration draw on 1+2 second cluster "wobbles"
 
-
 Gyrocks/ripoff and some others not working
-
 
 black widow and space duel start
 
 Pokey
-
 
 Pipeline implementation:
 
@@ -76,7 +65,7 @@ The Base pipeline is an array of MAX_PIPELINE elements held in the array:
 
 The global variable cpb (currentBasePipeline) always holds the next available item.
 When it is used, the next item must be gotten with a sequence of:
-(since we allways reuse the same array elements, we must ensure they are clean from start)
+(since we always reuse the same array elements, we must ensure they are clean from start)
 
     cpb = &pb[++pipelineCounter];
     cpb->force = 0;
@@ -102,14 +91,11 @@ The VectorPipeline pipeline itself is displayed with:
 
  */
 
-
-
 // special PITREX command to write aword to VIA -> which is faster than two bytes
 
-// SMS - or I handöle crankies better
+// SMS - or I handle crankies better
 // STO
 // SSS
-
 
 int myDebug;
 
@@ -122,22 +108,17 @@ int myDebug;
  *
  * */
 
-
 /*
- T ODO                                       **
+ TO DO:
  Reset detection -> eleminate T1 -> RAMP, do with timer of Pi!
 
  problematic but actually *should* work (but doesn't in all cases...
  */
 
-
-
-
 /*  Version 0.3
- D one by Malban for the PiTrex projec*t.    *
- last edit: 08th of Jamuary 2020
+ Done by Malban for the PiTrex project.
+ last edit: 08th of January 2020
  ... not written down yet
-
 
  Version 0.2
 
@@ -187,8 +168,8 @@ int myDebug;
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <stddef.h> // these are fresstanding includes!
-#include <stdint.h> // also "available":  <float.h>, <iso646.h>, <limits.h>, <stdarg.h>
+#include <stddef.h>             // these are fresstanding includes!
+#include <stdint.h>             // also "available": <float.h>, <iso646.h>, <limits.h>, <stdarg.h>
 
 #include <pitrex/pitrexio-gpio.h>
 #include <pitrex/bcm2835.h>
@@ -196,13 +177,14 @@ int myDebug;
 #include "baremetalUtil.h"
 #include "osWrapper.h"
 
-#include "vectorFont.i" // includes font definition and string printing routines
-#include "rasterFont.i" // includes font definition and string printing routines
+#include "vectorFont.i"         // includes font definition and string printing routines
+#include "rasterFont.i"         // includes font definition and string printing routines. Supports user fonts.
 
 // ff used for state saving
 // state are saved in two 1024 byte blobs
 // one for vectrexInterface, one for the "user"
 // the blobs can be cast after loading/saving to anything one wants...
+
 #ifdef FREESTANDING
 #include <baremetal/rpi-aux.h>
 #include <baremetal/rpi-base.h>
@@ -217,100 +199,96 @@ int myDebug;
 #endif
 
 /* reverse:  reverse string s in place */
-static void reverse(char s[])
- {
-     int i, j;
-     char c;
+static void reverse (char s[]) {
+  int i, j;
+  char c;
 
-     for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
-         c = s[i];
-         s[i] = s[j];
-         s[j] = c;
-     }
- }
+  for (i = 0, j = strlen (s) - 1; i < j; i++, j--) {
+    c = s[i];
+    s[i] = s[j];
+    s[j] = c;
+  }
+}
+
 // radix ignored
-static void itoa(int n, char s[], int radix)
- {
-     int i, sign;
+static void itoa (int n, char s[], int radix) {
+  int i, sign;
 
-     if ((sign = n) < 0)  /* record sign */
-         n = -n;          /* make n positive */
-     i = 0;
-     do {       /* generate digits in reverse order */
-         s[i++] = n % 10 + '0';   /* get next digit */
-     } while ((n /= 10) > 0);     /* delete it */
-     if (sign < 0)
-         s[i++] = '-';
-     s[i] = '\0';
-     reverse(s);
- }
+  if ((sign = n) < 0)           /* record sign */
+    n = -n;                     /* make n positive */
+  i = 0;
+  do {                          /* generate digits in reverse order */
+    s[i++] = n % 10 + '0';      /* get next digit */
+  } while ((n /= 10) > 0);      /* delete it */
+  if (sign < 0)
+    s[i++] = '-';
+  s[i] = '\0';
+  reverse (s);
+}
 
 typedef struct {
-    volatile uint32_t control_status;
-    volatile uint32_t counter_lo;
-    volatile uint32_t counter_hi;
-    volatile uint32_t compare0;
-    volatile uint32_t compare1;
-    volatile uint32_t compare2;
-    volatile uint32_t compare3;
-    } rpi_sys_timer_t;
+  volatile uint32_t control_status;
+  volatile uint32_t counter_lo;
+  volatile uint32_t counter_hi;
+  volatile uint32_t compare0;
+  volatile uint32_t compare1;
+  volatile uint32_t compare2;
+  volatile uint32_t compare3;
+} rpi_sys_timer_t;
 
-rpi_sys_timer_t* rpiSystemTimer;
+rpi_sys_timer_t *rpiSystemTimer;
 
 #ifdef AVOID_TICKS
 unsigned int scaleTotal = 0;
-uint32_t gpu_ier1=0, gpu_ier2=0, cpu_ier=0, fiqtemp=0;
+uint32_t gpu_ier1 = 0, gpu_ier2 = 0, cpu_ier = 0, fiqtemp = 0;
+
 #define MAP_FAILED	((void *) -1)
-volatile uint32_t *bcm2835_int		= (uint32_t *)MAP_FAILED;
+volatile uint32_t *bcm2835_int = (uint32_t *) MAP_FAILED;
 #endif
 
 #endif
 
 /***********************************************************************/
 
+int32_t currentCursorX;         // 16 bit positioning value X (stored in long), with sizing!
+int32_t currentCursorY;         // 16 bit positioning value Y (stored in long)
+uint16_t currentScale;          // currently active scale factor (T1 timer in VIA)
+uint16_t lastScale;             // last active scale factor (T1 timer in VIA)
 
+uint8_t currentButtonState;     // bit values as in vectrex
+uint8_t internalButtonState;    // bit values as in vectrex
 
-
-int32_t currentCursorX; // 16 bit positioning value X (stored in long), with sizing!
-int32_t currentCursorY; // 16 bit positioning value Y (stored in long)
-uint16_t currentScale; // currently active scale factor (T1 timer in VIA)
-uint16_t lastScale; // last active scale factor (T1 timer in VIA)
-
-uint8_t currentButtonState; // bit values as in vectrex
-uint8_t internalButtonState; // bit values as in vectrex
-
-int8_t currentJoy1X; // -127 left, 0 center, +127 right
-int8_t currentJoy1Y; // -127 up, 0 center, +127 down
-int8_t currentJoy2X; // not used yet
-int8_t currentJoy2Y; // not used yet
-int internalJoy1X; // -127 left, 0 center, +127 right
-int internalJoy1Y; // -127 up, 0 center, +127 down
-int internalJoy2X; // not used yet
-int internalJoy2Y; // not used yet
+int8_t currentJoy1X;            // -127 left, 0 center, +127 right
+int8_t currentJoy1Y;            // -127 up, 0 center, +127 down
+int8_t currentJoy2X;            // not used yet
+int8_t currentJoy2Y;            // not used yet
+int internalJoy1X;              // -127 left, 0 center, +127 right
+int internalJoy1Y;              // -127 up, 0 center, +127 down
+int internalJoy2X;              // not used yet
+int internalJoy2Y;              // not used yet
 int v_dotDwell;
 
-int16_t consecutiveDraws; // how many lines/moves were drawn/made directly after another! (without zeroing)
-
+int16_t consecutiveDraws;       // how many lines/moves were drawn/made directly after another! (without zeroing)
 
 // these are 16 bit to allow illegal values!
 // illegal values = unkown state
-int16_t currentPortA; // == portA (also X SH) = current X Strength
-int16_t currentYSH; // Y SH = current Y Strength
-int16_t currentZSH; // Z SH = Brightness (if bit 7 is set -> brightness is off!)
+int16_t currentPortA;           // == portA (also X SH) = current X Strength
+int16_t currentYSH;             // Y SH = current Y Strength
+int16_t currentZSH;             // Z SH = Brightness (if bit 7 is set -> brightness is off!)
 
 int inCalibration;
 
 int selectedCalibrationMenu;
 int selectionCalibrationMade;
-uint8_t ioDone; // vectrex IO should only be done once per "round"
+uint8_t ioDone;                 // vectrex IO should only be done once per "round"
 
 uint32_t timerMark;
 
 int pipelineFilled;
 
-void v_initSound();
-void v_initDebug();
-void handleUARTInterface();
+void v_initSound ();
+void v_initDebug ();
+void handleUARTInterface ();
 
 // I don't think the "medians" really do anything
 // but for now I leave them enabled.
@@ -320,14 +298,13 @@ int medianY1[MEDIAN_MAX];
 int medianX2[MEDIAN_MAX];
 int medianY2[MEDIAN_MAX];
 
-
 /* values that we remember for possible optimization purposes */
 unsigned int MAX_USED_STRENGTH;
 unsigned int MAX_CONSECUTIVE_DRAWS;
-unsigned int DELAY_ZERO_VALUE; // 70 // probably less, this can be adjusted, by max x position, the nearer to the center the less waits
+unsigned int DELAY_ZERO_VALUE;  // 70 // probably less, this can be adjusted, by max x position, the nearer to the center the less waits
 unsigned int DELAY_AFTER_T1_END_VALUE;
 uint16_t SCALE_STRENGTH_DIF;
-unsigned int Vec_Rfrsh; // 30000 cylces (vectrex) = $7530, little endian = $3075
+unsigned int Vec_Rfrsh;         // 30000 cylces (vectrex) = $7530, little endian = $3075
 unsigned int cycleEquivalent;
 int optimizationON;
 int commonHints;
@@ -344,40 +321,39 @@ int16_t offsetX;
 int16_t offsetY;
 float sizeX;
 float sizeY;
-uint8_t calibrationValue; // tut calibration
+uint8_t calibrationValue;       // tut calibration
 
 int currentMarkedMenu = 0;
 int menuOffset = 0;
 
-
-CrankyFlags crankyFlag; // cranky should be checked during calibration! In "VecFever" terms cranky off = burst modus
+CrankyFlags crankyFlag;         // cranky should be checked during calibration! In "VecFever" terms cranky off = burst modus
 int beamOffBetweenConsecutiveDraws;
 unsigned int resetToZeroDifMax;
 
 VectorPipeline P0[MAX_PIPELINE];
 VectorPipeline P1[MAX_PIPELINE];
-VectorPipeline *_P[]={P0,P1};
+VectorPipeline *_P[] = { P0, P1 };
+
 VectorPipeline *pl;
 int pipelineAlt;
-
 
 char *knownName = "";
 char *defaultName;
 unsigned char *knownBlob;
 int knownBlobSize;
 
-int bufferType;
+int bufferType;                 // this is accessed in user programs.  Would be better to make it static and encapulate access in a procedure...
 
 int browseMode;
 int currentBrowsline;
 int currentDisplayedBrowseLine;
 int valueChangeDelay;
 int saveresetToZeroDifMax;
+
 /***********************************************************************/
-int (*executeDebugger)(int);
-int noExecuteDebugger(int x)
-{
-  printf("Debugger not set!\r\n");
+int (*executeDebugger) (int);
+int noExecuteDebugger (int x) {
+  printf ("Debugger not set!\r\n");
 }
 
 int customClipxMin;
@@ -385,103 +361,100 @@ int customClipyMin;
 int customClipxMax;
 int customClipyMax;
 int customClippingEnabled;
+
 // custom clippings
 // are DIRECTLY
 // in the coordinates given
 // from caller!
 // before repositioning, scaling, orientation ....
-void setCustomClipping(int enabled, int x0, int y0, int x1, int y1)
-{
+void setCustomClipping (int enabled, int x0, int y0, int x1, int y1) {
   customClippingEnabled = enabled;
   customClipxMin = x0;
   customClipyMin = y0;
   customClipxMax = x1;
   customClipyMax = y1;
 }
-/* should be called once on startup / reset
- */
+
+/* should be called once on startup / reset */
 GlobalMemSettings *settings;
 
 #ifdef FREESTANDING
 #else
 GlobalMemSettings _settings;
 #endif
-void v_init()
-{
+void v_init (void) {
 #ifdef FREESTANDING
-setParameterAddress();
+  setParameterAddress ();
 #else
- settings = &_settings;
+  settings = &_settings;
 
 #ifdef AVOID_TICKS
-  bcm2835_int = bcm2835_peripherals + BCM2835_INT_BASE/4;
+  bcm2835_int = bcm2835_peripherals + BCM2835_INT_BASE / 4;
 #endif
 #ifdef RTSCHED
-  struct sched_param sp = { .sched_priority = 99 };
-   sched_setscheduler(0, SCHED_FIFO, &sp);
+struct sched_param sp = {.sched_priority = 99 };
+  sched_setscheduler (0, SCHED_FIFO, &sp);
 #endif
 
 #endif
 
- 
- 
   unsigned char *buffer;
-  buffer = malloc(200000);
 
-  setbuf(stdin, NULL);
-  setbuf(stdout, NULL);
+  buffer = malloc (200000);
+
+  setbuf (stdin, NULL);
+  setbuf (stdout, NULL);
 #ifdef FREESTANDING
-  initFileSystem();
+  initFileSystem ();
 #endif
-  printf("v_init()\r\n");
+  printf ("v_init()\r\n");
 
   executeDebugger = noExecuteDebugger;
-  v_initSound();
-  #ifdef PITREX_DEBUG
-  #ifdef FREESTANDING
-  v_initDebug();
+  v_initSound ();
+#ifdef PITREX_DEBUG
+#ifdef FREESTANDING
+  v_initDebug ();
   myDebug = 0;
-  #endif
-  #endif
+#endif
+#endif
 
   // once to ENABLE in general!
-  #ifdef FREESTANDING
-  PMNC(CYCLE_COUNTER_ENABLE|CYCLE_COUNTER_RESET|COUNTER_ZERO);
-  #endif
+#ifdef FREESTANDING
+  PMNC (CYCLE_COUNTER_ENABLE | CYCLE_COUNTER_RESET | COUNTER_ZERO);
+#endif
 
   MAX_CONSECUTIVE_DRAWS = 65;
-  DELAY_ZERO_VALUE = 40; // 70 // probably less, this can be adjusted, by max x position, the nearer to the center the less waits
-  DELAY_AFTER_T1_END_VALUE = 20; // last vectors should add 5!!!
+  DELAY_ZERO_VALUE = 40;        // 70 // probably less, this can be adjusted, by max x position, the nearer to the center the less waits
+  DELAY_AFTER_T1_END_VALUE = 20;        // last vectors should add 5!!!
   SCALE_STRENGTH_DIF = 2;
   bufferType = 0;
-  MAX_USED_STRENGTH = 100;// 110;
+  MAX_USED_STRENGTH = 100;      // 110;
   resetToZeroDifMax = 4000;
   customClippingEnabled = 0;
   commonHints = 0;
   pipelineFilled = 0;
   v_dotDwell = 10;
-  browseMode=0;
-  currentBrowsline=0;
-  currentDisplayedBrowseLine=-1;
+  browseMode = 0;
+  currentBrowsline = 0;
+  currentDisplayedBrowseLine = -1;
 
-
-  for (int i=0;i<MEDIAN_MAX;i++)
-  {
+  for (int i = 0; i < MEDIAN_MAX; i++) {   // NOTE: "for (int i" ... is a C++ feature and a gcc extension.
+                                           // I'ld rewrite it with an extra block, except we already use other gcc extensions
     medianX1[i] = 0;
     medianY1[i] = 0;
   }
 
-  crankyFlag=0x14;//CRANKY_NULLING_CALIBRATE | CRANKY_BETWEEN_VIA_B+6; // for is the normal cranky delay after switching port b to MUX_y (or Z)
+  crankyFlag = 0x14;            // CRANKY_NULLING_CALIBRATE | CRANKY_BETWEEN_VIA_B+6; // for is the normal cranky delay after switching port b to MUX_y (or Z)
 
   cycleEquivalent = 666;
   beamOffBetweenConsecutiveDraws = 1;
 
   clipActive = 0;
-  clipminX=-10000;
-  clipminY= 00000;
-  clipmaxX= 10000;
-  clipmaxY= 15000;
-  clipMode = 1; // 0 normal clipping, 1 = inverse clipping
+  clipminX = -10000;
+  clipminY = 00000;
+  clipmaxX = 10000;
+  clipmaxY = 15000;
+  clipMode = 1;                 // 0 normal clipping, 1 = inverse clipping
 
   ioDone = 0;
   orientation = 0;
@@ -492,20 +465,20 @@ setParameterAddress();
   pipelineCounter = 0;
   pipelineAlt = 0;
   pl = _P[pipelineAlt];
-  cpb = &pb[pipelineCounter]; // current base pipeline
+  cpb = &pb[pipelineCounter];   // current base pipeline
 
   inCalibration = 0;
-  currentCursorX = 0; // 16 bit positioning value X
-  currentCursorY = 0; // 16 bit positioning value Y
-  currentButtonState = 0; // nothing pressed
-  currentJoy1X = 0; // centered
-  currentJoy1Y = 0; // centered
-  currentJoy2X = 0; // centered
-  currentJoy2Y = 0; // centered
+  currentCursorX = 0;           // 16 bit positioning value X
+  currentCursorY = 0;           // 16 bit positioning value Y
+  currentButtonState = 0;       // nothing pressed
+  currentJoy1X = 0;             // centered
+  currentJoy1Y = 0;             // centered
+  currentJoy2X = 0;             // centered
+  currentJoy2Y = 0;             // centered
 
-  currentScale = 0; // currently active scale factor (T1 timer in VIA)
-  lastScale = 1; // last active scale factor (T1 timer in VIA)
-  consecutiveDraws = 0; // how many lines/moves were made after another!
+  currentScale = 0;             // currently active scale factor (T1 timer in VIA)
+  lastScale = 1;                // last active scale factor (T1 timer in VIA)
+  consecutiveDraws = 0;         // how many lines/moves were made after another!
   sizeX = 1.0;
   sizeY = 1.0;
   offsetX = 0;
@@ -514,44 +487,44 @@ setParameterAddress();
   selectedCalibrationMenu = 0;
   selectionCalibrationMade = 0;
 
-
   // these are 16 bit to allow illegal values!
-  currentPortA = 0x100; // == portA (also X SH)
-  currentYSH = 0x100; // Y SH
-  currentZSH = 0x100; // Z SH = brightness
+  currentPortA = 0x100;         // == portA (also X SH)
+  currentYSH = 0x100;           // Y SH
+  currentZSH = 0x100;           // Z SH = brightness
 
-  vectrexwrite (VIA_DDR_b, 0x9F); // All Outputs VIA Port B except COMPARE input and PB6 at Cartridge Port
-  vectrexwrite (VIA_DDR_a, 0xFF); // All Outputs VIA Port A
-  #ifdef BEAM_LIGHT_BY_SHIFT
-  SET (VIA_aux_cntl, 0x98); //Shift Reg. Enabled, T1 PB7 Enabled
-  #endif
-  #ifdef BEAM_LIGHT_BY_CNTL
-  SET (VIA_aux_cntl, 0x80); // Shift reg mode = 000 free disable, T1 PB7 enabled
-  #endif
+  vectrexwrite (VIA_DDR_b, 0x9F);       // All Outputs VIA Port B except COMPARE input and PB6 at Cartridge Port
+  vectrexwrite (VIA_DDR_a, 0xFF);       // All Outputs VIA Port A
+#ifdef BEAM_LIGHT_BY_SHIFT
+  SET (VIA_aux_cntl, 0x98);     // Shift Reg. Enabled, T1 PB7 Enabled
+#endif
+#ifdef BEAM_LIGHT_BY_CNTL
+  SET (VIA_aux_cntl, 0x80);     // Shift reg mode = 000 free disable, T1 PB7 enabled
+#endif
 
-  Vec_Rfrsh = 0x3075;//0x3075;//12405; // 30000 = $7530 little endian = $3075 = 12405
-  SETW (VIA_t2, Vec_Rfrsh); //Set T2 timer to 30000 cycles and start timer and reset IFlag
+  Vec_Rfrsh = 0x3075;           // 0x3075;//12405; // 30000 = $7530 little endian = $3075 = 12405
+  SETW (VIA_t2, Vec_Rfrsh);     // Set T2 timer to 30000 cycles and start timer and reset IFlag
 
-  v_readButtons(); // read buttons to check if we should enter calibration on init
+  v_readButtons ();             // read buttons to check if we should enter calibration on init
 
   // calibrate if button 1 is pressed on startup
-  if ((currentButtonState&0x08) == (0x08)) inCalibration=1;
+  if ((currentButtonState & 0x08) == (0x08))
+    inCalibration = 1;
 
   defaultName = "default";
-  knownBlob = (unsigned char*)0;
+  knownBlob = (unsigned char *) 0;
   knownBlobSize = 0;
 
-printf("1) Settings->flags = %02x\r\n", settings->flags);
-  v_loadSettings(knownName, knownBlob, knownBlobSize);
+  printf ("1) Settings->flags = %02x\r\n", settings->flags);
+  v_loadSettings (knownName, knownBlob, knownBlobSize);
 /*
   if ((settings->flags & GLOBAL_FLAG_IS_INIT) == 0)
   {
 */
-    printf("INIT Settings\r\n");
-    // global settings not set yet
-    settings->flags = settings->flags | GLOBAL_FLAG_IS_INIT;
-    settings->orientation = orientation; // 0-3
-    settings->lastSelection = 2; // start with tailgunner
+  printf ("INIT Settings\r\n");
+  // global settings not set yet
+  settings->flags = settings->flags | GLOBAL_FLAG_IS_INIT;
+  settings->orientation = orientation;  // 0-3
+  settings->lastSelection = 2;  // start with tailgunner
 /*
   }
   else
@@ -560,15 +533,14 @@ printf("1) Settings->flags = %02x\r\n", settings->flags);
     orientation = settings->orientation;
   }
 */
-printf("2) Settings->flags = %02x\r\n", settings->flags);
+  printf ("2) Settings->flags = %02x\r\n", settings->flags);
 
 }
 
 /***********************************************************************/
 
-
 /*
- S ystem timer runs at 250 Mhz               * *
+ System timer runs at 250 Mhz
  -> 1 tick = 1/250000000
 
  0,000000004s
@@ -583,7 +555,6 @@ printf("2) Settings->flags = %02x\r\n", settings->flags);
  0,000001 = 1 micro s
  0,000000001 = 1 nano s
 
-
  // 1 cycle = 1/1000000000
  0,000000001s
  0,000001 ms
@@ -593,110 +564,111 @@ printf("2) Settings->flags = %02x\r\n", settings->flags);
 
 // resolution "about" 4 nanoseconds
 // but not less than OFFSET_CYCLE_OVERHEAD
-void delayNano(uint32_t n)
-{
-  uint32_t nWait;
-  nWait = n-OFFSET_CYCLE_OVERHEAD;
-  if (nWait>((uint32_t)-20)) return;
-  /*
-   i f (n<1024)                             *  *
-   {
-   nWait = n-OFFSET_CYCLE_OVERHEAD;
-   if (nWait<=0) return;
-}
-else
-{
-nWait = n-OFFSET_TIMER_OVERHEAD;
-if (nWait>1024)
-{
-WAIT_MICRO_TIME(nWait>>10);
-nWait = nWait&0x3ff;
-}
-}
-*/
-  WAIT_CYCLE_NANO(nWait);
+void delayNano (uint32_t n) {
+uint32_t nWait;
+
+  nWait = n - OFFSET_CYCLE_OVERHEAD;
+  if (nWait > ((uint32_t) - 20))
+    return;
+  /* 
+     if (n<1024) {
+       nWait = n-OFFSET_CYCLE_OVERHEAD;
+       if (nWait<=0) return;
+     } else {
+       nWait = n-OFFSET_TIMER_OVERHEAD;
+       if (nWait>1024) {
+         WAIT_MICRO_TIME(nWait>>10);
+         nWait = nWait&0x3ff;
+       }
+     }
+  */
+  WAIT_CYCLE_NANO (nWait);
 }
 
 // delay in vectrex cycles
-void v_delayCycles(uint32_t n)
-{
+void v_delayCycles (uint32_t n) {
   uint32_t nWait;
-  nWait = (n*DELAY_PI_CYCLE_EQUIVALENT)-(OFFSET_CYCLE_OVERHEAD-3);
-  if (nWait>((uint32_t)-20)) return;
-  WAIT_CYCLE_NANO(nWait);
-}
-void v_delayCyclesQuarter()
-{
-  uint32_t nWait;
-  nWait = (DELAY_PI_CYCLE_EQUIVALENT/4)-(OFFSET_CYCLE_OVERHEAD-3);
-  if (nWait>((uint32_t)-20)) return;
-  WAIT_CYCLE_NANO(nWait);
+
+  nWait = (n * DELAY_PI_CYCLE_EQUIVALENT) - (OFFSET_CYCLE_OVERHEAD - 3);
+  if (nWait > ((uint32_t) - 20))
+    return;
+  WAIT_CYCLE_NANO (nWait);
 }
 
-void v_delayCyclesEighth()
-{
+void v_delayCyclesQuarter (void) {
   uint32_t nWait;
-  nWait = (DELAY_PI_CYCLE_EQUIVALENT/8)-(OFFSET_CYCLE_OVERHEAD-3);
-  if (nWait>((uint32_t)-20)) return;
-  WAIT_CYCLE_NANO(nWait);
+
+  nWait = (DELAY_PI_CYCLE_EQUIVALENT / 4) - (OFFSET_CYCLE_OVERHEAD - 3);
+  if (nWait > ((uint32_t) - 20))
+    return;
+  WAIT_CYCLE_NANO (nWait);
 }
+
+void v_delayCyclesEighth (void) {
+  uint32_t nWait;
+
+  nWait = (DELAY_PI_CYCLE_EQUIVALENT / 8) - (OFFSET_CYCLE_OVERHEAD - 3);
+  if (nWait > ((uint32_t) - 20))
+    return;
+  WAIT_CYCLE_NANO (nWait);
+}
+
 /***********************************************************************/
 
 /* Set current brightness of the Vectorbeam (provided BLANK is inactive).
- I f bit 7 is set, vectrex does not show an*y* brightness!
+ If bit 7 is set, vectrex does not show any brightness!
  It is checked if brightness is already set to the
  given value, if so - the function returns immediately.
 
  Ends without a delay, last set: VIA port B!
  */
-void v_setBrightness(uint8_t brightness)
-
-{
-  if (brightness == currentZSH) return; // beware -> this might cause brightness drift to zero on completely same intensities all the time!
-  if (brightness != currentPortA)
-  {
-    SET(VIA_port_a, brightness);
+void v_setBrightness (uint8_t brightness) {
+  if (brightness == currentZSH)
+    return;                     // beware -> this might cause brightness drift to zero on completely same intensities all the time!
+  if (brightness != currentPortA) {
+    SET (VIA_port_a, brightness);
     currentPortA = (int8_t) brightness;
   }
-  SET(VIA_port_b, 0x84); // MUX to intensity
+  SET (VIA_port_b, 0x84);       // MUX to intensity
   currentZSH = brightness;
-  DELAY_ZSH();
-  SET(VIA_port_b, 0x81); // SET port b to no Mux
+  DELAY_ZSH ();
+  SET (VIA_port_b, 0x81);       // SET port b to no Mux
 }
 
 /***********************************************************************/
 
 /* Moves from the current "cursor" position to given offsets.
- O ffsets are given in 16bit and are downsc*a*led by
+ Offsets are given in 16bit and are downscaled by
  "optimal" scale factors to vectrex strength/scale values.
  Wait is done using the Vectrex Timer T1.
  The wait is not "finished" - so other "pi" things can be done in between.
  After these "other pi things" are done "v_directDeltaMoveEnd()" must be
  called to insure T1 timer has expired.
  */
-void v_directDeltaMove32start(int32_t _xLen, int32_t _yLen)
-{
-  int32_t xLen = _xLen*sizeX;
-  int32_t yLen = _yLen*sizeY;
-  SET_OPTIMAL_SCALE(xLen, yLen);
-  SET_YSH16(yLen);
-  SET_XSH16(xLen);
-  START_T1_TIMER();
+void v_directDeltaMove32start (int32_t _xLen, int32_t _yLen) {
+  int32_t xLen = _xLen * sizeX;
+  int32_t yLen = _yLen * sizeY;
+
+  SET_OPTIMAL_SCALE (xLen, yLen);
+  SET_YSH16 (yLen);
+  SET_XSH16 (xLen);
+  START_T1_TIMER ();
   currentCursorX += xLen;
   currentCursorY += yLen;
 }
+
 // called from v_directDraw32, where sizing already occured!
-void v_directDeltaMove32start_nosizing(int32_t xLen, int32_t yLen)
-{
-  SET_OPTIMAL_SCALE(xLen, yLen);
-  SET_YSH16(yLen);
-  SET_XSH16(xLen);
-  START_T1_TIMER();
+void v_directDeltaMove32start_nosizing (int32_t xLen, int32_t yLen) {
+  SET_OPTIMAL_SCALE (xLen, yLen);
+  SET_YSH16 (yLen);
+  SET_XSH16 (xLen);
+  START_T1_TIMER ();
   currentCursorX += xLen;
   currentCursorY += yLen;
 }
+
 /*
- M oves to the given position "absolut".     * *
+ Moves to the given 'absolute' position.
  at the beginning the vectrex beam is reset to zero (center of screen).
 
  The difference between a sequence of
@@ -704,45 +676,43 @@ void v_directDeltaMove32start_nosizing(int32_t xLen, int32_t yLen)
  v_directDeltaMove32start(_xLen, _yLen);
 
  and a call to v_directMove32(...) is, that
- the absolut position call respects (can respect!) the
+ the absolute position call respects (can respect!) the
  chosen offsetX/offsetY.
- Delta move do not (can not) respect the offsets!
+ Delta moves do not (can not) respect the offsets!
  */
-void v_directMove32(int32_t xEnd, int32_t yEnd)
-{
-  v_zeroWait();
-  int32_t x = xEnd*sizeX+offsetX;
-  int32_t y = yEnd*sizeY+offsetY;
+void v_directMove32 (int32_t xEnd, int32_t yEnd) {
+  v_zeroWait ();
+  int32_t x = xEnd * sizeX + offsetX;
+  int32_t y = yEnd * sizeY + offsetY;
 
-  UNZERO(); // ensure vector beam can be moves
-  SET_OPTIMAL_SCALE(x, y);
-  SET_YSH16(y);
-  SET_XSH16(x);
-  START_T1_TIMER();
-  consecutiveDraws=0;
+  UNZERO ();                    // ensure vector beam can be moves
+  SET_OPTIMAL_SCALE (x, y);
+  SET_YSH16 (y);
+  SET_XSH16 (x);
+  START_T1_TIMER ();
+  consecutiveDraws = 0;
   currentCursorX = x;
   currentCursorY = y;
-  WAIT_T1_END();
+  WAIT_T1_END ();
 }
 
 /***********************************************************************/
 
 /*
- W aits till T1 interrupt flag of vectrex VI**A is set.
+ Waits till T1 interrupt flag of vectrex VIA is set.
  Instead the Macro: WAIT_T1_END can be used!
  See also:
  v_directDeltaMove32start(int32_t xLen, int32_t yLen)
  */
-void v_directDeltaMoveEnd()
-{
-  WAIT_T1_END();
+void v_directDeltaMoveEnd (void) {
+  WAIT_T1_END ();
 }
 
 /***********************************************************************/
 
 /*      Draws "directly" (not buffered) to vectrex screen.
- A ll given coordinates are absolut sc*reen c*oordinates.
- Assume coordinates are in the range: -32768 - +32767,
+ All given coordinates are absolute screen coordinates.
+ Assume coordinates are in the range: -32768 to +32767,
  assuming 0,0 is in the middle of the screen.
  "32" name tag denotes signed long range.
 
@@ -758,93 +728,89 @@ void v_directDeltaMoveEnd()
 
 int v_debug = 0;
 
-void v_directDraw32HintedDebug(int32_t xStart, int32_t yStart, int32_t xEnd, int32_t yEnd, uint8_t brightness, int forced, char* debugInfo)
-{
+void v_directDraw32HintedDebug (int32_t xStart, int32_t yStart, int32_t xEnd, int32_t yEnd, uint8_t brightness, int forced, char *debugInfo) {
   cpb->force = forced;
 
-  int i=0;
-  if (debugInfo != 0)
-  {
-    for (;i<239; i++)
-    {
-      if (!(cpb->debug[i] = *debugInfo++)) break;
+  int i = 0;
+
+  if (debugInfo != 0) {
+    for (; i < 239; i++) {
+      if (!(cpb->debug[i] = *debugInfo++))
+        break;
     }
   }
-  cpb->debug[i] = (char)0;
-  v_directDraw32(xStart, yStart, xEnd, yEnd, brightness);
-}
-void v_directDraw32Hinted(int32_t xStart, int32_t yStart, int32_t xEnd, int32_t yEnd, uint8_t brightness, int forced)
-{
-  cpb->force = forced;
-  cpb->debug[0] = (char)0;
-  v_directDraw32(xStart, yStart, xEnd, yEnd, brightness);
+  cpb->debug[i] = (char) 0;
+  v_directDraw32 (xStart, yStart, xEnd, yEnd, brightness);
 }
 
-void cohen_sutherlandCustom(int32_t *x1, int32_t *y1,  int32_t *x2, int32_t *y2, int xmin, int ymin, int xmax, int ymax);
+void v_directDraw32Hinted (int32_t xStart, int32_t yStart, int32_t xEnd, int32_t yEnd, uint8_t brightness, int forced) {
+  cpb->force = forced;
+  cpb->debug[0] = (char) 0;
+  v_directDraw32 (xStart, yStart, xEnd, yEnd, brightness);
+}
+
+void cohen_sutherlandCustom (int32_t * x1, int32_t * y1, int32_t * x2, int32_t * y2, int xmin, int ymin, int xmax, int ymax);
 
 // only pipelined!
-void v_directDraw32Patterned(int32_t xStart, int32_t yStart, int32_t xEnd, int32_t yEnd, uint8_t brightness, uint8_t pattern)
-{
-    cpb->pattern = pattern;
-    v_directDraw32(xStart, yStart, xEnd, yEnd, brightness);
+void v_directDraw32Patterned (int32_t xStart, int32_t yStart, int32_t xEnd, int32_t yEnd, uint8_t brightness, uint8_t pattern) {
+  cpb->pattern = pattern;
+  v_directDraw32 (xStart, yStart, xEnd, yEnd, brightness);
 }
 
-void v_directDraw32(int32_t xStart, int32_t yStart, int32_t xEnd, int32_t yEnd, uint8_t brightness)
-{
-  if (brightness==0) return;
-  if (customClippingEnabled)
-  {
-    cohen_sutherlandCustom(&xStart, &yStart,  &xEnd, &yEnd, customClipxMin, customClipyMin, customClipxMax, customClipyMax);
-    if (xStart == 1000000) return; // vector completely out of bounds
+void v_directDraw32 (int32_t xStart, int32_t yStart, int32_t xEnd, int32_t yEnd, uint8_t brightness) {
+  if (brightness == 0)
+    return;
+  if (customClippingEnabled) {
+    cohen_sutherlandCustom (&xStart, &yStart, &xEnd, &yEnd, customClipxMin, customClipyMin, customClipxMax, customClipyMax);
+    if (xStart == 1000000)
+      return;                   // vector completely out of bounds
   }
 
-  xStart = xStart*sizeX+offsetX;
-  yStart = yStart*sizeY+offsetY;
-  xEnd = xEnd*sizeX+offsetX;
-  yEnd = yEnd*sizeY+offsetY;
+  xStart = xStart * sizeX + offsetX;
+  yStart = yStart * sizeY + offsetY;
+  xEnd = xEnd * sizeX + offsetX;
+  yEnd = yEnd * sizeY + offsetY;
 
-  if (orientation == 0) ;// normal
-  else  if (orientation == 1)
-  {
+  if (orientation == 0) ;       // normal
+  else if (orientation == 1) {
     int32_t xStart_t = xStart;
     int32_t xEnd_t = xEnd;
+
     xStart = yStart;
     yStart = -xStart_t;
     xEnd = yEnd;
     yEnd = -xEnd_t;
-  }
-  else  if (orientation == 2)
-  {
+  } else if (orientation == 2) {
     xStart = -xStart;
     yStart = -yStart;
     xEnd = -xEnd;
     yEnd = -yEnd;
-  }
-  else  if (orientation == 3)
-  {
+  } else if (orientation == 3) {
     int32_t xStart_t = xStart;
     int32_t xEnd_t = xEnd;
+
     xStart = -yStart;
     yStart = xStart_t;
     xEnd = -yEnd;
     yEnd = xEnd_t;
   }
-  if (usePipeline)
-  {
+  if (usePipeline) {
     cpb->y0 = yStart & (~POSTION_MARGIN_AND);
     cpb->x0 = xStart & (~POSTION_MARGIN_AND);
     cpb->y1 = yEnd & (~POSTION_MARGIN_AND);
     cpb->x1 = xEnd & (~POSTION_MARGIN_AND);
-    if (myDebug)
-    {
-      printf("x0,y0,x1,y2: %i,%i,%i,%i\r\n",cpb->x0,  cpb->y0,  cpb->x1,  cpb->y1);
+    if (myDebug) {
+      printf ("x0,y0,x1,y2: %i,%i,%i,%i\r\n", cpb->x0, cpb->y0, cpb->x1, cpb->y1);
     }
     cpb->intensity = brightness;
     cpb->force |= commonHints;
     cpb->sms = MAX_USED_STRENGTH;
-    if (optimizationON==0) cpb->force |= PL_BASE_FORCE_ZERO;
-    if (cpb->force & PL_BASE_FORCE_USE_DOT_DWELL) cpb->timingForced = v_dotDwell;
-    if (cpb->force & PL_BASE_FORCE_USE_FIX_SIZE) cpb->timingForced = currentScale;
+    if (optimizationON == 0)
+      cpb->force |= PL_BASE_FORCE_ZERO;
+    if (cpb->force & PL_BASE_FORCE_USE_DOT_DWELL)
+      cpb->timingForced = v_dotDwell;
+    if (cpb->force & PL_BASE_FORCE_USE_FIX_SIZE)
+      cpb->timingForced = currentScale;
 
     cpb = &pb[++pipelineCounter];
     cpb->pattern = 0;
@@ -853,88 +819,83 @@ void v_directDraw32(int32_t xStart, int32_t yStart, int32_t xEnd, int32_t yEnd, 
     return;
   }
 
-  v_setBrightness(brightness);
-  UNZERO(); // ensure vector beam can be moves
+  v_setBrightness (brightness);
+  UNZERO ();                    // ensure vector beam can be moves
 
   // this will be the delta values for drawing
   int32_t xDrawDif;
   int32_t yDrawDif;
 
   // how far away is the cursor from the position we want to start drawing?
-  int32_t xMoveDif = xStart-currentCursorX;
-  int32_t yMoveDif = yStart-currentCursorY;
+  int32_t xMoveDif = xStart - currentCursorX;
+  int32_t yMoveDif = yStart - currentCursorY;
 
   // if not optimized, we always reposition!
   // test if the position of the last end - and the current start differs by more than our set margin
-  if (((ABS(xMoveDif) > POSITION_MARGIN) || (ABS(yMoveDif) > POSITION_MARGIN) ) || (optimizationON==0))
-  {
+  if (((ABS (xMoveDif) > POSITION_MARGIN) || (ABS (yMoveDif) > POSITION_MARGIN)) || (optimizationON == 0)) {
     // determine whether to zero and reposition (rather than do a move from here)
     // three facters
     // - did we already have to many consecutive moves? If so drift will be large - and it is better to zero once in a while
     // - will the next scale be considerably different from the current one? - if so - better start anew
     // - is the new position very far away from the old, if so, it might even be faster to zero and reposition
-    //   (possibly redundant to reason two)
+    // (possibly redundant to reason two)
 
     int resetPos = consecutiveDraws > MAX_CONSECUTIVE_DRAWS;
-    resetPos += ABS((currentScale-GET_OPTIMAL_SCALE(xMoveDif, yMoveDif)) > 20);
-    resetPos += ((ABS(xMoveDif)>7000) || (ABS(yMoveDif)>7000) );
+
+    resetPos += ABS ((currentScale - GET_OPTIMAL_SCALE (xMoveDif, yMoveDif)) > 20);
+    resetPos += ((ABS (xMoveDif) > 7000) || (ABS (yMoveDif) > 7000));
 
     // if not optimized, we always reposition!
-    resetPos += optimizationON==0;
-    if (resetPos)
-    {
-      // reset to zero - and position absolut
-      ZERO_AND_WAIT();
-      UNZERO();
-      //v_resetIntegratorOffsets0();
+    resetPos += optimizationON == 0;
+    if (resetPos) {
+      // reset to zero - and position absolute
+      ZERO_AND_WAIT ();
+      UNZERO ();
+      // v_resetIntegratorOffsets0();
       // reposition beam
 
-      v_directDeltaMove32start_nosizing(xStart, yStart);
+      v_directDeltaMove32start_nosizing (xStart, yStart);
       consecutiveDraws = 0;
-      xDrawDif = xEnd-xStart;
-      yDrawDif = yEnd-yStart;
-      SET_OPTIMAL_SCALE(xDrawDif, yDrawDif);
-      WAIT_T1_END_LAST();//v_directDeltaMoveEnd();
+      xDrawDif = xEnd - xStart;
+      yDrawDif = yEnd - yStart;
+      SET_OPTIMAL_SCALE (xDrawDif, yDrawDif);
+      WAIT_T1_END_LAST ();      // v_directDeltaMoveEnd();
 
-      //if (calibrationValue!=0)    v_resetIntegratorOffsets();
+      // if (calibrationValue!=0) v_resetIntegratorOffsets();
 
-    }
-    else
-    {
+    } else {
       // position relative
       // reposition beam
-      v_directDeltaMove32start_nosizing(xMoveDif, yMoveDif);
+      v_directDeltaMove32start_nosizing (xMoveDif, yMoveDif);
       consecutiveDraws++;
-      xDrawDif = xEnd-xStart;
-      yDrawDif = yEnd-yStart;
-      SET_OPTIMAL_SCALE(xDrawDif, yDrawDif);
-      WAIT_T1_END_LAST();//v_directDeltaMoveEnd();
+      xDrawDif = xEnd - xStart;
+      yDrawDif = yEnd - yStart;
+      SET_OPTIMAL_SCALE (xDrawDif, yDrawDif);
+      WAIT_T1_END_LAST ();      // v_directDeltaMoveEnd();
     }
-  }
-  else
-  {
+  } else {
     // no repositioning -> draw directly again!
-    xDrawDif = xEnd-xStart;
-    yDrawDif = yEnd-yStart;
-    SET_OPTIMAL_SCALE(xDrawDif, yDrawDif);
+    xDrawDif = xEnd - xStart;
+    yDrawDif = yEnd - yStart;
+    SET_OPTIMAL_SCALE (xDrawDif, yDrawDif);
   }
-  SET_YSH16(yDrawDif);
-  SET_XSH16(xDrawDif);
-  START_T1_TIMER();
-  SWITCH_BEAM_ON();
+  SET_YSH16 (yDrawDif);
+  SET_XSH16 (xDrawDif);
+  START_T1_TIMER ();
+  SWITCH_BEAM_ON ();
   consecutiveDraws++;
   currentCursorX = xEnd;
   currentCursorY = yEnd;
 
-  WAIT_T1_END();
-  SWITCH_BEAM_OFF();
+  WAIT_T1_END ();
+  SWITCH_BEAM_OFF ();
 }
 
 /***********************************************************************/
 
 /*      Draws "directly" (not buffered) to vectrex screen.
- D raws from the current position to t*he giv*en delta values.
- Assume delta values are in the range: -32768 - +32767,
+ Draws from the current position to the given delta values.
+ Assume delta values are in the range: -32768 to +32767,
  assuming 0,0 is in the middle of the screen.
  "32" name tag denotes signed long range.
 
@@ -944,19 +905,17 @@ void v_directDraw32(int32_t xStart, int32_t yStart, int32_t xEnd, int32_t yEnd, 
 
  Leaves non zeroed!
  */
-void v_directDeltaDraw32(int32_t _xLen, int32_t _yLen, uint8_t brightness)
-{
-  int32_t xLen = _xLen*sizeX;
-  int32_t yLen = _yLen*sizeY;
+void v_directDeltaDraw32 (int32_t _xLen, int32_t _yLen, uint8_t brightness) {
+  int32_t xLen = _xLen * sizeX;
+  int32_t yLen = _yLen * sizeY;
 
+  v_setBrightness (brightness);
+  SET_OPTIMAL_SCALE (xLen, yLen);
 
-  v_setBrightness(brightness);
-  SET_OPTIMAL_SCALE(xLen, yLen);
-
-  SET_YSH16(yLen);
-  SET_XSH16(xLen);
-  SWITCH_BEAM_ON();
-  START_T1_TIMER();
+  SET_YSH16 (yLen);
+  SET_XSH16 (xLen);
+  SWITCH_BEAM_ON ();
+  START_T1_TIMER ();
   currentCursorX += xLen;
   currentCursorY += yLen;
 
@@ -965,27 +924,26 @@ void v_directDeltaDraw32(int32_t _xLen, int32_t _yLen, uint8_t brightness)
   // resume "earlier", and switch the beam off
   // at EXACTLY the moment the timer finishes
   // lookup wait table 0x00 - 0xff (scale) for 100% correct timer values?
-  WAIT_T1_END();
-  SWITCH_BEAM_OFF();
+  WAIT_T1_END ();
+  SWITCH_BEAM_OFF ();
 }
 
 /***********************************************************************/
 // real "0", even to 0 when calibration was done!
-inline static void v_resetIntegratorOffsets0()
-{
-  printf("CALIBRATION 0\r\n");
+inline static void v_resetIntegratorOffsets0 (void) {
+  printf ("CALIBRATION 0\r\n");
   SET (VIA_port_b, 0x81);
-  DELAY_PORT_B_BEFORE_PORT_A();
+  DELAY_PORT_B_BEFORE_PORT_A ();
   SET (VIA_port_a, 0x00);
-  DELAY_CYCLES(4);
+  DELAY_CYCLES (4);
   SET (VIA_port_b, 0x80);
-  DELAY_CYCLES(6);
+  DELAY_CYCLES (6);
   // reset integrators
-  SET (VIA_port_b, 0x82);    // mux=1, enable mux - integrator offset = 0
-  DELAY_CYCLES(6);
-  SET (VIA_port_b, 0x81);    // disable mux
-  DELAY_CYCLES(4);
-  currentPortA=0x100;// non regular value!
+  SET (VIA_port_b, 0x82);       // mux=1, enable mux - integrator offset = 0
+  DELAY_CYCLES (6);
+  SET (VIA_port_b, 0x81);       // disable mux
+  DELAY_CYCLES (4);
+  currentPortA = 0x100;         // non regular value!
 }
 
 /* This routine resets the integrator offsets to zero. This might be neccessary once in a while.
@@ -993,120 +951,111 @@ inline static void v_resetIntegratorOffsets0()
  * The "opposite" (apart from natural degradation of the offsets) is Kristof Tuts like calibration.
  * Which actively sets a integrator offset to a very small value to compensate vectrex "drift".
  */
-inline static void v_resetIntegratorOffsets()
-{
+inline static void v_resetIntegratorOffsets (void) {
   SET (VIA_port_b, 0x81);
-  DELAY_PORT_B_BEFORE_PORT_A();
-  if (calibrationValue==0)
-  {
+  DELAY_PORT_B_BEFORE_PORT_A ();
+  if (calibrationValue == 0) {
     SET (VIA_port_a, 0x00);
-    DELAY_CYCLES(4);
+    DELAY_CYCLES (4);
     // reset integrators
-    SET (VIA_port_b, 0x82);    // mux=1, enable mux - integrator offset = 0
-    DELAY_CYCLES(6);
-    SET (VIA_port_b, 0x81);    // disable mux
-  }
-  else
-  {
+    SET (VIA_port_b, 0x82);     // mux=1, enable mux - integrator offset = 0
+    DELAY_CYCLES (6);
+    SET (VIA_port_b, 0x81);     // disable mux
+  } else {
     SET (VIA_port_b, 0x81);
-    DELAY_PORT_B_BEFORE_PORT_A();
+    DELAY_PORT_B_BEFORE_PORT_A ();
     SET (VIA_port_a, calibrationValue);
-    DELAY_CYCLES(6);
+    DELAY_CYCLES (6);
     SET (VIA_port_b, 0x82);
-    DELAY_PORT_B_BEFORE_PORT_A();
+    DELAY_PORT_B_BEFORE_PORT_A ();
     SET (VIA_port_a, 0xff);
-    DELAY_CYCLES(2);
+    DELAY_CYCLES (2);
     SET (VIA_port_b, 0x81);
   }
-  DELAY_CYCLES(4);
-  currentPortA=0x100;// non regular value!
+  DELAY_CYCLES (4);
+  currentPortA = 0x100;         // non regular value!
 }
 
-void v_delayCycles1point5()
-{
-  uint32_t nWait;
-  nWait = (DELAY_PI_CYCLE_EQUIVALENT*1.5)-(OFFSET_CYCLE_OVERHEAD-3);
-  if (nWait>((uint32_t)-20)) return;
-  WAIT_CYCLE_NANO(nWait);
+void v_delayCycles1point5 (void) {
+uint32_t nWait;
+
+  nWait = (DELAY_PI_CYCLE_EQUIVALENT * 1.5) - (OFFSET_CYCLE_OVERHEAD - 3);
+  if (nWait > ((uint32_t) - 20))
+    return;
+  WAIT_CYCLE_NANO (nWait);
 }
 
- inline static void __v_resetIntegratorOffsets()
-{
+inline static void __v_resetIntegratorOffsets (void) {
   SET (VIA_port_b, 0x81);
-  DELAY_PORT_B_BEFORE_PORT_A();
+  DELAY_PORT_B_BEFORE_PORT_A ();
   SET (VIA_port_a, 0x00);
-  DELAY_CYCLES(4);
+  DELAY_CYCLES (4);
   SET (VIA_port_b, 0x80);
-  DELAY_CYCLES(6);
-  if (calibrationValue==0)
-  {
-    // reset integrators
-    SET (VIA_port_b, 0x82);    // mux=1, enable mux - integrator offset = 0
-    DELAY_CYCLES(6);
-    SET (VIA_port_b, 0x81);    // disable mux
-  }
-  else
-  {
+  DELAY_CYCLES (6);
+  if (calibrationValue == 0) {  // reset integrators
+    SET (VIA_port_b, 0x82);     // mux=1, enable mux - integrator offset = 0
+    DELAY_CYCLES (6);
+    SET (VIA_port_b, 0x81);     // disable mux
+  } else {
     SET (VIA_port_b, 0x81);
-    DELAY_PORT_B_BEFORE_PORT_A();
+    DELAY_PORT_B_BEFORE_PORT_A ();
     SET (VIA_port_a, calibrationValue);
-    DELAY_CYCLES(4);
+    DELAY_CYCLES (4);
     SET (VIA_port_b, 0x82);
-    DELAY_CYCLES(4);
+    DELAY_CYCLES (4);
     SET (VIA_port_a, 0xff);
 //    v_delayCycles1point5(); // delay of 1.5 cycles ensures a safety zone, and 0x81 is poked after a FIXED cycle count!
     SET (VIA_port_a, 0xff);
     SET (VIA_port_b, 0x81);
 /*
-int waited  = waitUntil(0);
-if (waited > 4300)
-printf("%06i*********\r\n", waited);
-  else
-printf("%06i\r\n", waited);
+    int waited  = waitUntil(0);
+    if (waited > 4300)
+      printf("%06i*********\r\n", waited);
+    else
+      printf("%06i\r\n", waited);
 */
   }
-  DELAY_CYCLES(4);
-  currentPortA=0x100;// non regular value!
+  DELAY_CYCLES (4);
+  currentPortA = 0x100;         // non regular value!
 }
 
-/* ***********************************************************************/
+/**********************************************************************/
 
 /* This routine moves the vector beam to the extrem edges of the screen and zeros afterwards
  * this prevents "vector collaps".
  * If the "application" uses vectors which are far from the center anyway... this is not needed.
  */
-void v_deflok()
-{
-  ZERO_AND_WAIT();
-  UNZERO();
-  v_setScale(255);
-  SET_YSH_IMMEDIATE_8(127);
-  SET_XSH_IMMEDIATE_8(127);
-  START_WAIT_T1();
-  ZERO_AND_WAIT();
-  UNZERO();
-  SET_YSH_IMMEDIATE_8(-127);
-  SET_XSH_IMMEDIATE_8(-127);
-  START_WAIT_T1();
-  ZERO_AND_WAIT();
+void v_deflok (void) {
+  ZERO_AND_WAIT ();
+  UNZERO ();
+  v_setScale (255);
+  SET_YSH_IMMEDIATE_8 (127);
+  SET_XSH_IMMEDIATE_8 (127);
+  START_WAIT_T1 ();
+  ZERO_AND_WAIT ();
+  UNZERO ();
+  SET_YSH_IMMEDIATE_8 (-127);
+  SET_XSH_IMMEDIATE_8 (-127);
+  START_WAIT_T1 ();
+  ZERO_AND_WAIT ();
 }
 
 /***********************************************************************/
 
 /*      Set vectrex refresh rate for T2 "WaitRecal".
- P arameter in in Hz.                 *      *
+ Parameter in in Hz.
  -> so 50 Hz -> results in  Vec_Rfrsh = 0x3075
  */
-void v_setRefresh(int hz)
-{
-  int32_t cycles = 1500000 / hz; // Hz to vectrex cycles
-  Vec_Rfrsh = ((cycles&0xff)*256) + ((cycles>>8)&0xff); // swap hi / lo bytes for little endian VIA
+void v_setRefresh (int hz) {
+  int32_t cycles = 1500000 / hz;        // Hz to vectrex cycles
+
+  Vec_Rfrsh = ((cycles & 0xff) * 256) + ((cycles >> 8) & 0xff); // swap hi / lo bytes for little endian VIA
 }
 
 /***********************************************************************/
 
 /*      A vectrex BIOS like function that can be called "once per round".
- T his function waits till the Vectrex* Timer* T2 is finished (timing can be set
+ This function waits till the Vectrex Timer T2 is finished (timing can be set
  using "v_setRefresh(int hz)".
 
  After the wait finishes, following things are further executed:
@@ -1120,157 +1069,144 @@ void v_setRefresh(int hz)
 
  Also checks and reacts on PiTrex "button" sets (return to boot screen, calibrate etc)
  */
-void handlePipeline();
-void displayPipeline();
-void v_WaitRecal_buffered(int buildBuffer);
-void v_printBitmapUni(unsigned char *bitmapBlob, int width, int height, int size, int x, int y);
+void handlePipeline (void);
+void displayPipeline (void);
+void v_WaitRecal_buffered (int buildBuffer);
+void v_printBitmapUni (unsigned char *bitmapBlob, int width, int height, int size, int x, int y);
 
+void v_WaitRecal (void) {
+#ifdef FREESTANDING
+#ifdef PITREX_DEBUG
+  while (browseMode) {
+    /* (display a bitmap)
 
-void v_WaitRecal()
-{
-  #ifdef FREESTANDING
-  #ifdef PITREX_DEBUG
-  while (browseMode)
-  {
-    /* display a bitmap) *
-      ioDone = 0;
-    v_printBitmapUni(0, 20, 20, 20, -70, 70);
-  uint16_t timeLeftPrinting = ((Vec_Rfrsh&0xff)*256+(Vec_Rfrsh>>8)) - GET(VIA_t2_cnt_hi)*256;
-  int usagePercentAll  =(timeLeftPrinting*100/((Vec_Rfrsh&0xff)*256+(Vec_Rfrsh>>8)));
-  if (currentButtonState ==0xc) // button 3 + 4 pressed - print speed info
-  {
-    printf("Refresh usage: %i%%  \r\n", usagePercentAll );
-  }
+       ioDone = 0; 
+       v_printBitmapUni(0, 20, 20, 20, -70, 70);
+       uint16_t timeLeftPrinting = ((Vec_Rfrsh&0xff)*256+(Vec_Rfrsh>>8)) - GET(VIA_t2_cnt_hi)*256;
+       int usagePercentAll =(timeLeftPrinting*100/((Vec_Rfrsh&0xff)*256+(Vec_Rfrsh>>8)));
+       if (currentButtonState ==0xc) // button 3 + 4 pressed - print speed info
+       {
+         printf("Refresh usage: %i%% \r\n", usagePercentAll );
+       }
 
-    */
+     */
 
-
-
-    displayPipeline();
-    handleUARTInterface();
+    displayPipeline ();
+    handleUARTInterface ();
     // wait for Via T2 to expire
-    while ((GET (VIA_int_flags) & 0x20) == 0)
-    {;}
+    while ((GET (VIA_int_flags) & 0x20) == 0) {
+      ;
+    }
 
     // reset T2 VIA timer to 50Hz
     SETW (VIA_t2, Vec_Rfrsh);
     currentZSH = 0x100;
-    v_deflok();
-    v_resetIntegratorOffsets();
+    v_deflok ();
+    v_resetIntegratorOffsets ();
   }
-  #endif
-  #endif
+#endif
+#endif
 
-
-  if ((bufferType == 2) && (pipelineFilled))
-  {
-    if (pipelineCounter == 0)
-    {
-      v_WaitRecal_buffered(0);
+  if ((bufferType == 2) && (pipelineFilled)) {
+    if (pipelineCounter == 0) {
+      v_WaitRecal_buffered (0);
       return;
     }
-    v_WaitRecal_buffered(1);
+    v_WaitRecal_buffered (1);
     return;
   }
-  v_WaitRecal_buffered(1);
-  if (bufferType == 1)
-  {
-    v_WaitRecal_buffered(0);
+  v_WaitRecal_buffered (1);
+  if (bufferType == 1) {
+    v_WaitRecal_buffered (0);
   }
 }
-static int roundCounter =0;
 
-void v_WaitRecal_buffered(int buildBuffer)
-{
+static int roundCounter = 0;
+
+void v_WaitRecal_buffered (int buildBuffer) {
   // savety
   // within WaitRecal - neverchange the pipeline
-  #ifdef PITREX_DEBUG
-  uint16_t timeLeftCoding = ((Vec_Rfrsh&0xff)*256+(Vec_Rfrsh>>8)) - GET(VIA_t2_cnt_hi)*256;
-  #endif
-  if (usePipeline)
-  {
-    v_deflok();
-    if (bufferType != 3)
-    {
-      if (buildBuffer)
-      {
-        if (inCalibration) v_calibrate();
-        handlePipeline();
+#ifdef PITREX_DEBUG
+  uint16_t timeLeftCoding = ((Vec_Rfrsh & 0xff) * 256 + (Vec_Rfrsh >> 8)) - GET (VIA_t2_cnt_hi) * 256;
+#endif
+  if (usePipeline) {
+    v_deflok ();
+    if (bufferType != 3) {
+      if (buildBuffer) {
+        if (inCalibration)
+          v_calibrate ();
+        handlePipeline ();
       }
       roundCounter++;
-      v_resetIntegratorOffsets();
-      displayPipeline();
+      v_resetIntegratorOffsets ();
+      displayPipeline ();
     }
   }
   ioDone = 0;
-  SWITCH_BEAM_OFF();
-  #ifdef PITREX_DEBUG
-  uint16_t timeLeftPrinting = ((Vec_Rfrsh&0xff)*256+(Vec_Rfrsh>>8)) - GET(VIA_t2_cnt_hi)*256;
-  int usagePercentAll  =(timeLeftPrinting*100/((Vec_Rfrsh&0xff)*256+(Vec_Rfrsh>>8)));
+  SWITCH_BEAM_OFF ();
 
-  int usageCoding  =(timeLeftCoding*100/((Vec_Rfrsh&0xff)*256+(Vec_Rfrsh>>8)));
-  int usageDrawing  =usagePercentAll-usageCoding;
-  if (currentButtonState ==0xc) // button 3 + 4 pressed - print speed info
+#ifdef PITREX_DEBUG
+  uint16_t timeLeftPrinting = ((Vec_Rfrsh & 0xff) * 256 + (Vec_Rfrsh >> 8)) - GET (VIA_t2_cnt_hi) * 256;
+  int usagePercentAll = (timeLeftPrinting * 100 / ((Vec_Rfrsh & 0xff) * 256 + (Vec_Rfrsh >> 8)));
+
+  int usageCoding = (timeLeftCoding * 100 / ((Vec_Rfrsh & 0xff) * 256 + (Vec_Rfrsh >> 8)));
+  int usageDrawing = usagePercentAll - usageCoding;
+
+  if (currentButtonState == 0xc)        // button 3 + 4 pressed - print speed info
   {
-    printf("Refresh usage: %i%% (Code: %i%% Draw: %i%%) \r\n", usagePercentAll, usageCoding, usageDrawing );
+    printf ("Refresh usage: %i%% (Code: %i%% Draw: %i%%) \r\n", usagePercentAll, usageCoding, usageDrawing);
   }
-  #ifdef FREESTANDING
-  handleUARTInterface();
+#ifdef FREESTANDING
+  handleUARTInterface ();
+#endif
+#endif
 
-  #endif
-  #endif
-
-  v_resetDetection();
-  if (currentButtonState ==0xf) // button 1+ 2 + 3+4 -> go menu
+  v_resetDetection ();
+  if (currentButtonState == 0xf)        // button 1 + 2 + 3 + 4 -> go menu
   {
-    #ifndef FREESTANDING
-    v_noSound();
-    exit(0); // pressing all four buttons exits
-    #else
-    printf("Restarting kernel...%08x %08x\r\n",(int)settings->loader, (int)*settings->loader);
+#ifndef FREESTANDING
+    v_noSound ();
+    exit (0);                   // pressing all four buttons exits
+#else
+    printf ("Restarting kernel...%08x %08x\r\n", (int) settings->loader, (int) *settings->loader);
 /*
     uint32_t progSapce = LOADER_START;;
     void (*progStart)(void) = (void (*)(void))progSapce;
     progStart();
       __asm__ __volatile__(
           "mov r5, #0x008c   \n\t"
-//          "ldr pc, =0x400002c// 0x008c      \n\t"
+//        "ldr pc, =0x400002c// 0x008c      \n\t"
           "ldr pc, [r5]      \n\t"
-        );
-*/    
-    settings->loader();
-    #endif
+      );
+*/
+    settings->loader ();
+#endif
   }
 
-  if (currentButtonState ==0x3) // button 1 + 2 pressed - enter calibration menu1
+  if (currentButtonState == 0x3)        // button 1 + 2 pressed - enter calibration menu1
   {
     clipActive = 1;
     inCalibration = 1;
     valueChangeDelay = 0;
 
-
-    currentMarkedMenu=0;
+    currentMarkedMenu = 0;
     selectionCalibrationMade = 0;
-    menuOffset=0;
+    menuOffset = 0;
     selectedCalibrationMenu = 0;
-
-
 
     saveresetToZeroDifMax = resetToZeroDifMax;
     resetToZeroDifMax = 2000;
   }
 
   // wait for Via T2 to expire -> 50Hz
-  while ((GET (VIA_int_flags) & 0x20) == 0)
-  {
-    v_resetDetection();
-    ; // might do a usleep(1); here
+  while ((GET (VIA_int_flags) & 0x20) == 0) {
+    v_resetDetection ();
+    ;                           // might do a usleep(1); here
   }
 
-  if (!usePipeline)
-  {
-    v_deflok();
-    v_resetIntegratorOffsets();
+  if (!usePipeline) {
+    v_deflok ();
+    v_resetIntegratorOffsets ();
   }
 
   // reset T2 VIA timer to 50Hz
@@ -1285,36 +1221,33 @@ void v_WaitRecal_buffered(int buildBuffer)
 // TODO
 //-> this might work, if we don't use T1, but our own PI timer
 // which atm we do...
-void v_resetDetection()
-{
-  if ((GET(VIA_DDR_a) == 0) && (GET(VIA_DDR_b) == 0))
-  {
-    printf("Reset detected!\r\n");
+
+void v_resetDetection (void) {
+  if ((GET (VIA_DDR_a) == 0) && (GET (VIA_DDR_b) == 0)) {
+    printf ("Reset detected!\r\n");
     // wait till reset is finished
-    while ((GET(VIA_DDR_a) == 0) && (GET(VIA_DDR_b) == 0))
-    {
-      SET(VIA_DDR_a, 0xff);
-      DELAY_CYCLES(4);
+    while ((GET (VIA_DDR_a) == 0) && (GET (VIA_DDR_b) == 0)) {
+      SET (VIA_DDR_a, 0xff);
+      DELAY_CYCLES (4);
     }
 #ifdef FREESTANDING
 /*
     uint32_t progSapce = LOADER_START;;
     void (*progStart)(void) = (void (*)(void))progSapce;
     progStart();
-*/    
-    settings->loader();
+*/
+    settings->loader ();
 #else
-    exit(0);
+    exit (0);
 #endif
   }
 
 }
 
-
 /***********************************************************************/
 
 /*      Reads the vectrex button states (port 1 and port 2).
- N eeds only be called once per round *(or ev*en only every second round)
+ Needs only be called once per round (or even only every second round)
  result also in variable: currentButtonState
  bit 0 = button 1 port 1
  bit 1 = button 2 port 1
@@ -1325,71 +1258,72 @@ void v_resetDetection()
  bit 6 = button 3 port 2
  bit 7 = button 4 port 2
  if bit == 1, than button is pressed
-   if bit == 0, than button is not pressed
-     */
-uint8_t v_directReadButtons()
-{
- int ibs=0;
-  SET(VIA_port_a, 0x0e); // prepare access of psg port A (0x0e) by writing the register value to VIA port A
-  DELAY_CYCLES(4);
-  SET(VIA_port_b, 0x99); // set VIA port B to settings: sound BDIR on, BC1 on, mux off
-  DELAY_CYCLES(4);
-  SET(VIA_port_b, 0x81); // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
-  DELAY_CYCLES(4);
+ if bit == 0, than button is not pressed
+ */
+uint8_t v_directReadButtons (void) {
+int ibs = 0;
 
-  SET(VIA_DDR_a, 0x00); // set VIA DDR A to input
-  DELAY_CYCLES(4);
-  SET(VIA_port_b, 0x89); // set VIA port B to settings: sound BDIR on, BC1 on, mux off
-  DELAY_CYCLES(6);
-  ibs = ~GET(VIA_port_a); // Read buttons
-  SET(VIA_port_b, 0x81); // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
-  DELAY_CYCLES(4);
-  SET(VIA_DDR_a, 0xff); // set VIA DDR A to output
-  DELAY_CYCLES(4);
+  SET (VIA_port_a, 0x0e);       // prepare access of psg port A (0x0e) by writing the register value to VIA port A
+  DELAY_CYCLES (4);
+  SET (VIA_port_b, 0x99);       // set VIA port B to settings: sound BDIR on, BC1 on, mux off
+  DELAY_CYCLES (4);
+  SET (VIA_port_b, 0x81);       // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
+  DELAY_CYCLES (4);
+
+  SET (VIA_DDR_a, 0x00);        // set VIA DDR A to input
+  DELAY_CYCLES (4);
+  SET (VIA_port_b, 0x89);       // set VIA port B to settings: sound BDIR on, BC1 on, mux off
+  DELAY_CYCLES (6);
+  ibs = ~GET (VIA_port_a);      // Read buttons
+  SET (VIA_port_b, 0x81);       // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
+  DELAY_CYCLES (4);
+  SET (VIA_DDR_a, 0xff);        // set VIA DDR A to output
+  DELAY_CYCLES (4);
   currentPortA = 0x100;
 
   return ibs;
 }
-uint8_t v_readButtons()
-{
-  if (ioDone & V_BUTTONS_READ) return currentButtonState;
+
+uint8_t v_readButtons (void) {
+  if (ioDone & V_BUTTONS_READ)
+    return currentButtonState;
+
   ioDone |= V_BUTTONS_READ;
   // read of buttons goes thru the PSG sound chip, PSG port A
-  //
-  SET(VIA_port_a, 0x0e); // prepare access of psg port A (0x0e) by writing the register value to VIA port A
-  DELAY_CYCLES(4);
-  SET(VIA_port_b, 0x99); // set VIA port B to settings: sound BDIR on, BC1 on, mux off
-  DELAY_CYCLES(4);
-  SET(VIA_port_b, 0x81); // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
-  DELAY_CYCLES(4);
+  // 
+  SET (VIA_port_a, 0x0e);       // prepare access of psg port A (0x0e) by writing the register value to VIA port A
+  DELAY_CYCLES (4);
+  SET (VIA_port_b, 0x99);       // set VIA port B to settings: sound BDIR on, BC1 on, mux off
+  DELAY_CYCLES (4);
+  SET (VIA_port_b, 0x81);       // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
+  DELAY_CYCLES (4);
 
-  SET(VIA_DDR_a, 0x00); // set VIA DDR A to input
-  DELAY_CYCLES(4);
-  SET(VIA_port_b, 0x89); // set VIA port B to settings: sound BDIR on, BC1 on, mux off
-  DELAY_CYCLES(6);
-  currentButtonState = ~GET(VIA_port_a); // Read buttons
-  SET(VIA_port_b, 0x81); // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
-  DELAY_CYCLES(4);
-  SET(VIA_DDR_a, 0xff); // set VIA DDR A to output
-  DELAY_CYCLES(4);
+  SET (VIA_DDR_a, 0x00);        // set VIA DDR A to input
+  DELAY_CYCLES (4);
+  SET (VIA_port_b, 0x89);       // set VIA port B to settings: sound BDIR on, BC1 on, mux off
+  DELAY_CYCLES (6);
+  currentButtonState = ~GET (VIA_port_a);       // Read buttons
+  SET (VIA_port_b, 0x81);       // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
+  DELAY_CYCLES (4);
+  SET (VIA_DDR_a, 0xff);        // set VIA DDR A to output
+  DELAY_CYCLES (4);
   currentPortA = 0x100;
 
   internalButtonState = currentButtonState;
-  if (inCalibration)
-  {
+  if (inCalibration) {
     currentButtonState = 0;
   }
-
 
   return currentButtonState;
 }
 
 /***********************************************************************/
 
-/*      Reads the vectrex joystick states (port 1) DIGITAL.
- ( Faster than analog call!)          *      *
+/*      Reads the vectrex joystick states (port 1) DIGITAL. (Faster than analog call!)
+
  Needs only be called once per round (or even only every second round)
  result in variable:
+
  currentJoy1Y = -1 down
  currentJoy1Y = 0 centered
  currentJoy1Y = 1 up
@@ -1399,218 +1333,193 @@ uint8_t v_readButtons()
  currentJoy1X = 1 right
  */
 
-void v_readJoystick1Digital()
-{
-  if (ioDone & V_JOY_DIGITAL_READ) return;
+void v_readJoystick1Digital (void) {
+  if (ioDone & V_JOY_DIGITAL_READ)
+    return;
   ioDone |= V_JOY_DIGITAL_READ;
 
   // Y ANALOG
-  SET(VIA_port_a, 0x00); // clear VIA port A
-  DELAY_CYCLES(4);
-  SET(VIA_port_b, 0x82); // set VIA port B mux enabled, mux sel = 01 (vertical pot port 0)
+  SET (VIA_port_a, 0x00);       // clear VIA port A
+  DELAY_CYCLES (4);
+  SET (VIA_port_b, 0x82);       // set VIA port B mux enabled, mux sel = 01 (vertical pot port 0)
 
   // wait for joystick comparators to "settle"
-  DELAY_CYCLES(60); // must be tested! can probably be less?
+  DELAY_CYCLES (60);            // must be tested! can probably be less?
 
-  currentJoy1Y = -1; // default down
-  SET(VIA_port_b, 0x83); // set VIA port B mux
-  DELAY_PORT_B_BEFORE_PORT_A();
-  SET(VIA_port_a, 0x40); // load a with test value (positive y), test value to DAC
-  DELAY_CYCLES(4);
-  if ((GET(VIA_port_b) & 0x20) == 0x20)
-  {
-    currentJoy1Y = 1; //up
-  }
-  else
-  {
-    SET(VIA_port_a, -0x40); // load a with test value (negative y), test value to DAC
-    DELAY_CYCLES(4);
-    if ((GET(VIA_port_b) & 0x20) == 0x20)
-    {
-      currentJoy1Y = 0; // no direction
+  currentJoy1Y = -1;            // default down
+  SET (VIA_port_b, 0x83);       // set VIA port B mux
+  DELAY_PORT_B_BEFORE_PORT_A ();
+  SET (VIA_port_a, 0x40);       // load a with test value (positive y), test value to DAC
+  DELAY_CYCLES (4);
+  if ((GET (VIA_port_b) & 0x20) == 0x20) {
+    currentJoy1Y = 1;           // up
+  } else {
+    SET (VIA_port_a, -0x40);    // load a with test value (negative y), test value to DAC
+    DELAY_CYCLES (4);
+    if ((GET (VIA_port_b) & 0x20) == 0x20) {
+      currentJoy1Y = 0;         // no direction
     }
   }
 
   // X ANALOG
-  SET(VIA_port_a, 0x00); // clear VIA port A
-  DELAY_CYCLES(4);
-  SET(VIA_port_b, 0x80); // set VIA port B mux enabled, mux sel = 00 (horizontal pot port 0)
+  SET (VIA_port_a, 0x00);       // clear VIA port A
+  DELAY_CYCLES (4);
+  SET (VIA_port_b, 0x80);       // set VIA port B mux enabled, mux sel = 00 (horizontal pot port 0)
   // wait for joystick comparators to "settle"
-  DELAY_CYCLES(60); // must be tested! can probably be less?
+  DELAY_CYCLES (60);            // must be tested! can probably be less?
 
-  currentJoy1X = -1; // default left
-  SET(VIA_port_b, 0x83); // set VIA port B mux
-  DELAY_PORT_B_BEFORE_PORT_A();
-  SET(VIA_port_a, 0x40); // load a with test value (positive y), test value to DAC
-  DELAY_CYCLES(2);
-  if ((GET(VIA_port_b) & 0x20) == 0x20)
-  {
-    currentJoy1X = 1; //right
-  }
-  else
-  {
-    DELAY_CYCLES(4);
-    SET(VIA_port_a, -0x40); // load a with test value (negative y), test value to DAC
-    DELAY_CYCLES(4);
-    if ((GET(VIA_port_b) & 0x20) == 0x20)
-    {
-      currentJoy1X = 0; // no direction
+  currentJoy1X = -1;            // default left
+  SET (VIA_port_b, 0x83);       // set VIA port B mux
+  DELAY_PORT_B_BEFORE_PORT_A ();
+  SET (VIA_port_a, 0x40);       // load a with test value (positive y), test value to DAC
+  DELAY_CYCLES (2);
+  if ((GET (VIA_port_b) & 0x20) == 0x20) {
+    currentJoy1X = 1;           // right
+  } else {
+    DELAY_CYCLES (4);
+    SET (VIA_port_a, -0x40);    // load a with test value (negative y), test value to DAC
+    DELAY_CYCLES (4);
+    if ((GET (VIA_port_b) & 0x20) == 0x20) {
+      currentJoy1X = 0;         // no direction
     }
-    DELAY_CYCLES(4);
+    DELAY_CYCLES (4);
   }
-  if (inCalibration)
-  {
-    currentJoy1X =0;
-    currentJoy1Y =0;
+  if (inCalibration) {
+    currentJoy1X = 0;
+    currentJoy1Y = 0;
   }
-
-
 
   // todo
-  // if joyport 2  needed....
-
-
-
+  // if joyport 2 needed....
 
   // Y ANALOG
-  SET(VIA_port_a, 0x00); // clear VIA port A
-  DELAY_CYCLES(4);
-  SET(VIA_port_b, 0x82+0x04); // set VIA port B mux enabled, mux sel = 03 (vertical pot port 1)
+  SET (VIA_port_a, 0x00);       // clear VIA port A
+  DELAY_CYCLES (4);
+  SET (VIA_port_b, 0x82 + 0x04);        // set VIA port B mux enabled, mux sel = 03 (vertical pot port 1)
 
   // wait for joystick comparators to "settle"
-  DELAY_CYCLES(60); // must be tested! can probably be less?
+  DELAY_CYCLES (60);            // must be tested! can probably be less?
 
-  currentJoy2Y = -1; // default down
-  SET(VIA_port_b, 0x83); // set VIA port B mux
-  DELAY_PORT_B_BEFORE_PORT_A();
-  SET(VIA_port_a, 0x40); // load a with test value (positive y), test value to DAC
-  DELAY_CYCLES(4);
-  if ((GET(VIA_port_b) & 0x20) == 0x20)
-  {
-    currentJoy2Y = 1; //up
-  }
-  else
-  {
-    SET(VIA_port_a, -0x40); // load a with test value (negative y), test value to DAC
-    DELAY_CYCLES(4);
-    if ((GET(VIA_port_b) & 0x20) == 0x20)
-    {
-      currentJoy2Y = 0; // no direction
+  currentJoy2Y = -1;            // default down
+  SET (VIA_port_b, 0x83);       // set VIA port B mux
+  DELAY_PORT_B_BEFORE_PORT_A ();
+  SET (VIA_port_a, 0x40);       // load a with test value (positive y), test value to DAC
+  DELAY_CYCLES (4);
+  if ((GET (VIA_port_b) & 0x20) == 0x20) {
+    currentJoy2Y = 1;           // up
+  } else {
+    SET (VIA_port_a, -0x40);    // load a with test value (negative y), test value to DAC
+    DELAY_CYCLES (4);
+    if ((GET (VIA_port_b) & 0x20) == 0x20) {
+      currentJoy2Y = 0;         // no direction
     }
   }
 
   // X ANALOG
-  SET(VIA_port_a, 0x00); // clear VIA port A
-  DELAY_CYCLES(4);
-  SET(VIA_port_b, 0x84); // set VIA port B mux enabled, mux sel = 2 (horizontal pot port 1)
-  // wait for joystick comparators to "settle"
-  DELAY_CYCLES(60); // must be tested! can probably be less?
+  SET (VIA_port_a, 0x00);       // clear VIA port A
+  DELAY_CYCLES (4);
+  SET (VIA_port_b, 0x84);       // set VIA port B mux enabled, mux sel = 2 (horizontal pot port 1)
 
-  currentJoy2X = -1; // default left
-  SET(VIA_port_b, 0x83); // set VIA port B mux
-  DELAY_PORT_B_BEFORE_PORT_A();
-  SET(VIA_port_a, 0x40); // load a with test value (positive y), test value to DAC
-  DELAY_CYCLES(2);
-  if ((GET(VIA_port_b) & 0x20) == 0x20)
-  {
-    currentJoy2X = 1; //right
-  }
-  else
-  {
-    DELAY_CYCLES(4);
-    SET(VIA_port_a, -0x40); // load a with test value (negative y), test value to DAC
-    DELAY_CYCLES(4);
-    if ((GET(VIA_port_b) & 0x20) == 0x20)
-    {
-      currentJoy2X = 0; // no direction
+  // wait for joystick comparators to "settle"
+  DELAY_CYCLES (60);            // must be tested! can probably be less?
+
+  currentJoy2X = -1;            // default left
+  SET (VIA_port_b, 0x83);       // set VIA port B mux
+  DELAY_PORT_B_BEFORE_PORT_A ();
+  SET (VIA_port_a, 0x40);       // load a with test value (positive y), test value to DAC
+  DELAY_CYCLES (2);
+  if ((GET (VIA_port_b) & 0x20) == 0x20) {
+    currentJoy2X = 1;           // right
+  } else {
+    DELAY_CYCLES (4);
+    SET (VIA_port_a, -0x40);    // load a with test value (negative y), test value to DAC
+    DELAY_CYCLES (4);
+    if ((GET (VIA_port_b) & 0x20) == 0x20) {
+      currentJoy2X = 0;         // no direction
     }
-    DELAY_CYCLES(4);
+    DELAY_CYCLES (4);
   }
 
   // set port A reference value to unkown
-  currentYSH = currentPortA=0x100; // reset saved current values to unkown state
-  v_resetIntegratorOffsets();
+  currentYSH = currentPortA = 0x100;    // reset saved current values to unkown state
+  v_resetIntegratorOffsets ();
 }
 
 /***********************************************************************/
 
-/*      Reads the vectrex joystick states (port 1) ANALOG.
- ( Slower than digital call!)         *      *
- Needs only be called once per round (or even only every second round)
- result in variable:
- currentJoy1Y = -1 - -127 down
- currentJoy1Y = 0 centered
- currentJoy1Y = +1 - +127 up
+/*      Reads the vectrex joystick states (port 1) ANALOG.  (Slower than digital call!)
 
- currentJoy1X = -1 - -127  left
+ Needs only be called once per round (or even only every second round)
+
+ result in variable:
+ currentJoy1Y = -1 to -127 down
+ currentJoy1Y = 0 centered
+ currentJoy1Y = +1 to +127 up
+
+ currentJoy1X = -1 to -127  left
  currentJoy1X = 0 centered
- currentJoy1X = +1 - +127 right
+ currentJoy1X = +1 to +127 right
  */
 
-
-
-void v_readJoystick1Analog()
-{
-  if (ioDone & V_JOY_ANALOG_READ) return;
+void v_readJoystick1Analog (void) {
+  if (ioDone & V_JOY_ANALOG_READ)
+    return;
+  
   ioDone |= V_JOY_ANALOG_READ;
 
-
-
-  SET(VIA_port_a, 0x00); // clear VIA port A
-  DELAY_CYCLES(4);
-  SET(VIA_port_b, 0x82); // set VIA port B mux enabled, mux sel = 01 (vertical pot port 0)
+  SET (VIA_port_a, 0x00);       // clear VIA port A
+  DELAY_CYCLES (4);
+  SET (VIA_port_b, 0x82);       // set VIA port B mux enabled, mux sel = 01 (vertical pot port 0)
   // wait for joystick comparators to "settle"
-  DELAY_CYCLES(60); // must be tested! can probably be less?
+  DELAY_CYCLES (60);            // must be tested! can probably be less?
 
-  currentJoy1Y = 0; // default centered
-  SET(VIA_port_b, 0x83); // set VIA port B mux disabled
-  DELAY_PORT_B_BEFORE_PORT_A();
+  currentJoy1Y = 0;             // default centered
+  SET (VIA_port_b, 0x83);       // set VIA port B mux disabled
+  DELAY_PORT_B_BEFORE_PORT_A ();
   uint8_t compareBit = 0x80;
+
   currentJoy1Y = 0;
 
-  do
-  {
-    SET(VIA_port_a, currentJoy1Y); // load a with test value (positive y), test value to DAC
-    DELAY_CYCLES(4);
-    if ((GET(VIA_port_b) & 0x20) == 0)
-    {
+  do {
+    SET (VIA_port_a, currentJoy1Y);     // load a with test value (positive y), test value to DAC
+    DELAY_CYCLES (4);
+    if ((GET (VIA_port_b) & 0x20) == 0) {
       currentJoy1Y = currentJoy1Y ^ compareBit;
     }
-    DELAY_CYCLES(4);
-    compareBit = compareBit>>1;
+    DELAY_CYCLES (4);
+    compareBit = compareBit >> 1;
     currentJoy1Y = currentJoy1Y | compareBit;
-  } while (compareBit!=0);
+  } while (compareBit != 0);
 
-  SET(VIA_port_a, 0x00); // clear VIA port A
-  DELAY_CYCLES(4);
-  SET(VIA_port_b, 0x80); // set VIA port B mux enabled, mux sel = 01 (horizontal pot port 0)
+  SET (VIA_port_a, 0x00);       // clear VIA port A
+  DELAY_CYCLES (4);
+  SET (VIA_port_b, 0x80);       // set VIA port B mux enabled, mux sel = 01 (horizontal pot port 0)
+
   // wait for joystick comparators to "settle"
-  DELAY_CYCLES(60); // must be tested! can probably be less?
+  DELAY_CYCLES (60);            // must be tested! can probably be less?
 
-  currentJoy1X = 0; // default centered
-  SET(VIA_port_b, 0x81); // set VIA port B mux disabled
-  DELAY_PORT_B_BEFORE_PORT_A();
+  currentJoy1X = 0;             // default centered
+  SET (VIA_port_b, 0x81);       // set VIA port B mux disabled
+  DELAY_PORT_B_BEFORE_PORT_A ();
   compareBit = 0x80;
   currentJoy1X = 0;
 
-  do
-  {
-    SET(VIA_port_a, currentJoy1X); // load a with test value (positive y), test value to DAC
-    DELAY_CYCLES(4);
-    if ((GET(VIA_port_b) & 0x20) == 0)
-    {
+  do {
+    SET (VIA_port_a, currentJoy1X);     // load a with test value (positive y), test value to DAC
+    DELAY_CYCLES (4);
+    if ((GET (VIA_port_b) & 0x20) == 0) {
       currentJoy1X = currentJoy1X ^ compareBit;
     }
-    DELAY_CYCLES(4);
-    compareBit = compareBit>>1;
+    DELAY_CYCLES (4);
+    compareBit = compareBit >> 1;
     currentJoy1X = currentJoy1X | compareBit;
-  } while (compareBit!=0);
+  } while (compareBit != 0);
 
-  int difx = currentJoy1X - internalJoy1X;
-  int dify = currentJoy1Y - internalJoy1Y;
+int difx = currentJoy1X - internalJoy1X;
+int dify = currentJoy1Y - internalJoy1Y;
 
-  currentJoy1X = internalJoy1X+(difx>>1);
-  currentJoy1Y = internalJoy1Y+(dify>>1);
+  currentJoy1X = internalJoy1X + (difx >> 1);
+  currentJoy1Y = internalJoy1Y + (dify >> 1);
   internalJoy1X = currentJoy1X;
   internalJoy1Y = currentJoy1Y;
 /*
@@ -1630,104 +1539,84 @@ void v_readJoystick1Analog()
   internalJoy1Y/=MEDIAN_MAX;
   */
 
-  if (inCalibration)
-  {
-    currentJoy1X =0;
-    currentJoy1Y =0;
-  }
-  else
-  {
+  if (inCalibration) {
+    currentJoy1X = 0;
+    currentJoy1Y = 0;
+  } else {
     currentJoy1X = internalJoy1X;
     currentJoy1Y = internalJoy1Y;
   }
 
+  // todo
+  // if joyport 2 needed....
 
-
-
-
-
-
-
-    // todo
-  // if joyport 2  needed....
-
-  SET(VIA_port_a, 0x00); // clear VIA port A
-  DELAY_CYCLES(4);
-  SET(VIA_port_b, 0x82+0x04); // set VIA port B mux enabled, mux sel = 03 (vertical pot port 1)
+  SET (VIA_port_a, 0x00);       // clear VIA port A
+  DELAY_CYCLES (4);
+  SET (VIA_port_b, 0x82 + 0x04);        // set VIA port B mux enabled, mux sel = 03 (vertical pot port 1)
   // wait for joystick comparators to "settle"
-  DELAY_CYCLES(60); // must be tested! can probably be less?
+  DELAY_CYCLES (60);            // must be tested! can probably be less?
 
-  currentJoy2Y = 0; // default centered
-  SET(VIA_port_b, 0x83); // set VIA port B mux disabled
-  DELAY_PORT_B_BEFORE_PORT_A();
+  currentJoy2Y = 0;             // default centered
+  SET (VIA_port_b, 0x83);       // set VIA port B mux disabled
+  DELAY_PORT_B_BEFORE_PORT_A ();
   compareBit = 0x80;
   currentJoy2Y = 0;
 
-  do
-  {
-    SET(VIA_port_a, currentJoy2Y); // load a with test value (positive y), test value to DAC
-    DELAY_CYCLES(4);
-    if ((GET(VIA_port_b) & 0x20) == 0)
-    {
+  do {
+    SET (VIA_port_a, currentJoy2Y);     // load a with test value (positive y), test value to DAC
+    DELAY_CYCLES (4);
+    if ((GET (VIA_port_b) & 0x20) == 0) {
       currentJoy2Y = currentJoy2Y ^ compareBit;
     }
-    DELAY_CYCLES(4);
-    compareBit = compareBit>>1;
+    DELAY_CYCLES (4);
+    compareBit = compareBit >> 1;
     currentJoy2Y = currentJoy2Y | compareBit;
-  } while (compareBit!=0);
+  } while (compareBit != 0);
 
-  SET(VIA_port_a, 0x00); // clear VIA port A
-  DELAY_CYCLES(4);
-  SET(VIA_port_b, 0x84); // set VIA port B mux enabled, mux sel = 2 (horizontal pot port 1)
+  SET (VIA_port_a, 0x00);       // clear VIA port A
+  DELAY_CYCLES (4);
+  SET (VIA_port_b, 0x84);       // set VIA port B mux enabled, mux sel = 2 (horizontal pot port 1)
+  
   // wait for joystick comparators to "settle"
-  DELAY_CYCLES(60); // must be tested! can probably be less?
+  DELAY_CYCLES (60);            // must be tested! can probably be less?
 
-  currentJoy2X = 0; // default centered
-  SET(VIA_port_b, 0x81); // set VIA port B mux disabled
-  DELAY_PORT_B_BEFORE_PORT_A();
+  currentJoy2X = 0;             // default centered
+  SET (VIA_port_b, 0x81);       // set VIA port B mux disabled
+  DELAY_PORT_B_BEFORE_PORT_A ();
   compareBit = 0x80;
   currentJoy2X = 0;
 
-  do
-  {
-    SET(VIA_port_a, currentJoy2X); // load a with test value (positive y), test value to DAC
-    DELAY_CYCLES(4);
-    if ((GET(VIA_port_b) & 0x20) == 0)
-    {
+  do {
+    SET (VIA_port_a, currentJoy2X);     // load a with test value (positive y), test value to DAC
+    DELAY_CYCLES (4);
+    if ((GET (VIA_port_b) & 0x20) == 0) {
       currentJoy2X = currentJoy2X ^ compareBit;
     }
-    DELAY_CYCLES(4);
-    compareBit = compareBit>>1;
+    DELAY_CYCLES (4);
+    compareBit = compareBit >> 1;
     currentJoy2X = currentJoy2X | compareBit;
-  } while (compareBit!=0);
-
-
-
-
-
+  } while (compareBit != 0);
 
   // set port A reference value to unkown
-  currentYSH = currentPortA=0x100; // reset saved current values to unkown state
-  v_resetIntegratorOffsets();
+  currentYSH = currentPortA = 0x100;    // reset saved current values to unkown state
+  v_resetIntegratorOffsets ();
 }
 
 /***********************************************************************/
 
 /*      Sets the Vectrex Zero state - and waits for zeroing to have full effect.
- Z eroing is NOT disabled upon end of *functi*on!
+ Zeroing is NOT disabled upon end of function!
  */
-void v_zeroWait()
-{
-  ZERO_AND_WAIT();
+void v_zeroWait (void) {
+  ZERO_AND_WAIT ();
 }
 
 /***********************************************************************/
 
-/*      Sets the current scale value absolut to given value.
- D oes NOT change VIA!                    *  *
+/*      Sets the current scale value absolute to given value.
+ Does NOT change VIA!
  */
-void v_setScale(uint16_t s)
-{
+void v_setScale (uint16_t s) {
   lastScale = currentScale;
   currentScale = s;
 }
@@ -1735,294 +1624,296 @@ void v_setScale(uint16_t s)
 /***********************************************************************/
 
 /*      Moves from current location to
- d elta given by parameters.          *      *
+ delta given by parameters.
  - does not set any internal variables
  - does not change scale
  - waits till position is reached
 
  Caller must ensure zeroing and similar states are taken care of beforehand!
  */
-void v_moveToImmediate8(int8_t xLen, int8_t yLen)
-{
-  SET_YSH_IMMEDIATE_8(yLen);
-  SET_XSH_IMMEDIATE_8(xLen);
-  START_T1_TIMER();
-  WAIT_T1_END();
+void v_moveToImmediate8 (int8_t xLen, int8_t yLen) {
+  SET_YSH_IMMEDIATE_8 (yLen);
+  SET_XSH_IMMEDIATE_8 (xLen);
+  START_T1_TIMER ();
+  WAIT_T1_END ();
 }
 
 /***********************************************************************/
 
 /*      Draws from current location to
- d elta given by parameters.          *      *
+ delta given by parameters.
  - does not set any internal variables
  - does not change scale
  - waits till position is reached
 
  Caller must ensure zeroing and similar states are taken care of!
  */
-void v_drawToImmediate8(int8_t xLen, int8_t yLen)
-{
-  SET_YSH_IMMEDIATE_8(yLen);
-  SET_XSH_IMMEDIATE_8(xLen);
-  SWITCH_BEAM_ON();
-  START_T1_TIMER();
-  WAIT_T1_END();
-  SWITCH_BEAM_OFF();
+void v_drawToImmediate8 (int8_t xLen, int8_t yLen) {
+  SET_YSH_IMMEDIATE_8 (yLen);
+  SET_XSH_IMMEDIATE_8 (xLen);
+  SWITCH_BEAM_ON ();
+  START_T1_TIMER ();
+  WAIT_T1_END ();
+  SWITCH_BEAM_OFF ();
 }
 
 /***********************************************************************/
 /* All things calibration follows                                      */
 /***********************************************************************/
-void v_driftCalibration()
-{
+void v_driftCalibration (void) {
   int doingSomething = 0;
-  if ((internalButtonState&0x01) == (0x01)) calibrationValue=0;
-  if ((internalButtonState&0x04) == (0x04)) selectedCalibrationMenu=0;
-  if (valueChangeDelay>0)valueChangeDelay--;
-  if ((internalJoy1X==0) && (internalJoy1Y==0)) valueChangeDelay =0;
-  if (valueChangeDelay<=0)
-  {
-    if (internalJoy1X>80)
-    {
+
+  if ((internalButtonState & 0x01) == (0x01))
+    calibrationValue = 0;
+  if ((internalButtonState & 0x04) == (0x04))
+    selectedCalibrationMenu = 0;
+  if (valueChangeDelay > 0)
+    valueChangeDelay--;
+  if ((internalJoy1X == 0) && (internalJoy1Y == 0))
+    valueChangeDelay = 0;
+  if (valueChangeDelay <= 0) {
+    if (internalJoy1X > 80) {
       calibrationValue++;
-      valueChangeDelay = 64-(internalJoy1X>>1);
-      doingSomething=1;
+      valueChangeDelay = 64 - (internalJoy1X >> 1);
+      doingSomething = 1;
     }
-    if (internalJoy1X<-80)
-    {
+    if (internalJoy1X < -80) {
       calibrationValue--;
-      valueChangeDelay = 64+(internalJoy1X>>1);
-      doingSomething=1;
+      valueChangeDelay = 64 + (internalJoy1X >> 1);
+      doingSomething = 1;
     }
   }
 /*
   v_printString(-50, 90, "ALIGN THIS STRING ONLY!", 1,0x50);
   v_printString(-50, 80, "ALIGN THIS STRING ONLY!", 3,0x50);
 */
-  v_printStringNP(-50, 70, "ALIGN THIS STRING ONLY!", 5,0x50);
-  v_printStringNP(-50, 50, "LEFT <> RIGHT!", 5,0x50);
-  v_printStringNP(-50, 30, "1 RESET!", 5,0x50);
+  v_printStringNP (-50, 70, "ALIGN THIS STRING ONLY!", 5, 0x50);
+  v_printStringNP (-50, 50, "LEFT <> RIGHT!", 5, 0x50);
+  v_printStringNP (-50, 30, "1 RESET!", 5, 0x50);
 
-  #ifdef PITREX_DEBUG
+#ifdef PITREX_DEBUG
   if (doingSomething)
-    printf("drift: %i (%i)\r\n", calibrationValue, internalJoy1X);
-  #endif
+    printf ("drift: %i (%i)\r\n", calibrationValue, internalJoy1X);
+#endif
 }
 
 /***********************************************************************/
 // left is smaller X
 // down is smaller Y
-void v_sizeCalibration()
-{
+void v_sizeCalibration (void) {
   int doingSomething = 0;
-  if ((internalButtonState&0x04) == (0x04)) selectedCalibrationMenu=0;
-  if (valueChangeDelay>0)valueChangeDelay--;
-  if ((internalJoy1X==0) && (internalJoy1Y==0)) valueChangeDelay =0;
-  if (valueChangeDelay<=0)
-  {
-    if (internalJoy1X>80)
-    {
-      doingSomething=1;
-      sizeX+= 0.01;
-      valueChangeDelay = 64-(internalJoy1X>>1);
+
+  if ((internalButtonState & 0x04) == (0x04))
+    selectedCalibrationMenu = 0;
+  if (valueChangeDelay > 0)
+    valueChangeDelay--;
+  if ((internalJoy1X == 0) && (internalJoy1Y == 0))
+    valueChangeDelay = 0;
+  if (valueChangeDelay <= 0) {
+    if (internalJoy1X > 80) {
+      doingSomething = 1;
+      sizeX += 0.01;
+      valueChangeDelay = 64 - (internalJoy1X >> 1);
     }
-    if (internalJoy1X<-80)
-    {
-      doingSomething=1;
-      sizeX-= 0.01;
-      valueChangeDelay = 64+(internalJoy1X>>1);
+    if (internalJoy1X < -80) {
+      doingSomething = 1;
+      sizeX -= 0.01;
+      valueChangeDelay = 64 + (internalJoy1X >> 1);
     }
-    if (internalJoy1Y>80)
-    {
-      doingSomething=1;
-      sizeY+= 0.01;
-      valueChangeDelay = 64-(internalJoy1Y>>1);
+    if (internalJoy1Y > 80) {
+      doingSomething = 1;
+      sizeY += 0.01;
+      valueChangeDelay = 64 - (internalJoy1Y >> 1);
     }
-    if (internalJoy1Y<-80)
-    {
-      doingSomething=1;
-      sizeY-= 0.01;
-      valueChangeDelay = 64+(internalJoy1Y>>1);
+    if (internalJoy1Y < -80) {
+      doingSomething = 1;
+      sizeY -= 0.01;
+      valueChangeDelay = 64 + (internalJoy1Y >> 1);
     }
   }
-  v_printStringNP(-50, 20, "JOYSTICK", 5,0x50);
-  #ifdef PITREX_DEBUG
+  v_printStringNP (-50, 20, "JOYSTICK", 5, 0x50);
+#ifdef PITREX_DEBUG
   if (doingSomething)
-    printf("stretch x, y: %f, %f\r\n", sizeX, sizeY);
-  #endif
+    printf ("stretch x, y: %f, %f\r\n", sizeX, sizeY);
+#endif
 
 }
 
 /***********************************************************************/
 
-void v_positionCalibration()
-{
+void v_positionCalibration (void) {
   int doingSomething = 0;
-  if ((internalButtonState&0x04) == (0x04)) selectedCalibrationMenu=0;
-  if (valueChangeDelay>0)valueChangeDelay--;
-  if ((internalJoy1X==0) && (internalJoy1Y==0)) valueChangeDelay =0;
-  if (valueChangeDelay<=0)
-  {
-    if (internalJoy1X>80)
-    {
-      doingSomething=1;
-      offsetX+= 100;
-      valueChangeDelay = 64-(internalJoy1X>>1);
+
+  if ((internalButtonState & 0x04) == (0x04))
+    selectedCalibrationMenu = 0;
+  if (valueChangeDelay > 0)
+    valueChangeDelay--;
+  if ((internalJoy1X == 0) && (internalJoy1Y == 0))
+    valueChangeDelay = 0;
+  if (valueChangeDelay <= 0) {
+    if (internalJoy1X > 80) {
+      doingSomething = 1;
+      offsetX += 100;
+      valueChangeDelay = 64 - (internalJoy1X >> 1);
     }
-    if (internalJoy1X<-80)
-    {
-      doingSomething=1;
-      offsetX-= 100;
-      valueChangeDelay = 64+(internalJoy1X>>1);
+    if (internalJoy1X < -80) {
+      doingSomething = 1;
+      offsetX -= 100;
+      valueChangeDelay = 64 + (internalJoy1X >> 1);
     }
-    if (internalJoy1Y>80)
-    {
-      doingSomething=1;
-      offsetY+= 100;
-      valueChangeDelay = 64-(internalJoy1Y>>1);
+    if (internalJoy1Y > 80) {
+      doingSomething = 1;
+      offsetY += 100;
+      valueChangeDelay = 64 - (internalJoy1Y >> 1);
     }
-    if (internalJoy1Y<-80)
-    {
-      doingSomething=1;
-      offsetY-= 100;
-      valueChangeDelay = 64+(internalJoy1Y>>1);
+    if (internalJoy1Y < -80) {
+      doingSomething = 1;
+      offsetY -= 100;
+      valueChangeDelay = 64 + (internalJoy1Y >> 1);
     }
   }
-  v_printStringNP(-50, 20, "JOYSTICK", 5,0x50);
+  v_printStringNP (-50, 20, "JOYSTICK", 5, 0x50);
 
-  #ifdef PITREX_DEBUG
+#ifdef PITREX_DEBUG
   if (doingSomething)
-    printf("offset x, y: %i, %i\r\n", offsetX, offsetY);
-  #endif
+    printf ("offset x, y: %i, %i\r\n", offsetX, offsetY);
+#endif
 }
-void v_SSSCalibration()
-{
+
+void v_SSSCalibration (void) {
   int doingSomething = 0;
   char buf[12];
 
-  if ((internalButtonState&0x04) == (0x04)) selectedCalibrationMenu=0;
-  if (valueChangeDelay>0)valueChangeDelay--;
-  if ((internalJoy1X==0) && (internalJoy1Y==0)) valueChangeDelay =0;
-  if (valueChangeDelay<=0)
-  {
-    if (internalJoy1X>80)
-    {
-      doingSomething=1;
-      SCALE_STRENGTH_DIF+= 1;
-      valueChangeDelay = 64-(internalJoy1X>>1);
-      if (SCALE_STRENGTH_DIF>10) SCALE_STRENGTH_DIF = 10;
+  if ((internalButtonState & 0x04) == (0x04))
+    selectedCalibrationMenu = 0;
+  if (valueChangeDelay > 0)
+    valueChangeDelay--;
+  if ((internalJoy1X == 0) && (internalJoy1Y == 0))
+    valueChangeDelay = 0;
+  if (valueChangeDelay <= 0) {
+    if (internalJoy1X > 80) {
+      doingSomething = 1;
+      SCALE_STRENGTH_DIF += 1;
+      valueChangeDelay = 64 - (internalJoy1X >> 1);
+      if (SCALE_STRENGTH_DIF > 10)
+        SCALE_STRENGTH_DIF = 10;
     }
-    if (internalJoy1X<-80)
-    {
-      doingSomething=1;
-      SCALE_STRENGTH_DIF-=1;
-      valueChangeDelay = 64+(internalJoy1X>>1);
-      if (SCALE_STRENGTH_DIF<0) SCALE_STRENGTH_DIF = 0;
+    if (internalJoy1X < -80) {
+      doingSomething = 1;
+      SCALE_STRENGTH_DIF -= 1;
+      valueChangeDelay = 64 + (internalJoy1X >> 1);
+      if (SCALE_STRENGTH_DIF < 0)
+        SCALE_STRENGTH_DIF = 0;
     }
   }
-  itoa(SCALE_STRENGTH_DIF, buf, 10);
-  v_printStringNP(-20, 80, "SSS", 5,0x50);
-  v_printStringNP(-50, 50, "JOYSTICK", 5,0x50);
-  v_printStringNP(-10, 30, buf, 5,0x50);
-  #ifdef PITREX_DEBUG
+  itoa (SCALE_STRENGTH_DIF, buf, 10);
+  v_printStringNP (-20, 80, "SSS", 5, 0x50);
+  v_printStringNP (-50, 50, "JOYSTICK", 5, 0x50);
+  v_printStringNP (-10, 30, buf, 5, 0x50);
+#ifdef PITREX_DEBUG
   if (doingSomething)
-    printf("SSS: %i\r\n", SCALE_STRENGTH_DIF);
-  #endif
+    printf ("SSS: %i\r\n", SCALE_STRENGTH_DIF);
+#endif
 }
-void v_STOCalibration()
-{
+
+void v_STOCalibration (void) {
   char buf[12];
   int doingSomething = 0;
 
-  if ((internalButtonState&0x04) == (0x04)) selectedCalibrationMenu=0;
-  if (valueChangeDelay>0)valueChangeDelay--;
-  if ((internalJoy1X==0) && (internalJoy1Y==0)) valueChangeDelay =0;
-  if (valueChangeDelay<=0)
-  {
-    if (internalJoy1X>80)
-    {
-      doingSomething=1;
-      DELAY_AFTER_T1_END_VALUE+= 1;
-      valueChangeDelay = 64-(internalJoy1X>>1);
-      if (DELAY_AFTER_T1_END_VALUE>255) DELAY_AFTER_T1_END_VALUE = 255;
+  if ((internalButtonState & 0x04) == (0x04))
+    selectedCalibrationMenu = 0;
+  if (valueChangeDelay > 0)
+    valueChangeDelay--;
+  if ((internalJoy1X == 0) && (internalJoy1Y == 0))
+    valueChangeDelay = 0;
+  if (valueChangeDelay <= 0) {
+    if (internalJoy1X > 80) {
+      doingSomething = 1;
+      DELAY_AFTER_T1_END_VALUE += 1;
+      valueChangeDelay = 64 - (internalJoy1X >> 1);
+      if (DELAY_AFTER_T1_END_VALUE > 255)
+        DELAY_AFTER_T1_END_VALUE = 255;
     }
-    if (internalJoy1X<-80)
-    {
-      doingSomething=1;
-      DELAY_AFTER_T1_END_VALUE-=1;
-      valueChangeDelay = 64+(internalJoy1X>>1);
-      if (DELAY_AFTER_T1_END_VALUE<1) DELAY_AFTER_T1_END_VALUE = 1;
+    if (internalJoy1X < -80) {
+      doingSomething = 1;
+      DELAY_AFTER_T1_END_VALUE -= 1;
+      valueChangeDelay = 64 + (internalJoy1X >> 1);
+      if (DELAY_AFTER_T1_END_VALUE < 1)
+        DELAY_AFTER_T1_END_VALUE = 1;
     }
   }
-  itoa(DELAY_AFTER_T1_END_VALUE, buf, 10);
-  v_printStringNP(-20, 80, "STO", 5,0x50);
-  v_printStringNP(-50, 50, "JOYSTICK", 5,0x50);
-  v_printStringNP(-10, 30, buf, 5,0x50);
-  #ifdef PITREX_DEBUG
+  itoa (DELAY_AFTER_T1_END_VALUE, buf, 10);
+  v_printStringNP (-20, 80, "STO", 5, 0x50);
+  v_printStringNP (-50, 50, "JOYSTICK", 5, 0x50);
+  v_printStringNP (-10, 30, buf, 5, 0x50);
+#ifdef PITREX_DEBUG
   if (doingSomething)
-    printf("STO: %i\r\n", DELAY_AFTER_T1_END_VALUE);
-  #endif
+    printf ("STO: %i\r\n", DELAY_AFTER_T1_END_VALUE);
+#endif
 }
 
-void v_SMSCalibration()
-{
+void v_SMSCalibration (void) {
   char buf[12];
   int doingSomething = 0;
 
-  if ((internalButtonState&0x04) == (0x04)) selectedCalibrationMenu=0;
-  if (valueChangeDelay>0)valueChangeDelay--;
-  if ((internalJoy1X==0) && (internalJoy1Y==0)) valueChangeDelay =0;
-  if (valueChangeDelay<=0)
-  {
-    if (internalJoy1X>80)
-    {
-      doingSomething=1;
-      MAX_USED_STRENGTH+= 1;
-      valueChangeDelay = 64-(internalJoy1X>>1);
-      if (MAX_USED_STRENGTH>127) MAX_USED_STRENGTH = 127;
+  if ((internalButtonState & 0x04) == (0x04))
+    selectedCalibrationMenu = 0;
+  if (valueChangeDelay > 0)
+    valueChangeDelay--;
+  if ((internalJoy1X == 0) && (internalJoy1Y == 0))
+    valueChangeDelay = 0;
+  if (valueChangeDelay <= 0) {
+    if (internalJoy1X > 80) {
+      doingSomething = 1;
+      MAX_USED_STRENGTH += 1;
+      valueChangeDelay = 64 - (internalJoy1X >> 1);
+      if (MAX_USED_STRENGTH > 127)
+        MAX_USED_STRENGTH = 127;
     }
-    if (internalJoy1X<-80)
-    {
-      doingSomething=1;
-      MAX_USED_STRENGTH-=1;
-      valueChangeDelay = 64+(internalJoy1X>>1);
-      if (MAX_USED_STRENGTH<10) MAX_USED_STRENGTH = 10;
+    if (internalJoy1X < -80) {
+      doingSomething = 1;
+      MAX_USED_STRENGTH -= 1;
+      valueChangeDelay = 64 + (internalJoy1X >> 1);
+      if (MAX_USED_STRENGTH < 10)
+        MAX_USED_STRENGTH = 10;
     }
   }
-  itoa(MAX_USED_STRENGTH, buf, 10);
-  v_printStringNP(-20, 80, "SMS", 5,0x50);
-  v_printStringNP(-50, 50, "JOYSTICK", 5,0x50);
-  v_printStringNP(-10, 30, buf, 5,0x50);
-  #ifdef PITREX_DEBUG
+  itoa (MAX_USED_STRENGTH, buf, 10);
+  v_printStringNP (-20, 80, "SMS", 5, 0x50);
+  v_printStringNP (-50, 50, "JOYSTICK", 5, 0x50);
+  v_printStringNP (-10, 30, buf, 5, 0x50);
+#ifdef PITREX_DEBUG
   if (doingSomething)
-    printf("SMS: %i\r\n", MAX_USED_STRENGTH);
-  #endif
+    printf ("SMS: %i\r\n", MAX_USED_STRENGTH);
+#endif
 }
-void v_OrientationCalibration()
-{
+
+void v_OrientationCalibration (void) {
   char buf[12];
   int doingSomething = 0;
 
-  if ((internalButtonState&0x04) == (0x04)) selectedCalibrationMenu=0;
-  if (valueChangeDelay>0)valueChangeDelay--;
-  if ((internalJoy1X==0) && (internalJoy1Y==0)) valueChangeDelay =0;
-  if (valueChangeDelay<=0)
-  {
-    if (internalJoy1X>80)
-    {
-      orientation+= 1;
+  if ((internalButtonState & 0x04) == (0x04))
+    selectedCalibrationMenu = 0;
+  if (valueChangeDelay > 0)
+    valueChangeDelay--;
+  if ((internalJoy1X == 0) && (internalJoy1Y == 0))
+    valueChangeDelay = 0;
+  if (valueChangeDelay <= 0) {
+    if (internalJoy1X > 80) {
+      orientation += 1;
       valueChangeDelay = 64;
-      if (orientation>3) orientation = 0;
+      if (orientation > 3)
+        orientation = 0;
     }
-    if (internalJoy1X<-80)
-    {
-      orientation-= 1;
+    if (internalJoy1X < -80) {
+      orientation -= 1;
       valueChangeDelay = 64;
-      if (orientation<0) orientation = 3;
+      if (orientation < 0)
+        orientation = 3;
     }
   }
-  v_printStringNP(-35, 80, "ORIENTATION", 5,0x50);
-  v_printStringNP(-50, 50, "JOYSTICK", 5,0x50);
+  v_printStringNP (-35, 80, "ORIENTATION", 5, 0x50);
+  v_printStringNP (-50, 50, "JOYSTICK", 5, 0x50);
   settings->orientation = orientation;
 }
 
@@ -2030,8 +1921,9 @@ void v_OrientationCalibration()
 
 typedef struct MenuItem {
   char *name;
-  void (*calibrateFunction)(void);
+  void (*calibrateFunction) (void);
 } MenuItem;
+
 MenuItem menuItems[] = {
   {"DRIFT   ", v_driftCalibration},
   {"SIZE    ", v_sizeCalibration},
@@ -2044,46 +1936,45 @@ MenuItem menuItems[] = {
   {"DONE    ", 0},
 };
 
-void v_calibrationMenu()
-{
-  char *selected = ">";
-  if (!usePipeline) v_setBrightness(80);
-  for (int i=0; i<7; i++)
-  {
-    v_printStringNP(-40, 80-i*10, menuItems[menuOffset+i].name, 4,0x50);
-    if (menuOffset+i == currentMarkedMenu)
-      v_printStringNP(-60, 80-i*10, selected, 5,0x50);
+void v_calibrationMenu (void) {
+char *selected = ">";
+
+  if (!usePipeline)
+    v_setBrightness (80);
+  for (int i = 0; i < 7; i++) {
+    v_printStringNP (-40, 80 - i * 10, menuItems[menuOffset + i].name, 4, 0x50);
+    if (menuOffset + i == currentMarkedMenu)
+      v_printStringNP (-60, 80 - i * 10, selected, 5, 0x50);
   }
-  
-  if ((internalJoy1Y<-50) && (selectionCalibrationMade==0))
-  {
-    if (menuItems[currentMarkedMenu].calibrateFunction != 0)
-    {
+
+  if ((internalJoy1Y < -50) && (selectionCalibrationMade == 0)) {
+    if (menuItems[currentMarkedMenu].calibrateFunction != 0) {
       currentMarkedMenu++;
       selectionCalibrationMade = 1;
-      if (currentMarkedMenu-menuOffset>6) menuOffset++;
-      
+      if (currentMarkedMenu - menuOffset > 6)
+        menuOffset++;
+
     }
   }
-  if ((internalJoy1Y>50) && (selectionCalibrationMade==0))
-  {
+  if ((internalJoy1Y > 50) && (selectionCalibrationMade == 0)) {
     currentMarkedMenu--;
-    if (currentMarkedMenu<0) currentMarkedMenu=0;
+    if (currentMarkedMenu < 0)
+      currentMarkedMenu = 0;
 
-    if (menuOffset>currentMarkedMenu) menuOffset--;
+    if (menuOffset > currentMarkedMenu)
+      menuOffset--;
     selectionCalibrationMade = 1;
   }
-  if (ABS(internalJoy1Y)<45) selectionCalibrationMade =0;
+  if (ABS (internalJoy1Y) < 45)
+    selectionCalibrationMade = 0;
 
-  if ((internalButtonState&0x08) == (0x08))
-  {
-    selectedCalibrationMenu = currentMarkedMenu+1;
-    if (menuItems[currentMarkedMenu].calibrateFunction == 0)
-    {
-      inCalibration=0;
+  if ((internalButtonState & 0x08) == (0x08)) {
+    selectedCalibrationMenu = currentMarkedMenu + 1;
+    if (menuItems[currentMarkedMenu].calibrateFunction == 0) {
+      inCalibration = 0;
       clipActive = 0;
       resetToZeroDifMax = saveresetToZeroDifMax;
-      v_saveSettings(knownName, knownBlob, knownBlobSize);
+      v_saveSettings (knownName, knownBlob, knownBlobSize);
     }
   }
 }
@@ -2094,21 +1985,19 @@ void v_calibrationMenu()
  */
 
 // todo possibly display some funny stuff
-void v_calibrate()
-{
+
+void v_calibrate (void) {
   commonHints = PL_BASE_FORCE_NOT_CLIPPED | PL_BASE_FORCE_STABLE;
   char *message = "CALIBRATION";
-  v_printStringNP(-57, 95, message, 10,0x50);
-  v_readButtons();
-  v_readJoystick1Analog();
 
-  if (selectedCalibrationMenu == 0)
-  {
-    v_calibrationMenu();
-  }
-  else 
-  {
-      menuItems[selectedCalibrationMenu-1].calibrateFunction();
+  v_printStringNP (-57, 95, message, 10, 0x50);
+  v_readButtons ();
+  v_readJoystick1Analog ();
+
+  if (selectedCalibrationMenu == 0) {
+    v_calibrationMenu ();
+  } else {
+    menuItems[selectedCalibrationMenu - 1].calibrateFunction ();
   }
 
   commonHints = 0;
@@ -2118,97 +2007,91 @@ void v_calibrate()
 
 #ifdef FREESTANDING
 #include <baremetal/rpi-systimer.h>
-static rpi_sys_timer_t* rpiSystemTimer = (rpi_sys_timer_t*)RPI_SYSTIMER_BASE;
+static rpi_sys_timer_t *rpiSystemTimer = (rpi_sys_timer_t *) RPI_SYSTIMER_BASE;
 #endif
 
 uint32_t markStartLo = 0;
 uint32_t markStartHi = 0;
 uint32_t markRollOverExpected = 0;
 
-
-
 /* sets a "mark" for the system timer
  * returns just after a timer "tick" occured
  */
-    static int errdone = 0;
-void setMarkStart(void)
-{
-  #ifndef FREESTANDING
-  if (errdone) return;
-  if (bcm2835_st==((void *) -1))
-  {
-    if (!errdone)
-    {
+static int errdone = 0;
+
+void setMarkStart (void) {
+#ifndef FREESTANDING
+  if (errdone)
+    return;
+  if (bcm2835_st == ((void *) -1)) {
+    if (!errdone) {
       errdone = 1;
       printf ("Read system time failed - try running with SUDO \r\n");
     }
     return;
   }
-  rpi_sys_timer_t* rpiSystemTimer = (rpi_sys_timer_t*)bcm2835_st;
-  #endif
+  rpi_sys_timer_t *rpiSystemTimer = (rpi_sys_timer_t *) bcm2835_st;
+#endif
 
   volatile uint32_t ts = rpiSystemTimer->counter_lo;
+
   // ensure the timer "just" switched
   // the timer has only a resolution of 1 micro second
   // one instruction takes 1 nano second - soooo actually
   // the resolution is only exact for 1000 pi instructions!!!
   markStartHi = rpiSystemTimer->counter_hi;
-  while (ts == rpiSystemTimer->counter_lo);
+  while (ts == rpiSystemTimer->counter_lo) ;
 
   if (markStartHi != rpiSystemTimer->counter_hi)
     markStartHi = rpiSystemTimer->counter_hi;
   markStartLo = rpiSystemTimer->counter_lo;
-  return ;
+  return;
 }
 
 /* waits till # of microseconds passed since mark was set */
-void waitMarkEnd(uint32_t offsetMicro)
-{
-  #ifndef FREESTANDING
-  if (errdone) return;
-  if (bcm2835_st==((void *) -1))
-  {
-    if (!errdone)
-    {
+void waitMarkEnd (uint32_t offsetMicro) {
+#ifndef FREESTANDING
+  if (errdone)
+    return;
+  if (bcm2835_st == ((void *) -1)) {
+    if (!errdone) {
       errdone = 1;
       printf ("Read system time failed - try running with SUDO \r\n");
     }
     return;
   }
-  rpi_sys_timer_t* rpiSystemTimer = (rpi_sys_timer_t*)bcm2835_st;
-  #endif
+  rpi_sys_timer_t *rpiSystemTimer = (rpi_sys_timer_t *) bcm2835_st;
+#endif
   volatile uint32_t ts = markStartLo + offsetMicro;
-  //  printf("mMarkEnd: %i, %i, %i\r\n", ts, rpiSystemTimer->counter_lo, offsetMicro);
-  if (ts < markStartLo)
-  {
+
+  // printf("mMarkEnd: %i, %i, %i\r\n", ts, rpiSystemTimer->counter_lo, offsetMicro);
+  if (ts < markStartLo) {
     // wait till rollover
-    while (markStartHi == rpiSystemTimer->counter_hi)
-      ;
+    while (markStartHi == rpiSystemTimer->counter_hi) ;
   }
 
   // return when the timer has "just" switched
   while (ts > rpiSystemTimer->counter_lo) ;
   return;
 }
+
 /* waits till the next "full" micro second tick is done
  then returns the full tick counter since *la*st mark */
-int waitFullMicro()
-{
-  #ifndef FREESTANDING
-  if (errdone) return 0;
-  if (bcm2835_st==((void *) -1))
-  {
-    if (!errdone)
-    {
+int waitFullMicro (void) {
+#ifndef FREESTANDING
+  if (errdone)
+    return 0;
+  if (bcm2835_st == ((void *) -1)) {
+    if (!errdone) {
       errdone = 1;
       printf ("Read system time failed - try running with SUDO \r\n");
     }
     return 0;
   }
-  rpi_sys_timer_t* rpiSystemTimer = (rpi_sys_timer_t*)bcm2835_st;
-  #endif
+  rpi_sys_timer_t *rpiSystemTimer = (rpi_sys_timer_t *) bcm2835_st;
+#endif
 
-  int ticks =  rpiSystemTimer->counter_lo-markStartLo+1;
+  int ticks = rpiSystemTimer->counter_lo - markStartLo + 1;
 
   volatile uint32_t ts = rpiSystemTimer->counter_lo;
 
@@ -2219,24 +2102,22 @@ int waitFullMicro()
 
 /* waits till # of microseconds passed since mark was set */
 /* and sets new mark */
-void waitMarkEndMark(uint32_t offsetMicro)
-{
-  #ifndef FREESTANDING
-  if (errdone) return;
-  if (bcm2835_st==((void *) -1))
-  {
-    if (!errdone)
-    {
+void waitMarkEndMark (uint32_t offsetMicro) {
+#ifndef FREESTANDING
+  if (errdone)
+    return;
+  if (bcm2835_st == ((void *) -1)) {
+    if (!errdone) {
       errdone = 1;
       printf ("Read system time failed - try running with SUDO \r\n");
     }
     return;
   }
-  rpi_sys_timer_t* rpiSystemTimer = (rpi_sys_timer_t*)bcm2835_st;
-  #endif
+  rpi_sys_timer_t *rpiSystemTimer = (rpi_sys_timer_t *) bcm2835_st;
+#endif
   volatile uint32_t ts = markStartLo + offsetMicro;
-  if (ts < markStartLo)
-  {
+
+  if (ts < markStartLo) {
     // wait till rollover
     while (markStartHi == rpiSystemTimer->counter_hi) ;
   }
@@ -2258,41 +2139,34 @@ void waitMarkEndMark(uint32_t offsetMicro)
  * One Vectrex cycle = 0,666 useconds
  *
  * ...passed since mark was set */
-void waitCycleMarkEnd(uint32_t cycles)
-{
-  //   markStartLo = 0;
-  //  if(markStartLo==0) return;
-  /*
-   u int32_t micros = cycles * 0.840;         **
-   uint32_t nanos = cycles * 840 - micros*1000;
-   waitMarkEnd(micros);
-   WAIT_CYCLE_NANO(nanos);
-   */
-  waitMarkEnd((cycles*cycleEquivalent)/1000);
+void waitCycleMarkEnd (uint32_t cycles) {
+  // markStartLo = 0;
+  // if(markStartLo==0) return;
+  /* 
+     u int32_t micros = cycles * 0.840; ** uint32_t nanos = cycles * 840 - micros*1000; waitMarkEnd(micros); WAIT_CYCLE_NANO(nanos); */
+  waitMarkEnd ((cycles * cycleEquivalent) / 1000);
   return;
 }
 
-void measureTime()
-{
-  SET(VIA_t1_cnt_lo, 100);
-  DELAY_CYCLES(4);
-  setMarkStart();
-  SET(VIA_t1_cnt_hi, 0);
-  while ((GET (VIA_int_flags) & 0x40) == 0);
+void measureTime (void) {
+  SET (VIA_t1_cnt_lo, 100);
+  DELAY_CYCLES (4);
+  setMarkStart ();
+  SET (VIA_t1_cnt_hi, 0);
+  while ((GET (VIA_int_flags) & 0x40) == 0) ;
 
-  #ifndef FREESTANDING
-  if (errdone) return;
-  if (bcm2835_st==((void *) -1))
-  {
-    if (!errdone)
-    {
+#ifndef FREESTANDING
+  if (errdone)
+    return;
+  if (bcm2835_st == ((void *) -1)) {
+    if (!errdone) {
       errdone = 1;
       printf ("Read system time failed - try running with SUDO \r\n");
     }
     return;
   }
 //  rpi_sys_timer_t* rpiSystemTimer = (rpi_sys_timer_t*)bcm2835_st;
-  #endif
+#endif
 /*
   uint32_t lmarkStartHi = rpiSystemTimer->counter_hi;
   if (lmarkStartHi != rpiSystemTimer->counter_hi)
@@ -2303,85 +2177,78 @@ void measureTime()
 }
 
 // only using low counters!
-uint32_t v_millis()
-{
-  #ifndef FREESTANDING
-  if (errdone) return 0;
-  if (bcm2835_st==((void *) -1))
-  {
-    if (!errdone)
-    {
+uint32_t v_millis (void) {
+#ifndef FREESTANDING
+  if (errdone)
+    return 0;
+  if (bcm2835_st == ((void *) -1)) {
+    if (!errdone) {
       errdone = 1;
       printf ("Read system time failed - try running with SUDO \r\n");
     }
     return 0;
   }
-  rpi_sys_timer_t* rpiSystemTimer = (rpi_sys_timer_t*)bcm2835_st;
-  #endif
-  uint32_t micros= rpiSystemTimer->counter_lo;
-  return micros/1000;
+  rpi_sys_timer_t *rpiSystemTimer = (rpi_sys_timer_t *) bcm2835_st;
+#endif
+  uint32_t micros = rpiSystemTimer->counter_lo;
+
+  return micros / 1000;
 }
 
 // only using low counters!
-uint32_t v_micros()
-{
-  #ifndef FREESTANDING
-  if (errdone) return 0;
-  if (bcm2835_st==((void *) -1))
-  {
-    if (!errdone)
-    {
+uint32_t v_micros (void) {
+#ifndef FREESTANDING
+  if (errdone)
+    return 0;
+  if (bcm2835_st == ((void *) -1)) {
+    if (!errdone) {
       errdone = 1;
       printf ("Read system time failed - try running with SUDO \r\n");
     }
     return 0;
   }
-  rpi_sys_timer_t* rpiSystemTimer = (rpi_sys_timer_t*)bcm2835_st;
-  #endif
+  rpi_sys_timer_t *rpiSystemTimer = (rpi_sys_timer_t *) bcm2835_st;
+#endif
   return rpiSystemTimer->counter_lo;
 }
 
 // blocking error message!
-void v_error(char *message)
-{
-  printf("Vectrex/PiTrex bailing out - error:\r\n\t%s\r\n" , message);
-  while (1)
-  {
-    v_WaitRecal();
-    v_setBrightness(64);        /* set intensity of vector beam... */
-    v_printStringRaster(-30, 80, "ERROR", 40, -7, 0);
-    v_printStringRaster(-100, 0, message, 40, -7, 0);
-    v_readButtons();
+void v_error (char *message) {
+  printf ("Vectrex/PiTrex bailing out - error:\r\n\t%s\r\n", message);
+  while (1) {
+    v_WaitRecal ();
+    v_setBrightness (64);       /* set intensity of vector beam... */
+    v_printStringRaster (-30, 80, "ERROR", 40, -7, 0);
+    v_printStringRaster (-100, 0, message, 40, -7, 0);
+    v_readButtons ();
   }
 }
-void v_errori(char *message, int i)
-{
-  printf("Vectrex/PiTrex bailing out - error:\r\n\t%s (%i)\r\n" , message, i);
+void v_errori (char *message, int i) {
+  printf ("Vectrex/PiTrex bailing out - error:\r\n\t%s (%i)\r\n", message, i);
   char buf[16];
-  itoa(i,buf,10);
-  while (1)
-  {
-    v_WaitRecal();
-    v_setBrightness(64);        /* set intensity of vector beam... */
-    v_printStringRaster(-30, 80, "ERROR", 40, -7, 0);
-    v_printStringRaster(-100, 0, message, 40, -7, 0);
-    v_printStringRaster(-100, -20, buf, 40, -7, 0);
-    v_readButtons();
+
+  itoa (i, buf, 10);
+  while (1) {
+    v_WaitRecal ();
+    v_setBrightness (64);       /* set intensity of vector beam... */
+    v_printStringRaster (-30, 80, "ERROR", 40, -7, 0);
+    v_printStringRaster (-100, 0, message, 40, -7, 0);
+    v_printStringRaster (-100, -20, buf, 40, -7, 0);
+    v_readButtons ();
   }
 }
-
 
 ////////////////////////////////////////////////////////////////////////////
 // PSG and samples -> all stuff sound
 ////////////////////////////////////////////////////////////////////////////
 /*
- A ccessing PSG is "expensive" (to set* one r*egister 6/8 (write/read) VIA access are necessary!)!
+ Accessing PSG is "expensive" (to set one register 6/8 (write/read) VIA access are necessary!)!
 
  To "directly" access PSG registers use functions:
  void            v_writePSG(uint8_t reg, uint8_t data)
  uint8_t         v_readPSG(uint8_t reg)
 
- However since it is so "expansive" there is a buffer thru which all PSG acccess should be done:
+ However since it is so "expensive" there is a buffer thru which all PSG access should be done:
  Therefor we use a buffer system, if all reads writes are done using the buffer functions
  void v_writePSG_buffered(uint8_t reg, uint8_t data)
  uint8_t v_readPSG_buffered(uint8_t reg)
@@ -2439,99 +2306,91 @@ int sfx_priority2;
 int sfx_priority3;
 
 typedef struct {
-	unsigned int *status;
-	int *priority;
+  unsigned int *status;
+  int *priority;
 } SFX;
 
-SFX ayfx[3] =
-{
-	{&sfx_status_1, &sfx_priority1},
-	{&sfx_status_2, &sfx_priority2},
-	{&sfx_status_3, &sfx_priority3}
+SFX ayfx[3] = {
+  {&sfx_status_1, &sfx_priority1},
+  {&sfx_status_2, &sfx_priority2},
+  {&sfx_status_3, &sfx_priority3}
 };
 
-// used to cut of thrust in asteroids
-int v_addSFXForced(unsigned char *buffer, int channel, int loop)
-{
-	v_playSFXCont(buffer, channel, loop);
-	*ayfx[channel].priority=0;
-	return channel;
+// used to cut off thrust in asteroids
+int v_addSFXForced (unsigned char *buffer, int channel, int loop) {
+  v_playSFXCont (buffer, channel, loop);
+  *ayfx[channel].priority = 0;
+  return channel;
 }
 
 // allows the same effect to be played multiple times on// different channels
 // return -1 on failure
 // channel on success
-int v_addSFX(unsigned char *buffer, int priority, int loop, int whenEqualPriorityPlayNew)
-{
-	int use = -1;
-	int possibleUse1 = -1;
-	int possibleUse2 = -1;
-	for (int i=0;i<3;i++)
-	{
-		if (*ayfx[i].status == NOT_PLAYING)
-		{
-			use = i;
-			break;
-		}
-		if (*ayfx[i].priority < priority)
-		{
-			possibleUse1 = i;
-		}
-		if (whenEqualPriorityPlayNew)
-		{
-			if (*ayfx[i].priority == priority)
-			{
-				possibleUse2 = i;
-			}
-		}
-	}
-	int reallyUse = -1;
-	if (use != -1) reallyUse = use;
-	else if (possibleUse1 != -1) reallyUse = possibleUse1;
-	else if (possibleUse2 != -1) reallyUse = possibleUse2;
-	if (reallyUse == -1) return -1;
+int v_addSFX (unsigned char *buffer, int priority, int loop, int whenEqualPriorityPlayNew) {
+  int use = -1;
+  int possibleUse1 = -1;
+  int possibleUse2 = -1;
 
-	v_playSFXCont(buffer, reallyUse, loop);
-	return reallyUse;
+  for (int i = 0; i < 3; i++) {
+    if (*ayfx[i].status == NOT_PLAYING) {
+      use = i;
+      break;
+    }
+    if (*ayfx[i].priority < priority) {
+      possibleUse1 = i;
+    }
+    if (whenEqualPriorityPlayNew) {
+      if (*ayfx[i].priority == priority) {
+        possibleUse2 = i;
+      }
+    }
+  }
+  int reallyUse = -1;
+
+  if (use != -1)
+    reallyUse = use;
+  else if (possibleUse1 != -1)
+    reallyUse = possibleUse1;
+  else if (possibleUse2 != -1)
+    reallyUse = possibleUse2;
+  if (reallyUse == -1)
+    return -1;
+
+  v_playSFXCont (buffer, reallyUse, loop);
+  return reallyUse;
 }
 
-void v_noSound();
+void v_noSound (void);
 
-void v_writePSG_double_buffered(uint8_t reg, uint8_t data);
-void v_writePSG_buffered(uint8_t reg, uint8_t data);
-void v_writePSG(uint8_t reg, uint8_t data);
-uint8_t v_readPSG_double_buffered(uint8_t reg);
-uint8_t v_readPSG_buffered(uint8_t reg);
-uint8_t v_readPSG(uint8_t reg);
-void v_PSG_writeDoubleBuffer();
+void v_writePSG_double_buffered (uint8_t reg, uint8_t data);
+void v_writePSG_buffered (uint8_t reg, uint8_t data);
+void v_writePSG (uint8_t reg, uint8_t data);
+uint8_t v_readPSG_double_buffered (uint8_t reg);
+uint8_t v_readPSG_buffered (uint8_t reg);
+uint8_t v_readPSG (uint8_t reg);
+void v_PSG_writeDoubleBuffer (void);
 
-void v_initYM(uint8_t *b, uint16_t length, int l);
-int v_playYM();
-int play_sfx1();
-int play_sfx2();
-int play_sfx3();
+void v_initYM (uint8_t * b, uint16_t length, int l);
+int v_playYM (void);
+int play_sfx1 (void);
+int play_sfx2 (void);
+int play_sfx3 (void);
 
-void v_playDirectSampleAll(char *ymBufferLoad, int fsize, int rate);
-
-
+void v_playDirectSampleAll (char *ymBufferLoad, int fsize, int rate);
 
 // set PSG sound output to "none"
-void v_noSound()
-{
-  v_writePSG_buffered(8,0); // volume 0
-  v_writePSG_buffered(9,0);
-  v_writePSG_buffered(10,0);
-  v_writePSG_buffered(10,0x3f); // all channel off
+void v_noSound (void) {
+  v_writePSG_buffered (8, 0);   // volume 0
+  v_writePSG_buffered (9, 0);
+  v_writePSG_buffered (10, 0);
+  v_writePSG_buffered (10, 0x3f);       // all channel off
 }
-void v_doSound()
-{
-  v_PSG_writeDoubleBuffer();
+void v_doSound (void) {
+  v_PSG_writeDoubleBuffer ();
 }
 
-void v_initSound()
-{
-  for (int i=0;i<16;i++)
-  {
+void v_initSound (void) {
+  for (int i = 0; i < 16; i++) {
     psgShadow[i] = 0;
     psgDoubleBuffer[i] = 0;
   }
@@ -2544,115 +2403,109 @@ void v_initSound()
   sfx_pointer_1_org = (uint8_t *) 0;
   sfx_pointer_2_org = (uint8_t *) 0;
   sfx_pointer_3_org = (uint8_t *) 0;
-  sfx_priority1 =0;
-  sfx_priority2 =0;
-  sfx_priority3 =0;
+  sfx_priority1 = 0;
+  sfx_priority2 = 0;
+  sfx_priority3 = 0;
   ymLength = 0;
   ymBuffer = 0;
   ymloop = 1;
-  v_noSound();
+  v_noSound ();
 }
 
 /***********************************************************************/
-uint8_t v_readPSG_double_buffered(uint8_t reg)
-{
+uint8_t v_readPSG_double_buffered (uint8_t reg) {
   return psgDoubleBuffer[reg];
 }
 
-void v_writePSG_double_buffered(uint8_t reg, uint8_t data)
-{
+void v_writePSG_double_buffered (uint8_t reg, uint8_t data) {
   psgDoubleBuffer[reg] = data;
 }
 
-void v_PSG_writeDoubleBuffer()
-{
-  for (int i=0;i<15;i++)
-  {
+void v_PSG_writeDoubleBuffer (void) {
+  for (int i = 0; i < 15; i++) {
     uint8_t data = psgDoubleBuffer[i];
-    if (psgShadow[i] == data) continue;
+
+    if (psgShadow[i] == data)
+      continue;
     psgShadow[i] = data;
 
-    SET(VIA_port_a, i); // prepare access of psg port A (0x0e) by writing the register value to VIA port A
-    SET(VIA_port_b, 0x99); // set VIA port B to settings: sound BDIR on, BC1 on, mux off
-    SET(VIA_port_b, 0x81); // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
+    SET (VIA_port_a, i);        // prepare access of psg port A (0x0e) by writing the register value to VIA port A
+    SET (VIA_port_b, 0x99);     // set VIA port B to settings: sound BDIR on, BC1 on, mux off
+    SET (VIA_port_b, 0x81);     // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
 
-    SET(VIA_port_a, data); // write data to port a of via -> and than to psg
-    SET(VIA_port_b, 0x91); // set VIA port B to settings: sound BDIR on, BC1 on, mux off, write to PSG
-    SET(VIA_port_b, 0x81); // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
+    SET (VIA_port_a, data);     // write data to port a of via -> and than to psg
+    SET (VIA_port_b, 0x91);     // set VIA port B to settings: sound BDIR on, BC1 on, mux off, write to PSG
+    SET (VIA_port_b, 0x81);     // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
   }
-  currentPortA = 0x100; // undefined
+  currentPortA = 0x100;         // undefined
 }
 
-void v_writePSG_buffered(uint8_t reg, uint8_t data)
-{
-  if (psgShadow[reg] == data) return;
+void v_writePSG_buffered (uint8_t reg, uint8_t data) {
+  if (psgShadow[reg] == data)
+    return;
   psgShadow[reg] = data;
 
-  SET(VIA_port_a, reg); // prepare access of psg port A (0x0e) by writing the register value to VIA port A
-  SET(VIA_port_b, 0x99); // set VIA port B to settings: sound BDIR on, BC1 on, mux off
-  SET(VIA_port_b, 0x81); // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
+  SET (VIA_port_a, reg);        // prepare access of psg port A (0x0e) by writing the register value to VIA port A
+  SET (VIA_port_b, 0x99);       // set VIA port B to settings: sound BDIR on, BC1 on, mux off
+  SET (VIA_port_b, 0x81);       // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
 
-  SET(VIA_port_a, data); // write data to port a of via -> and than to psg
-  SET(VIA_port_b, 0x91); // set VIA port B to settings: sound BDIR on, BC1 on, mux off, write to PSG
-  SET(VIA_port_b, 0x81); // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
-  currentPortA = 0x100; // undefined
+  SET (VIA_port_a, data);       // write data to port a of via -> and than to psg
+  SET (VIA_port_b, 0x91);       // set VIA port B to settings: sound BDIR on, BC1 on, mux off, write to PSG
+  SET (VIA_port_b, 0x81);       // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
+  currentPortA = 0x100;         // undefined
 }
-uint8_t v_readPSG_buffered(uint8_t reg)
-{
+
+uint8_t v_readPSG_buffered (uint8_t reg) {
   return psgShadow[reg];
 }
 
-void v_writePSG(uint8_t reg, uint8_t data)
-{
-  SET(VIA_port_a, reg); // prepare access of psg port A (0x0e) by writing the register value to VIA port A
-  SET(VIA_port_b, 0x99); // set VIA port B to settings: sound BDIR on, BC1 on, mux off
-  SET(VIA_port_b, 0x81); // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
+void v_writePSG (uint8_t reg, uint8_t data) {
+  SET (VIA_port_a, reg);        // prepare access of psg port A (0x0e) by writing the register value to VIA port A
+  SET (VIA_port_b, 0x99);       // set VIA port B to settings: sound BDIR on, BC1 on, mux off
+  SET (VIA_port_b, 0x81);       // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
 
-  SET(VIA_port_a, data); // write data to port a of via -> and than to psg
-  SET(VIA_port_b, 0x91); // set VIA port B to settings: sound BDIR on, BC1 on, mux off, write to PSG
-  SET(VIA_port_b, 0x81); // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
-  currentPortA = 0x100; // undefined
+  SET (VIA_port_a, data);       // write data to port a of via -> and than to psg
+  SET (VIA_port_b, 0x91);       // set VIA port B to settings: sound BDIR on, BC1 on, mux off, write to PSG
+  SET (VIA_port_b, 0x81);       // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
+  currentPortA = 0x100;         // undefined
 }
 
 /***********************************************************************/
 
-uint8_t v_readPSG(uint8_t reg)
-{
-  SET(VIA_port_a, reg); // prepare access of psg port A (0x0e) by writing the register value to VIA port A
-  SET(VIA_port_b, 0x99); // set VIA port B to settings: sound BDIR on, BC1 on, mux off
-  SET(VIA_port_b, 0x81); // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
+uint8_t v_readPSG (uint8_t reg) {
+  SET (VIA_port_a, reg);        // prepare access of psg port A (0x0e) by writing the register value to VIA port A
+  SET (VIA_port_b, 0x99);       // set VIA port B to settings: sound BDIR on, BC1 on, mux off
+  SET (VIA_port_b, 0x81);       // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
 
-  SET(VIA_DDR_a, 0x00); // set VIA DDR A to input
-  SET(VIA_port_b, 0x89); // set VIA port B to settings: sound BDIR on, BC1 on, mux off, read from psg
-  uint8_t directData = GET(VIA_port_a); // Read buttons
-  SET(VIA_port_b, 0x81); // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
-  SET(VIA_DDR_a, 0xff); // set VIA DDR A to output
-  currentPortA = 0x100; // undefined
+  SET (VIA_DDR_a, 0x00);        // set VIA DDR A to input
+  SET (VIA_port_b, 0x89);       // set VIA port B to settings: sound BDIR on, BC1 on, mux off, read from psg
+uint8_t directData = GET (VIA_port_a);  // Read buttons
+
+  SET (VIA_port_b, 0x81);       // set VIA Port B = 81, mux disabled, RAMP disabled, BC1/BDIR = 00 (PSG inactive)
+  SET (VIA_DDR_a, 0xff);        // set VIA DDR A to output
+  currentPortA = 0x100;         // undefined
   return directData;
 }
 
-void v_initYM(uint8_t *b, uint16_t length, int l)
-{
+void v_initYM (uint8_t * b, uint16_t length, int l) {
   ymBuffer = b;
   ymloop = l;
   ymLength = length;
   ymPos = 0;
 }
 
-int v_playYM()
-{
-  if (ymPos>=ymLength)
-  {
-    if (ymloop==1)
+int v_playYM (void) {
+  if (ymPos >= ymLength) {
+    if (ymloop == 1)
       ymPos = 0;
     else
       return 0;
   }
-  uint8_t *currentPointer = ymBuffer+ymPos*14;
+  uint8_t *currentPointer = ymBuffer + ymPos * 14;
+
   ymPos++;
-  for (int i=0; i<14; i++)
-  {
-    v_writePSG_double_buffered(i, *currentPointer);
+  for (int i = 0; i < 14; i++) {
+    v_writePSG_double_buffered (i, *currentPointer);
     currentPointer++;
   }
   return 1;
@@ -2663,127 +2516,142 @@ int v_playYM()
 // one sample each 0,000066 seconds
 // = 0,0666 milli seconds
 // = each 66 micro seconds
-void v_playDirectSampleAll(char *ymBufferLoad, int fsize, int rate)
-{
+void v_playDirectSampleAll (char *ymBufferLoad, int fsize, int rate) {
   int counter = 0;
-  int microsToWait = (1000*1000) / rate;
+  int microsToWait = (1000 * 1000) / rate;
 
-  SET(VIA_port_a, 0);
-  DELAY_CYCLES(4);
+  SET (VIA_port_a, 0);
+  DELAY_CYCLES (4);
 
-  SET(VIA_port_b, 0x86);
-  DELAY_CYCLES(4);
-  while (counter < fsize)
-  {
+  SET (VIA_port_b, 0x86);
+  DELAY_CYCLES (4);
+  while (counter < fsize) {
     char b = *ymBufferLoad++;
-    SET(VIA_port_a, b);
-    int endTime = v_micros()+microsToWait;
+
+    SET (VIA_port_a, b);
+    int endTime = v_micros () + microsToWait;
+
     counter++;
-    while (v_micros()<endTime) ;
+    while (v_micros () < endTime) ;
   }
-  SET(VIA_port_b, 0x81);
-  DELAY_CYCLES(4);
+  SET (VIA_port_b, 0x81);
+  DELAY_CYCLES (4);
 }
 
-void v_playAllSFX()
-{
-  play_sfx1();
-  play_sfx2();
-  play_sfx3();
+void v_playAllSFX (void) {
+  play_sfx1 ();
+  play_sfx2 ();
+  play_sfx3 ();
 }
 
 // plays a SFX
 // if the sfx is already playing... does nothing
-void v_playSFXCont(unsigned char *buffer, int channel, int loop)
-{
-  if (channel == 0)
-  {
-    if (sfx_pointer_1_org == buffer) return;
+void v_playSFXCont (unsigned char *buffer, int channel, int loop) {
+  if (channel == 0) {
+    if (sfx_pointer_1_org == buffer)
+      return;
     sfx_pointer_1_org = buffer;
     sfx_pointer_1 = buffer;
-    if (loop) sfx_status_1 = PLAY_LOOP; else  sfx_status_1 = PLAY_END;
+    if (loop)
+      sfx_status_1 = PLAY_LOOP;
+    else
+      sfx_status_1 = PLAY_END;
   }
-  if (channel == 1)
-  {
-    if (sfx_pointer_2_org == buffer) return;
+  if (channel == 1) {
+    if (sfx_pointer_2_org == buffer)
+      return;
     sfx_pointer_2_org = buffer;
     sfx_pointer_2 = buffer;
-    if (loop) sfx_status_2 = PLAY_LOOP; else  sfx_status_2 = PLAY_END;
+    if (loop)
+      sfx_status_2 = PLAY_LOOP;
+    else
+      sfx_status_2 = PLAY_END;
   }
-  if (channel == 2)
-  {
-    if (sfx_pointer_3_org == buffer) return;
+  if (channel == 2) {
+    if (sfx_pointer_3_org == buffer)
+      return;
     sfx_pointer_3_org = buffer;
     sfx_pointer_3 = buffer;
-    if (loop) sfx_status_3 = PLAY_LOOP; else  sfx_status_3 = PLAY_END;
+    if (loop)
+      sfx_status_3 = PLAY_LOOP;
+    else
+      sfx_status_3 = PLAY_END;
   }
 
 }
+
 // plays a SFX
 // if the sfx is already playing... restart it
-void v_playSFXStart(unsigned char *buffer, int channel, int loop)
-{
-  if (channel == 0)
-  {
+void v_playSFXStart (unsigned char *buffer, int channel, int loop) {
+  if (channel == 0) {
     sfx_pointer_1_org = buffer;
     sfx_pointer_1 = buffer;
-    if (loop) sfx_status_1 = PLAY_LOOP; else  sfx_status_1 = PLAY_END;
+    if (loop)
+      sfx_status_1 = PLAY_LOOP;
+    else
+      sfx_status_1 = PLAY_END;
   }
-  if (channel == 1)
-  {
+  if (channel == 1) {
     sfx_pointer_2_org = buffer;
     sfx_pointer_2 = buffer;
-    if (loop) sfx_status_2 = PLAY_LOOP; else  sfx_status_2 = PLAY_END;
+    if (loop)
+      sfx_status_2 = PLAY_LOOP;
+    else
+      sfx_status_2 = PLAY_END;
   }
-  if (channel == 2)
-  {
+  if (channel == 2) {
     sfx_pointer_3_org = buffer;
     sfx_pointer_3 = buffer;
-    if (loop) sfx_status_3 = PLAY_LOOP; else  sfx_status_3 = PLAY_END;
+    if (loop)
+      sfx_status_3 = PLAY_LOOP;
+    else
+      sfx_status_3 = PLAY_END;
   }
 }
 
-void v_playSFXStop(unsigned char *buffer, int channel)
-{
-  if (channel == 0)
-  {
-    if (sfx_pointer_1_org != buffer) return;
+void v_playSFXStop (unsigned char *buffer, int channel) {
+  if (channel == 0) {
+    if (sfx_pointer_1_org != buffer)
+      return;
     sfx_pointer_1_org = 0;
     sfx_status_1 = NOT_PLAYING;
-    v_writePSG_double_buffered(0+8, 0);
+    v_writePSG_double_buffered (0 + 8, 0);
 
-    uint8_t enable = v_readPSG_double_buffered(7);
+    uint8_t enable = v_readPSG_double_buffered (7);
+
     // disable tone
-    enable = enable | (1<<0); // channel 0
+    enable = enable | (1 << 0); // channel 0
     // disable noise
-    enable = enable | (1<<(3+0)); // channel 0
-    v_writePSG_double_buffered(7, enable);
+    enable = enable | (1 << (3 + 0));   // channel 0
+    v_writePSG_double_buffered (7, enable);
   }
-  if (channel == 1)
-  {
-    if (sfx_pointer_2_org != buffer) return;
+  if (channel == 1) {
+    if (sfx_pointer_2_org != buffer)
+      return;
     sfx_pointer_2_org = 0;
     sfx_status_2 = NOT_PLAYING;
-    v_writePSG_double_buffered(1+8, 0);
-    uint8_t enable = v_readPSG_double_buffered(7);
+    v_writePSG_double_buffered (1 + 8, 0);
+    uint8_t enable = v_readPSG_double_buffered (7);
+
     // disable tone
-    enable = enable | (1<<1); // channel 0
+    enable = enable | (1 << 1); // channel 0
     // disable noise
-    enable = enable | (1<<(3+1)); // channel 0
-    v_writePSG_double_buffered(7, enable);
+    enable = enable | (1 << (3 + 1));   // channel 0
+    v_writePSG_double_buffered (7, enable);
   }
-  if (channel == 2)
-  {
-    if (sfx_pointer_3_org != buffer) return;
+  if (channel == 2) {
+    if (sfx_pointer_3_org != buffer)
+      return;
     sfx_pointer_3_org = 0;
     sfx_status_3 = NOT_PLAYING;
-    v_writePSG_double_buffered(2+8, 0);
-    uint8_t enable = v_readPSG_double_buffered(7);
+    v_writePSG_double_buffered (2 + 8, 0);
+    uint8_t enable = v_readPSG_double_buffered (7);
+
     // disable tone
-    enable = enable | (1<<2); // channel 0
+    enable = enable | (1 << 2); // channel 0
     // disable noise
-    enable = enable | (1<<(3+2)); // channel 0
-    v_writePSG_double_buffered(7, enable);
+    enable = enable | (1 << (3 + 2));   // channel 0
+    v_writePSG_double_buffered (7, enable);
   }
 }
 
@@ -2795,69 +2663,58 @@ void v_playSFXStop(unsigned char *buffer, int channel)
 #define SFX_STATUS sfx_status_1
 #define SFX_POINTER sfx_pointer_1
 #define SFX_POINTER_ORG sfx_pointer_1_org
+
 // return 0 on finish or nothing
-int play_sfx1()
-{
-  if (!SFX_STATUS) return 0;
+int play_sfx1 (void) {
+  if (!SFX_STATUS)
+    return 0;
 
   uint8_t b = *SFX_POINTER++;
 
-  if (b == 0xd0)
-  {
-    if ((*SFX_POINTER) == 0x20)
-    {
-      if (SFX_STATUS == PLAY_LOOP)
-      {
+  if (b == 0xd0) {
+    if ((*SFX_POINTER) == 0x20) {
+      if (SFX_STATUS == PLAY_LOOP) {
         SFX_POINTER = SFX_POINTER_ORG;
         b = *SFX_POINTER++;
-      }
-      else
-      {
+      } else {
         SFX_POINTER_ORG = 0;
         SFX_STATUS = 0;
         return 0;
       }
     }
   }
-  if ((b & (1 << 5)) == (1 << 5))
-  {
+  if ((b & (1 << 5)) == (1 << 5)) {
     // tone frequency
-    v_writePSG_double_buffered(PSG_CHANNEL*2+0, *SFX_POINTER++);
-    v_writePSG_double_buffered(PSG_CHANNEL*2+1, *SFX_POINTER++);
+    v_writePSG_double_buffered (PSG_CHANNEL * 2 + 0, *SFX_POINTER++);
+    v_writePSG_double_buffered (PSG_CHANNEL * 2 + 1, *SFX_POINTER++);
   }
-  if ((b & (1 << 6)) == (1 << 6))
-  {
+  if ((b & (1 << 6)) == (1 << 6)) {
     // noise frequency
-    v_writePSG_double_buffered(6, *SFX_POINTER++);
+    v_writePSG_double_buffered (6, *SFX_POINTER++);
   }
-  uint8_t volume = b&0xf;
-  v_writePSG_double_buffered(PSG_CHANNEL+8, volume);
-  uint8_t enable = v_readPSG_double_buffered(7);
-  if ((b & (1 << 4)) == (1 << 4))
-  {
+  uint8_t volume = b & 0xf;
+
+  v_writePSG_double_buffered (PSG_CHANNEL + 8, volume);
+  uint8_t enable = v_readPSG_double_buffered (7);
+
+  if ((b & (1 << 4)) == (1 << 4)) {
     // disable tone
-    enable = enable | (1<<PSG_CHANNEL); // channel 0
-  }
-  else
-  {
+    enable = enable | (1 << PSG_CHANNEL);       // channel 0
+  } else {
     // enable tone
-    enable = enable & (0xff - (1<<PSG_CHANNEL)); // channel 0
+    enable = enable & (0xff - (1 << PSG_CHANNEL));      // channel 0
   }
 
-  if ((b & (1 << 7)) == (1 << 7))
-  {
+  if ((b & (1 << 7)) == (1 << 7)) {
     // disable noise
-    enable = enable | (1<<(3+PSG_CHANNEL)); // channel 0
-  }
-  else
-  {
+    enable = enable | (1 << (3 + PSG_CHANNEL)); // channel 0
+  } else {
     // enable tone
-    enable = enable & (0xff - (1<<(3+PSG_CHANNEL))); // channel 0
+    enable = enable & (0xff - (1 << (3 + PSG_CHANNEL)));        // channel 0
   }
-  v_writePSG_double_buffered(7, enable);
+  v_writePSG_double_buffered (7, enable);
   return 1;
 }
-
 
 #undef PSG_CHANNEL
 #undef SFX_STATUS
@@ -2867,70 +2724,58 @@ int play_sfx1()
 #define SFX_STATUS sfx_status_2
 #define SFX_POINTER sfx_pointer_2
 #define SFX_POINTER_ORG sfx_pointer_2_org
+
 // return 0 on finish or nothing
-int play_sfx2()
-{
-  if (!SFX_STATUS) return 0;
+int play_sfx2 (void) {
+  if (!SFX_STATUS)
+    return 0;
 
   uint8_t b = *SFX_POINTER++;
 
-  if (b == 0xd0)
-  {
-    if ((*SFX_POINTER) == 0x20)
-    {
-      if (SFX_STATUS == PLAY_LOOP)
-      {
+  if (b == 0xd0) {
+    if ((*SFX_POINTER) == 0x20) {
+      if (SFX_STATUS == PLAY_LOOP) {
         SFX_POINTER = SFX_POINTER_ORG;
         b = *SFX_POINTER++;
-      }
-      else
-      {
+      } else {
         SFX_POINTER_ORG = 0;
         SFX_STATUS = 0;
         return 0;
       }
     }
   }
-  if ((b & (1 << 5)) == (1 << 5))
-  {
+  if ((b & (1 << 5)) == (1 << 5)) {
     // tone frequency
-    v_writePSG_double_buffered(PSG_CHANNEL*2+0, *SFX_POINTER++);
-    v_writePSG_double_buffered(PSG_CHANNEL*2+1, *SFX_POINTER++);
+    v_writePSG_double_buffered (PSG_CHANNEL * 2 + 0, *SFX_POINTER++);
+    v_writePSG_double_buffered (PSG_CHANNEL * 2 + 1, *SFX_POINTER++);
   }
-  if ((b & (1 << 6)) == (1 << 6))
-  {
+  if ((b & (1 << 6)) == (1 << 6)) {
     // noise frequency
-    v_writePSG_double_buffered(6, *SFX_POINTER++);
+    v_writePSG_double_buffered (6, *SFX_POINTER++);
   }
-  uint8_t volume = b&0xf;
-  v_writePSG_double_buffered(PSG_CHANNEL+8, volume);
-  uint8_t enable = v_readPSG_double_buffered(7);
-  if ((b & (1 << 4)) == (1 << 4))
-  {
+  uint8_t volume = b & 0xf;
+
+  v_writePSG_double_buffered (PSG_CHANNEL + 8, volume);
+  uint8_t enable = v_readPSG_double_buffered (7);
+
+  if ((b & (1 << 4)) == (1 << 4)) {
     // disable tone
-    enable = enable | (1<<PSG_CHANNEL); // channel 0
-  }
-  else
-  {
+    enable = enable | (1 << PSG_CHANNEL);       // channel 0
+  } else {
     // enable tone
-    enable = enable & (0xff - (1<<PSG_CHANNEL)); // channel 0
+    enable = enable & (0xff - (1 << PSG_CHANNEL));      // channel 0
   }
 
-  if ((b & (1 << 7)) == (1 << 7))
-  {
+  if ((b & (1 << 7)) == (1 << 7)) {
     // disable noise
-    enable = enable | (1<<(3+PSG_CHANNEL)); // channel 0
-  }
-  else
-  {
+    enable = enable | (1 << (3 + PSG_CHANNEL)); // channel 0
+  } else {
     // enable tone
-    enable = enable & (0xff - (1<<(3+PSG_CHANNEL))); // channel 0
+    enable = enable & (0xff - (1 << (3 + PSG_CHANNEL)));        // channel 0
   }
-  v_writePSG_double_buffered(7, enable);
+  v_writePSG_double_buffered (7, enable);
   return 1;
 }
-
-
 
 #undef PSG_CHANNEL
 #undef SFX_STATUS
@@ -2940,86 +2785,76 @@ int play_sfx2()
 #define SFX_STATUS sfx_status_3
 #define SFX_POINTER sfx_pointer_3
 #define SFX_POINTER_ORG sfx_pointer_3_org
+
 // return 0 on finish or nothing
-int play_sfx3()
-{
-  if (!SFX_STATUS) return 0;
+int play_sfx3 (void) {
+  if (!SFX_STATUS)
+    return 0;
 
   uint8_t b = *SFX_POINTER++;
 
-  if (b == 0xd0)
-  {
-    if ((*SFX_POINTER) == 0x20)
-    {
-      if (SFX_STATUS == PLAY_LOOP)
-      {
+  if (b == 0xd0) {
+    if ((*SFX_POINTER) == 0x20) {
+      if (SFX_STATUS == PLAY_LOOP) {
         SFX_POINTER = SFX_POINTER_ORG;
         b = *SFX_POINTER++;
-      }
-      else
-      {
+      } else {
         SFX_POINTER_ORG = 0;
         SFX_STATUS = 0;
         return 0;
       }
     }
   }
-  if ((b & (1 << 5)) == (1 << 5))
-  {
+  if ((b & (1 << 5)) == (1 << 5)) {
     // tone frequency
-    v_writePSG_double_buffered(PSG_CHANNEL*2+0, *SFX_POINTER++);
-    v_writePSG_double_buffered(PSG_CHANNEL*2+1, *SFX_POINTER++);
+    v_writePSG_double_buffered (PSG_CHANNEL * 2 + 0, *SFX_POINTER++);
+    v_writePSG_double_buffered (PSG_CHANNEL * 2 + 1, *SFX_POINTER++);
   }
-  if ((b & (1 << 6)) == (1 << 6))
-  {
+  if ((b & (1 << 6)) == (1 << 6)) {
     // noise frequency
-    v_writePSG_double_buffered(6, *SFX_POINTER++);
+    v_writePSG_double_buffered (6, *SFX_POINTER++);
   }
-  uint8_t volume = b&0xf;
-  v_writePSG_double_buffered(PSG_CHANNEL+8, volume);
-  uint8_t enable = v_readPSG_double_buffered(7);
-  if ((b & (1 << 4)) == (1 << 4))
-  {
+  uint8_t volume = b & 0xf;
+
+  v_writePSG_double_buffered (PSG_CHANNEL + 8, volume);
+  uint8_t enable = v_readPSG_double_buffered (7);
+
+  if ((b & (1 << 4)) == (1 << 4)) {
     // disable tone
-    enable = enable | (1<<PSG_CHANNEL); // channel 0
-  }
-  else
-  {
+    enable = enable | (1 << PSG_CHANNEL);       // channel 0
+  } else {
     // enable tone
-    enable = enable & (0xff - (1<<PSG_CHANNEL)); // channel 0
+    enable = enable & (0xff - (1 << PSG_CHANNEL));      // channel 0
   }
 
-  if ((b & (1 << 7)) == (1 << 7))
-  {
+  if ((b & (1 << 7)) == (1 << 7)) {
     // disable noise
-    enable = enable | (1<<(3+PSG_CHANNEL)); // channel 0
-  }
-  else
-  {
+    enable = enable | (1 << (3 + PSG_CHANNEL)); // channel 0
+  } else {
     // enable tone
-    enable = enable & (0xff - (1<<(3+PSG_CHANNEL))); // channel 0
+    enable = enable & (0xff - (1 << (3 + PSG_CHANNEL)));        // channel 0
   }
-  v_writePSG_double_buffered(7, enable);
+  v_writePSG_double_buffered (7, enable);
   return 1;
 }
+
 #undef PSG_CHANNEL
 #undef SFX_STATUS
 #undef SFX_POINTER
 #undef SFX_POINTER_ORG
 
-
 /*
- s etOptimalScale()                          * *
+ setOptimalScale()
  startDraw
  startMove
  continueTo
  doZero
  */
 
-
-void handleVectorRequest(int type, int x, int y)
-{
+void handleVectorRequest (int type, int x, int y) {
+  // ????
 }
+
 #ifdef FREESTANDING
 #ifdef PITREX_DEBUG
 #include "commands.i"
@@ -3030,34 +2865,30 @@ void handleVectorRequest(int type, int x, int y)
 unsigned char v_settingsBlob[V_SETTINGS_SIZE];
 
 typedef struct {
-  int8_t crankyFlag; // boolean: cranky should be checked during calibration! In "VecFever" terms cranky off = burst modus
-  unsigned int Vec_Rfrsh; // 30000 cylces (vectrex) = $7530, little endian = $3075
+  int8_t crankyFlag;            // boolean: cranky should be checked during calibration! In "VecFever" terms cranky off = burst modus
+  unsigned int Vec_Rfrsh;       // 30000 cylces (vectrex) = $7530, little endian = $3075
   int optimizationON;
-  uint8_t calibrationValue; // tut calibration
+  uint8_t calibrationValue;     // tut calibration
   float sizeX;
   float sizeY;
   int16_t offsetX;
   int16_t offsetY;
-  unsigned int  orientation;
+  unsigned int orientation;
   unsigned int MAX_USED_STRENGTH;
   unsigned int MAX_CONSECUTIVE_DRAWS;
-  unsigned int DELAY_ZERO_VALUE; // 70 // probably less, this can be adjusted, by max x position, the nearer to the center the less waits
+  unsigned int DELAY_ZERO_VALUE;        // 70 // probably less, this can be adjusted, by max x position, the nearer to the center the less waits
   unsigned int DELAY_AFTER_T1_END_VALUE;
   uint16_t SCALE_STRENGTH_DIF;
   unsigned int cycleEquivalent;
   int beamOffBetweenConsecutiveDraws;
 } Settings;
 
-
 /* values that we remember for possible optimization purposes */
-
-
 
 Settings *currentSettings;
 
-void applyLoadedSettings()
-{
-  currentSettings = (Settings *)v_settingsBlob;
+void applyLoadedSettings (void) {
+  currentSettings = (Settings *) v_settingsBlob;
   crankyFlag = currentSettings->crankyFlag;
   Vec_Rfrsh = currentSettings->Vec_Rfrsh;
   optimizationON = currentSettings->optimizationON;
@@ -3075,9 +2906,9 @@ void applyLoadedSettings()
   cycleEquivalent = currentSettings->cycleEquivalent;
   beamOffBetweenConsecutiveDraws = currentSettings->beamOffBetweenConsecutiveDraws;
 }
-void prepareSaveSettings()
-{
-  currentSettings = (Settings *)v_settingsBlob;
+
+void prepareSaveSettings (void) {
+  currentSettings = (Settings *) v_settingsBlob;
   currentSettings->crankyFlag = crankyFlag;
   currentSettings->Vec_Rfrsh = Vec_Rfrsh;
   currentSettings->optimizationON = optimizationON;
@@ -3097,16 +2928,14 @@ void prepareSaveSettings()
 }
 
 /* Set the name of the running game */
-void v_setName(char *name)
-{
- knownName = name;
+void v_setName (char *name) {
+  knownName = name;
 }
 
 // Expects to be in root directData.
 // Expects filesystem to be initialized.
 // Saves to default settings file if name is blank.
-int v_loadSettings(char *name, unsigned char *blob, int blobSize)
-{
+int v_loadSettings (char *name, unsigned char *blob, int blobSize) {
 
   knownBlob = blob;
   knownBlobSize = blobSize;
@@ -3119,71 +2948,67 @@ int v_loadSettings(char *name, unsigned char *blob, int blobSize)
   char *defaultpwd = "..";
   char *pwd;
 
-  pwdmax = pathconf(".", _PC_PATH_MAX);
-  pwd = malloc(pwdmax * sizeof(*pwd));
+  pwdmax = pathconf (".", _PC_PATH_MAX);
+  pwd = malloc (pwdmax * sizeof (*pwd));
 
-  if (getcwd(pwd, pwdmax) == NULL)
-  {
-   printf("Couldn't retrieve current directory path!\r\n");
-   free(pwd);
-   pwd = defaultpwd;
+  if (getcwd (pwd, pwdmax) == NULL) {
+    printf ("Couldn't retrieve current directory path!\r\n");
+    free (pwd);
+    pwd = defaultpwd;
   }
 //printf("Path is: %s\n", pwd);
 #else
   char *pwd = "..";
 #endif
 
-  int err=0;
+  int err = 0;
+
   err = chdir (settingsDir);
-  if (err)
-  {
-    printf("NO settings directory found (%i) at \"%s\"!\r\n", errno, settingsDir);
+  if (err) {
+    printf ("NO settings directory found (%i) at \"%s\"!\r\n", errno, settingsDir);
 #ifndef FREESTANDING
-    free(pwd);
+    free (pwd);
 #endif
     return 0;
   }
 
-  if (name[0] != (char) 0)
-  {
-    printf("Loading settings file: %s!\r\n", name);
-    fileRead = fopen(name, "rb");
-   if (fileRead == 0)
-     printf("Could not open settings file (%i) \r\n", errno);
+  if (name[0] != (char) 0) {
+    printf ("Loading settings file: %s!\r\n", name);
+    fileRead = fopen (name, "rb");
+    if (fileRead == 0)
+      printf ("Could not open settings file (%i) \r\n", errno);
   }
 
-  if ( name[0] == (char) 0 || fileRead == 0)
-  {
-    printf("Loading settings file: %s!\r\n", defaultName);
-    fileRead = fopen(defaultName, "rb");
+  if (name[0] == (char) 0 || fileRead == 0) {
+    printf ("Loading settings file: %s!\r\n", defaultName);
+    fileRead = fopen (defaultName, "rb");
 
-   if (fileRead == 0)
-   {
-     printf("Could not open settings file (%i) \r\n", errno);
-     err = chdir(pwd);
+    if (fileRead == 0) {
+      printf ("Could not open settings file (%i) \r\n", errno);
+      err = chdir (pwd);
 #ifndef FREESTANDING
-     free(pwd);
+      free (pwd);
 #endif
-     return 0;
-   }
+      return 0;
+    }
   }
 
-  unsigned int lenLoaded=0;
-  lenLoaded = fread(v_settingsBlob, V_SETTINGS_SIZE, 1, fileRead);
-  if (1 != lenLoaded)
-  {
-    printf("Read(1) fails (len loaded: %i) (Error: %i)\r\n", lenLoaded, errno);
-    fclose(fileRead);
-    err = chdir(pwd);
+  unsigned int lenLoaded = 0;
+
+  lenLoaded = fread (v_settingsBlob, V_SETTINGS_SIZE, 1, fileRead);
+  if (1 != lenLoaded) {
+    printf ("Read(1) fails (len loaded: %i) (Error: %i)\r\n", lenLoaded, errno);
+    fclose (fileRead);
+    err = chdir (pwd);
 #ifndef FREESTANDING
-    free(pwd);
+    free (pwd);
 #endif
     return 0;
   }
-  applyLoadedSettings();
-  err = chdir(pwd);
+  applyLoadedSettings ();
+  err = chdir (pwd);
 #ifndef FREESTANDING
-  free(pwd);
+  free (pwd);
 #endif
   return 1;
 }
@@ -3191,8 +3016,7 @@ int v_loadSettings(char *name, unsigned char *blob, int blobSize)
 // Expects to be in root directData.
 // Expects filesystem to be initialized.
 // Saves to default settings file if name is blank.
-int v_saveSettings(char *name, unsigned char *blob, int blobSize)
-{
+int v_saveSettings (char *name, unsigned char *blob, int blobSize) {
 
   knownBlob = blob;
   knownBlobSize = blobSize;
@@ -3205,88 +3029,75 @@ int v_saveSettings(char *name, unsigned char *blob, int blobSize)
   char *defaultpwd = "..";
   char *pwd;
 
-  pwdmax = pathconf(".", _PC_PATH_MAX);
-  pwd = malloc(pwdmax * sizeof(*pwd));
+  pwdmax = pathconf (".", _PC_PATH_MAX);
+  pwd = malloc (pwdmax * sizeof (*pwd));
 
-  if (getcwd(pwd, pwdmax) == NULL)
-  {
-   printf("Couldn't retrieve current directory path!\r\n");
-   free(pwd);
-   pwd = defaultpwd;
+  if (getcwd (pwd, pwdmax) == NULL) {
+    printf ("Couldn't retrieve current directory path!\r\n");
+    free (pwd);
+    pwd = defaultpwd;
   }
 //printf("Path is: %s\n", pwd);
 #else
   char *pwd = "..";
 #endif
 
-  int err=0;
+  int err = 0;
+
   err = chdir (settingsDir);
-  if (err)
-  {
-    printf("NO settings directory found (%i) at \"%s\"!\r\n", errno, settingsDir);
+  if (err) {
+    printf ("NO settings directory found (%i) at \"%s\"!\r\n", errno, settingsDir);
 #ifndef FREESTANDING
-    free(pwd);
+    free (pwd);
 #endif
     return 0;
   }
 
-  if (name[0] != (char) 0)
-  {
-    printf("Saving settings file: %s!\r\n", name);
+  if (name[0] != (char) 0) {
+    printf ("Saving settings file: %s!\r\n", name);
     // always as a "new file"
-    fileWrite = fopen(name, "wb");
-  }
-  else
-  {
-    printf("Saving settings file: %s!\r\n", defaultName);
+    fileWrite = fopen (name, "wb");
+  } else {
+    printf ("Saving settings file: %s!\r\n", defaultName);
     // always as a "new file"
-    fileWrite = fopen(defaultName, "wb");
+    fileWrite = fopen (defaultName, "wb");
   }
 
-  prepareSaveSettings();
+  prepareSaveSettings ();
 
-  if (fileWrite == 0)
-  {
-    printf("Could not open file (%i) \r\n", errno);
-    err = chdir(pwd);
+  if (fileWrite == 0) {
+    printf ("Could not open file (%i) \r\n", errno);
+    err = chdir (pwd);
 #ifndef FREESTANDING
-    free(pwd);
+    free (pwd);
 #endif
     return 0;
   }
-  unsigned int lenSaved=0;
-  lenSaved = fwrite(v_settingsBlob, V_SETTINGS_SIZE, 1, fileWrite);
-  if ( lenSaved != 1)
-  {
-    printf("File not saved (1) (size written = %i) (error: %i)\r\n", lenSaved, errno);
-    fclose(fileWrite);
-    err = chdir(pwd);
+  unsigned int lenSaved = 0;
+
+  lenSaved = fwrite (v_settingsBlob, V_SETTINGS_SIZE, 1, fileWrite);
+  if (lenSaved != 1) {
+    printf ("File not saved (1) (size written = %i) (error: %i)\r\n", lenSaved, errno);
+    fclose (fileWrite);
+    err = chdir (pwd);
 #ifndef FREESTANDING
-    free(pwd);
+    free (pwd);
 #endif
     return 0;
   }
-  fclose(fileWrite);
+  fclose (fileWrite);
 
-  err = chdir(pwd);
+  err = chdir (pwd);
 #ifndef FREESTANDING
-  free(pwd);
+  free (pwd);
 #endif
   return 1;
 }
 
-
-
-
-
-
-
-
-// if zeroing is enabled -we can not moveor draw
+// if zeroing is enabled, we can not move or draw
 // ensure it is off!
 
-
-// if zeroing is enabled -we can not moveor draw
+// if zeroing is enabled, we can not move or draw
 // ensure it is off!
 
 // moving from the current position, without bothering about the beam illumination state
@@ -3368,7 +3179,7 @@ do{ \
   t1_timingSet=timingNow; \
 } while (0)
 
-#ifndef AVIOD_TICKS
+#ifndef AVOID_TICKS   /* BUG FIXED 2021/01/04 - was AVIOD_TICKS */
 #define INIT_NEXT_PIPELINE_ITEM \
   pl[fpc].this_timing = timingNow; \
   pl[fpc].last_timing = timingLast; \
@@ -3401,8 +3212,12 @@ do{ \
   rampingNow = 0;
 #endif
 
-#define min(a,b) (a<b?a:b)
-#define max(a,b) (a>b?a:b)
+// unfortunate name choice, may have to be undef'd in user code.
+// parameters were not protected, and may have side-effects if
+// params are a function call or include ++ etc
+// Better to use a static inline function?
+#define min(a,b) ((a)<(b)?(a):(b))
+#define max(a,b) ((a)>(b)?(a):(b))
 
 #define ADD_CLIPPED_VECTOR(_x0,_y0,_x1,_y1, baseVector) \
 do { \
@@ -3435,13 +3250,13 @@ do { \
   cpb->force = 0; \
   } while (0)
 
-
-enum {TOP = 0x1, BOTTOM = 0x2, RIGHT = 0x4, LEFT = 0x8};
-enum {FALSE, TRUE};
+enum { TOP = 0x1, BOTTOM = 0x2, RIGHT = 0x4, LEFT = 0x8 };
+enum { FALSE, TRUE };
 typedef unsigned int outcode;
-outcode compute_outcode(int x, int y, int xmin, int ymin, int xmax, int ymax)
-{
+
+outcode compute_outcode (int x, int y, int xmin, int ymin, int xmax, int ymax) {
   outcode oc = 0;
+
   if (y > ymax)
     oc |= TOP;
   else if (y < ymin)
@@ -3454,75 +3269,95 @@ outcode compute_outcode(int x, int y, int xmin, int ymin, int xmax, int ymax)
 }
 
 // returns x1 = 1000000 on complete outside!
-void cohen_sutherlandCustom(int32_t *x1, int32_t *y1,  int32_t *x2, int32_t *y2, int xmin, int ymin, int xmax, int ymax)
-{
+void cohen_sutherlandCustom (int32_t * x1, int32_t * y1, int32_t * x2, int32_t * y2, int xmin, int ymin, int xmax, int ymax) {
+  //
+  // Is this algorithm faulty in the case of:
+  //
+  //         |            |
+  //         |            |
+  //         |            |
+  // --------+------------+--------
+  //         |            |
+  //         |            |
+  //         |            |   * x1,y1
+  // --------+------------+--/-----
+  //         |            | /
+  //         |            |/
+  //         |            /
+  //         |           /|
+  //         |    x2,y2 * |
+  //
+  
+  // because the codes are the same as this case, which does need clipping:
+
+  //         |            |
+  //         |            |
+  //         |            |
+  // --------+------------+--------
+  //         |            |   * x1,y1
+  //         |            |  /
+  //         |            | /
+  //         |            |/
+  //         |            /
+  //         |           /|
+  // --------+----------/-+--------
+  //         |         /  |
+  //         |  x2,y2 *   |
+  //
+
+  // Either the first case above is clipped unnecessarily or the second case is not clipped when it should be.
+
   int accept;
   int done;
   outcode outcode1, outcode2;
+
   accept = FALSE;
   done = FALSE;
-  outcode1 = compute_outcode(*x1, *y1, xmin, ymin, xmax, ymax);
-  outcode2 = compute_outcode(*x2, *y2, xmin, ymin, xmax, ymax);
-  do
-  {
-    if (outcode1 == 0 && outcode2 == 0)
-    {
+  outcode1 = compute_outcode (*x1, *y1, xmin, ymin, xmax, ymax);
+  outcode2 = compute_outcode (*x2, *y2, xmin, ymin, xmax, ymax);
+  do {
+    if (outcode1 == 0 && outcode2 == 0) {
       accept = TRUE;
       done = TRUE;
-    }
-    else if (outcode1 & outcode2)
-    {
+    } else if (outcode1 & outcode2) {
       done = TRUE;
-    }
-    else
-    {
+    } else {
       int x, y;
       int outcode_ex = outcode1 ? outcode1 : outcode2;
-      if (outcode_ex & TOP)
-      {
+
+      if (outcode_ex & TOP) {
         x = *x1 + (*x2 - *x1) * (ymax - *y1) / (*y2 - *y1);
         y = ymax;
-      }
-      else if (outcode_ex & BOTTOM)
-      {
+      } else if (outcode_ex & BOTTOM) {
         x = *x1 + (*x2 - *x1) * (ymin - *y1) / (*y2 - *y1);
         y = ymin;
-      }
-      else if (outcode_ex & RIGHT)
-      {
+      } else if (outcode_ex & RIGHT) {
         y = *y1 + (*y2 - *y1) * (xmax - *x1) / (*x2 - *x1);
         x = xmax;
-      }
-      else
-      {
+      } else {
         y = *y1 + (*y2 - *y1) * (xmin - *x1) / (*x2 - *x1);
         x = xmin;
       }
-      if (outcode_ex == outcode1)
-      {
+      if (outcode_ex == outcode1) {
         *x1 = x;
         *y1 = y;
-        outcode1 = compute_outcode(*x1, *y1, xmin, ymin, xmax, ymax);
-      }
-      else
-      {
+        outcode1 = compute_outcode (*x1, *y1, xmin, ymin, xmax, ymax);
+      } else {
         *x2 = x;
         *y2 = y;
-        outcode2 = compute_outcode(*x2, *y2, xmin, ymin, xmax, ymax);
+        outcode2 = compute_outcode (*x2, *y2, xmin, ymin, xmax, ymax);
       }
     }
   } while (done == FALSE);
-  if (accept == TRUE)
-  {
+  if (accept == TRUE) {
     return;
   }
-  *x1 = 1000000;
+  *x1 = 1000000; // signal out of bounds
   return;
 }
 
 // reuses current baseline
-void cohen_sutherland(VectorPipelineBase *baseVector, int xmin, int ymin, int xmax, int ymax)
-{
+void cohen_sutherland (VectorPipelineBase * baseVector, int xmin, int ymin, int xmax, int ymax) {
   int x1 = baseVector->x0;
   int y1 = baseVector->y0;
   int x2 = baseVector->x1;
@@ -3531,65 +3366,50 @@ void cohen_sutherland(VectorPipelineBase *baseVector, int xmin, int ymin, int xm
   int accept;
   int done;
   outcode outcode1, outcode2;
+
   accept = FALSE;
   done = FALSE;
-  outcode1 = compute_outcode(x1, y1, xmin, ymin, xmax, ymax);
-  outcode2 = compute_outcode(x2, y2, xmin, ymin, xmax, ymax);
-  do
-  {
-    if (outcode1 == 0 && outcode2 == 0)
-    {
+  outcode1 = compute_outcode (x1, y1, xmin, ymin, xmax, ymax);
+  outcode2 = compute_outcode (x2, y2, xmin, ymin, xmax, ymax);
+  do {
+    if (outcode1 == 0 && outcode2 == 0) {
       accept = TRUE;
       done = TRUE;
-    }
-    else if (outcode1 & outcode2)
-    {
+    } else if (outcode1 & outcode2) {
       done = TRUE;
-    }
-    else
-    {
+    } else {
       int x, y;
       int outcode_ex = outcode1 ? outcode1 : outcode2;
-      if (outcode_ex & TOP)
-      {
+
+      if (outcode_ex & TOP) {
         x = x1 + (x2 - x1) * (ymax - y1) / (y2 - y1);
         y = ymax;
-      }
-      else if (outcode_ex & BOTTOM)
-      {
+      } else if (outcode_ex & BOTTOM) {
         x = x1 + (x2 - x1) * (ymin - y1) / (y2 - y1);
         y = ymin;
-      }
-      else if (outcode_ex & RIGHT)
-      {
+      } else if (outcode_ex & RIGHT) {
         y = y1 + (y2 - y1) * (xmax - x1) / (x2 - x1);
         x = xmax;
-      }
-      else
-      {
+      } else {
         y = y1 + (y2 - y1) * (xmin - x1) / (x2 - x1);
         x = xmin;
       }
-      if (outcode_ex == outcode1)
-      {
+      if (outcode_ex == outcode1) {
         x1 = x;
         y1 = y;
-        outcode1 = compute_outcode(x1, y1, xmin, ymin, xmax, ymax);
-      }
-      else
-      {
+        outcode1 = compute_outcode (x1, y1, xmin, ymin, xmax, ymax);
+      } else {
         x2 = x;
         y2 = y;
-        outcode2 = compute_outcode(x2, y2, xmin, ymin, xmax, ymax);
+        outcode2 = compute_outcode (x2, y2, xmin, ymin, xmax, ymax);
       }
     }
   } while (done == FALSE);
-  if (accept == TRUE)
-  {
-    baseVector->x0 =x1;
-    baseVector->y0 =y1;
-    baseVector->x1 =x2;
-    baseVector->y1 =y2;
+  if (accept == TRUE) {
+    baseVector->x0 = x1;
+    baseVector->y0 = y1;
+    baseVector->x1 = x2;
+    baseVector->y1 = y2;
     return;
   }
   baseVector->force |= PL_BASE_FORCE_EMPTY;
@@ -3599,165 +3419,135 @@ void cohen_sutherland(VectorPipelineBase *baseVector, int xmin, int ymin, int xm
 // https://stackoverflow.com/questions/47884592/how-to-reverse-cohen-sutherland-algorithm
 // adds new baselines
 // invalidates old baseline
-void reverse_cohen_sutherland(VectorPipelineBase *baseVector, int xmin, int ymin, int xmax, int ymax)
-{
+
+void reverse_cohen_sutherland (VectorPipelineBase * baseVector, int xmin, int ymin, int xmax, int ymax) {
+  // used to blank a window inside the image, for drawing a pop-up over.
   int x1 = baseVector->x0;
   int y1 = baseVector->y0;
   int x2 = baseVector->x1;
   int y2 = baseVector->y1;
+
   baseVector->force |= PL_BASE_FORCE_EMPTY;
 
   int accept;
   int done;
   outcode outcode1, outcode2;
+
   accept = FALSE;
   done = FALSE;
-  outcode1 = compute_outcode(x1, y1, xmin, ymin, xmax, ymax);
-  outcode2 = compute_outcode(x2, y2, xmin, ymin, xmax, ymax);
-  do
-  {
-    if (outcode1 == 0 && outcode2 == 0)
-    {
+  outcode1 = compute_outcode (x1, y1, xmin, ymin, xmax, ymax);
+  outcode2 = compute_outcode (x2, y2, xmin, ymin, xmax, ymax);
+  do {
+    if (outcode1 == 0 && outcode2 == 0) {
       done = TRUE;
-    }
-    else if (outcode1 & outcode2)
-    {
+    } else if (outcode1 & outcode2) {
       accept = TRUE;
       done = TRUE;
-    }
-    else
-    {
+    } else {
       int x, y;
       int outcode_ex = outcode1 ? outcode1 : outcode2;
 
-      if (outcode_ex & TOP)
-      {
+      if (outcode_ex & TOP) {
         x = x1 + (x2 - x1) * (ymax - y1) / (y2 - y1);
         y = ymax;
-      }
-      else if (outcode_ex & BOTTOM)
-      {
+      } else if (outcode_ex & BOTTOM) {
         x = x1 + (x2 - x1) * (ymin - y1) / (y2 - y1);
         y = ymin;
-      }
-      else if (outcode_ex & RIGHT)
-      {
+      } else if (outcode_ex & RIGHT) {
         y = y1 + (y2 - y1) * (xmax - x1) / (x2 - x1);
         x = xmax;
-      }
-      else
-      {
+      } else {
         y = y1 + (y2 - y1) * (xmin - x1) / (x2 - x1);
         x = xmin;
       }
 
-      if (outcode_ex == outcode1)
-      {
-        ADD_CLIPPED_VECTOR(x1,y1,x,y,baseVector);
+      if (outcode_ex == outcode1) {
+        ADD_CLIPPED_VECTOR (x1, y1, x, y, baseVector);
         x1 = x;
         y1 = y;
-        outcode1 = compute_outcode(x1, y1, xmin, ymin, xmax, ymax);
-      }
-      else
-      {
-        ADD_CLIPPED_VECTOR(x,y,x2,y2,baseVector);
+        outcode1 = compute_outcode (x1, y1, xmin, ymin, xmax, ymax);
+      } else {
+        ADD_CLIPPED_VECTOR (x, y, x2, y2, baseVector);
         x2 = x;
         y2 = y;
-        outcode2 = compute_outcode(x2, y2, xmin, ymin, xmax, ymax);
+        outcode2 = compute_outcode (x2, y2, xmin, ymin, xmax, ymax);
       }
     }
   } while (done == FALSE);
-  if (accept == TRUE)
-  {
-    ADD_CLIPPED_VECTOR(x1,y1,x2,y2,baseVector);
+  if (accept == TRUE) {
+    ADD_CLIPPED_VECTOR (x1, y1, x2, y2, baseVector);
     return;
   }
   return;
 }
 
-void handlePipeline()
-{
-  // build a list of all items
-  // and put "dots" last
-  // and stables first (hint)
-  if (pipelineCounter>0)
-     pipelineFilled = 1;
+void handlePipeline (void) {
+  // build a list of all items and put "dots" last and stables first (hint)
+  if (pipelineCounter > 0)
+    pipelineFilled = 1;
+
   // the array is converted to a double linked list
   // that way we can later easily manipulate the "array"
-  VectorPipelineBase *head=(VectorPipelineBase *)0;
-  VectorPipelineBase *element=(VectorPipelineBase *)0;
+  VectorPipelineBase *head = (VectorPipelineBase *) 0;
+  VectorPipelineBase *element = (VectorPipelineBase *) 0;
 
-  // move dots to be done "last" - possibly without ZERO REF
-  // in between
+  // move dots to be done "last" - possibly without ZERO REF inbetween
   // dots are often fast moving small objects
-  // a) they desturb the integrators
+  // a) they disturb the integrators
   // b) exact position is not so important!
-  //
+  // 
   // last head is for "dots" -> for a short time an own linked list
   // which is later put at the end of the "normal" vectors
-  VectorPipelineBase *lastHead=(VectorPipelineBase *)0;
-  VectorPipelineBase *lastElement=(VectorPipelineBase *)0;
+  VectorPipelineBase *lastHead = (VectorPipelineBase *) 0;
+  VectorPipelineBase *lastElement = (VectorPipelineBase *) 0;
 
-  VectorPipelineBase *firstHead=(VectorPipelineBase *)0;
-  VectorPipelineBase *firstElement=(VectorPipelineBase *)0;
+  VectorPipelineBase *firstHead = (VectorPipelineBase *) 0;
+  VectorPipelineBase *firstElement = (VectorPipelineBase *) 0;
 
-
-  // clipping is "costly"
-  // and is done on the array
+  // clipping is "costly" and is done on the array
   // this way "reverse" clipping can more easily
   // add new vectors to the end, since
   // we still are in "addition" mode of the pipeline
-  if (clipActive)
-  {
+
+  if (clipActive) {
     // add a "window"
-    ADD_PIPELINE(clipminX, clipminY, clipminX, clipmaxY, 90);
-    ADD_PIPELINE(clipminX, clipmaxY, clipmaxX, clipmaxY, 90);
-    ADD_PIPELINE(clipmaxX, clipmaxY, clipmaxX, clipminY, 90);
-    ADD_PIPELINE(clipmaxX, clipminY, clipminX, clipminY, 90);
+    ADD_PIPELINE (clipminX, clipminY, clipminX, clipmaxY, 90);
+    ADD_PIPELINE (clipminX, clipmaxY, clipmaxX, clipmaxY, 90);
+    ADD_PIPELINE (clipmaxX, clipmaxY, clipmaxX, clipminY, 90);
+    ADD_PIPELINE (clipmaxX, clipminY, clipminX, clipminY, 90);
 
     VectorPipelineBase *c_cpb;
-    for (int i=0; i<pipelineCounter; i++)
-    {
+
+    for (int i = 0; i < pipelineCounter; i++) {
       c_cpb = &pb[i];
       // we can "hint" not to clip
       // e.g. already inverse clipped and added reverse results!
-      if (!(c_cpb->force & PL_BASE_FORCE_NOT_CLIPPED))
-      {
-        if (clipMode==0)
-        {
-          cohen_sutherland(c_cpb, clipminX, clipminY, clipmaxX, clipmaxY);
-        }
-        else if (clipMode==1)
-        {
-          reverse_cohen_sutherland(c_cpb, clipminX, clipminY, clipmaxX, clipmaxY);
+      if (!(c_cpb->force & PL_BASE_FORCE_NOT_CLIPPED)) {
+        if (clipMode == 0) {
+          cohen_sutherland (c_cpb, clipminX, clipminY, clipmaxX, clipmaxY);
+        } else if (clipMode == 1) {
+          reverse_cohen_sutherland (c_cpb, clipminX, clipminY, clipmaxX, clipmaxY);
         }
       }
     }
   }
 
-  // now we build the linked list
-  //
-  // adding "stables" to the front
+  // now we build the linked list, adding "stables" to the front
   // in case "stables" are sorted (which is likely)
   // backwards ensured, that stables are correctly ordered!
   // when we move them to the front!
-  for (int i=0; i<pipelineCounter; i++)
-  {
+  for (int i = 0; i < pipelineCounter; i++) {
     cpb = &pb[i];
 
     // stables are added in front of the list head!
-    if (cpb->force & PL_BASE_FORCE_STABLE)
-    {
-      if (firstHead == (VectorPipelineBase *)0)
-      {
+    if (cpb->force & PL_BASE_FORCE_STABLE) {
+      if (firstHead == (VectorPipelineBase *) 0) {
         firstHead = cpb;
         firstElement = cpb;
-        firstElement->next = (VectorPipelineBase *)0;
-        firstElement->previous = (VectorPipelineBase *)0;
-      }
-      else
-      {
-        cpb->next = (VectorPipelineBase *)0;
+        firstElement->next = (VectorPipelineBase *) 0;
+        firstElement->previous = (VectorPipelineBase *) 0;
+      } else {
+        cpb->next = (VectorPipelineBase *) 0;
         cpb->previous = firstElement;
         firstElement->next = cpb;
         firstElement = cpb;
@@ -3766,65 +3556,53 @@ void handlePipeline()
     }
 
     // MOVE dots to the back of the list!
-    if ((cpb->x0 == cpb->x1) && (cpb->y0 == cpb->y1))
-    {
+    if ((cpb->x0 == cpb->x1) && (cpb->y0 == cpb->y1)) {
       // in some cases it might be ok
       // to not zero "stars"
-      // for now - we let the algorythm decide
+      // for now - we let the algorithm decide
       // and do not force to NOT ZERO
-      //      if (!(cpb->force & PL_BASE_FORCE_ZERO))
-      //        cpb->force |= PL_BASE_FORCE_NO_ZERO; // not sure if that is always a good thing!
-      if (lastHead == (VectorPipelineBase *)0)
-      {
+      // if (!(cpb->force & PL_BASE_FORCE_ZERO))
+      // cpb->force |= PL_BASE_FORCE_NO_ZERO; // not sure if that is always a good thing!
+      if (lastHead == (VectorPipelineBase *) 0) { // (btw "#define NULL 0" is OK, NULL does not have to be cast, i.e. you can use plain "0"
         lastHead = cpb;
         lastElement = cpb;
-        lastElement->next = (VectorPipelineBase *)0;
-        lastElement->previous = (VectorPipelineBase *)0;
-      }
-      else
-      {
+        lastElement->next = (VectorPipelineBase *) 0;
+        lastElement->previous = (VectorPipelineBase *) 0;
+      } else {
         cpb->previous = lastElement;
         lastElement->next = cpb;
         lastElement = cpb;
-        lastElement->next = (VectorPipelineBase *)0;
+        lastElement->next = (VectorPipelineBase *) 0;
       }
       continue;
     }
 
     // everything not dot and not stable
     // is just added to the normal list
-    if (head == (VectorPipelineBase *)0)
-    {
+    if (head == (VectorPipelineBase *) 0) {
       head = cpb;
       element = cpb;
-      element->next = (VectorPipelineBase *)0;
-      element->previous = (VectorPipelineBase *)0;
-    }
-    else
-    {
+      element->next = (VectorPipelineBase *) 0;
+      element->previous = (VectorPipelineBase *) 0;
+    } else {
       cpb->previous = element;
       element->next = cpb;
       element = cpb;
-      element->next = (VectorPipelineBase *)0;
+      element->next = (VectorPipelineBase *) 0;
     }
   }
-  if (lastHead != 0)
-  {
+  if (lastHead != 0) {
     // add dots last...
-    if (head == (VectorPipelineBase *)0)
-    {
+    if (head == (VectorPipelineBase *) 0) {
       head = lastHead;
     }
-    if (element != (VectorPipelineBase *)0)
-    {
+    if (element != (VectorPipelineBase *) 0) {
       element->next = lastHead;
       lastHead->previous = element;
     }
   }
-  if (firstHead != 0)
-  {
-    if (head != 0)
-    {
+  if (firstHead != 0) {
+    if (head != 0) {
       firstElement->next = head;
       head->previous = firstElement;
     }
@@ -3836,56 +3614,57 @@ void handlePipeline()
   // might sort for brightness
   // supposedly all same brightnesses will build a (or several) "clusters"
 
-  // now we calculate our "optimal"
-  // VectorPipeline
+  // now we calculate our "optimal" VectorPipeline
   // for that we keep track of a hell of a lot
   // single items
   // like position, and contents of registers...
   // starts with position 0,0 assumed
-  int cx = 0;
-  int cy = 0;
+int cx = 0;
+int cy = 0;
 
-  int beamState = 0; // off
-  int currentY = 0x100;  // value in reg A (illegal)
-  int currentA = 0x100;  // value in reg A (illegal)
-  int zeroActive = 1;
-  int currentBrightness = 0x100; // invalid
-  int timingNow = 0;
-  int timingLast = 0;
-  int t1_timingSet = 0xffff;
-  int rampingNow = 0;
-  int rampingLast;
-  int currentMUX = 0x100;
-  int lastMustFinish = 0;
-  #define  MUX_BRIGHTNESS 4
-  #define  MUX_Y 0
-  #define  MUX_X 1
+int beamState = 0;              // off
+int currentY = 0x100;           // value in reg A (illegal)
+int currentA = 0x100;           // value in reg A (illegal)
+int zeroActive = 1;
+int currentBrightness = 0x100;  // invalid
+int timingNow = 0;
+int timingLast = 0;
+int t1_timingSet = 0xffff;
+int rampingNow = 0;
+int rampingLast;
+int currentMUX = 0x100;
+int lastMustFinish = 0;
 
-  // (since we allways reuse the same array elements, we must ensure they are clean from start)
-  int fpc = 0; // final pipeline counter
+#define  MUX_BRIGHTNESS 4
+#define  MUX_Y 0
+#define  MUX_X 1
+
+  // (since we always reuse the same array elements, we must ensure they are clean from start)
+  int fpc = 0;                    // final pipeline counter
+
   pl[fpc].flags = 0;
 
   // not used anymore...
   consecutiveDraws = 0;
 
-  // when clipping thats not true anymore - but who cares
-  // clippin is special anyway
-  if (myDebug)  printf("Base pipeline has %i items!\r\n", pipelineCounter);
-  while (cpb != (VectorPipelineBase *)0)
-  {
+  // when clipping, that's not true anymore - but who cares, clipping is special anyway
+  if (myDebug)
+    printf ("Base pipeline has %i items!\r\n", pipelineCounter);
+  while (cpb != (VectorPipelineBase *) 0) {
     int calibDone = 0;
+
     // invalidated element... do nothing
-    if (cpb->force & PL_BASE_FORCE_EMPTY)
-    {
-      if (myDebug)  printf("Base EMPTY!\r\n");
+    if (cpb->force & PL_BASE_FORCE_EMPTY) {
+      if (myDebug)
+        printf ("Base EMPTY!\r\n");
       // cleanup and next!
       cpb->force = 0;
       cpb = cpb->next;
       continue;
     }
-    if (cpb->force & PL_BASE_FORCE_DEFLOK)
-    {
-      if (myDebug)  printf("Base DEFLOK!\r\n");
+    if (cpb->force & PL_BASE_FORCE_DEFLOK) {
+      if (myDebug)
+        printf ("Base DEFLOK!\r\n");
       pl[fpc].type = PL_DEFLOK;
       timingNow = 0;
       rampingNow = 0;
@@ -3893,8 +3672,7 @@ void handlePipeline()
       currentMUX = MUX_X;
       currentA = 0x100;
       calibDone = 1;
-      if (beamState)
-      {
+      if (beamState) {
         pl[fpc].flags = pl[fpc].flags | PL_SWITCH_BEAM_OFF;
         beamState = 0;
       }
@@ -3906,17 +3684,15 @@ void handlePipeline()
       continue;
     }
 
-
     /************ HANDLE brightness of Vector ************/
-    if (currentBrightness != cpb->intensity)
-    {
-      if (myDebug)  printf("Base BRIGHTNESS!\r\n");
+    if (currentBrightness != cpb->intensity) {
+      if (myDebug)
+        printf ("Base BRIGHTNESS!\r\n");
       pl[fpc].type = PL_SET_BRIGHTNESS;
       pl[fpc].intensity = cpb->intensity;
       currentBrightness = cpb->intensity;
 
-      if (currentA != currentBrightness)
-      {
+      if (currentA != currentBrightness) {
         pl[fpc].flags = pl[fpc].flags | PL_I_A_MUST_BE_SET;
         currentA = currentBrightness;
       }
@@ -3924,8 +3700,7 @@ void handlePipeline()
       // if we don't switch the beam off
       // while setting the brightness -
       // bright dots might be possible!
-      if (beamState)
-      {
+      if (beamState) {
         pl[fpc].flags = pl[fpc].flags | PL_SWITCH_BEAM_OFF;
         beamState = 0;
       }
@@ -3937,14 +3712,14 @@ void handlePipeline()
       INIT_NEXT_PIPELINE_ITEM;
     }
 
-    // forcing zero prevents algorythm!
-    if (((cpb->force & PL_BASE_FORCE_ZERO )== PL_BASE_FORCE_ZERO) && (!zeroActive))
-    {
-      if (myDebug)  printf("Base ZERO!\r\n");
+    // forcing zero prevents algorithm!
+    if (((cpb->force & PL_BASE_FORCE_ZERO) == PL_BASE_FORCE_ZERO) && (!zeroActive)) {
+      if (myDebug)
+        printf ("Base ZERO!\r\n");
       pl[fpc].type = PL_ZERO;
       timingNow = DELAY_ZERO_VALUE;
-// for now ZEROING
-// allways recalibs!
+      // for now ZEROING
+      // always recalibs!
 
 /*
       if (cpb->force & PL_BASE_FORCE_RESET_ZERO_REF )
@@ -3956,21 +3731,20 @@ void handlePipeline()
       }
       if (cpb->force & PL_BASE_FORCE_CALIBRATE_INTEGRATORS )
 */
-{
+      {
 //        pl[fpc].flags = pl[fpc].flags | PL_CALIBRATE;
-  calibDone = 1;
-  currentMUX = MUX_X;
-  currentA = 0x100;
+        calibDone = 1;
+        currentMUX = MUX_X;
+        currentA = 0x100;
 //  currentY = 0;
-}
+      }
 
       // todo
       // zero timer in relation to current position
       // the less far from zero -> the less time needed!
       rampingNow = 0;
       lastMustFinish = 1;
-      if (beamState)
-      {
+      if (beamState) {
         pl[fpc].flags = pl[fpc].flags | PL_SWITCH_BEAM_OFF;
         beamState = 0;
       }
@@ -3979,56 +3753,49 @@ void handlePipeline()
       cy = 0;
       consecutiveDraws = 0;
       INIT_NEXT_PIPELINE_ITEM;
-    }
-    else if (!(cpb->force & PL_BASE_FORCE_NO_ZERO )) // do not force the algorythm if we are not prepared to eventually ZERO
-    {
-      // VERY EASY algorythm
+    } else if (!(cpb->force & PL_BASE_FORCE_NO_ZERO)) {   // do not force the algorithm if we are not prepared to eventually ZERO
+      // VERY EASY algorithm
       // like the "old" one
 
       // how far away is the cursor from the position we want to start drawing?
-      int32_t xMoveDif = cpb->x0-cx;
-      int32_t yMoveDif = cpb->y0-cy;
+      int32_t xMoveDif = cpb->x0 - cx;
+      int32_t yMoveDif = cpb->y0 - cy;
 
       // test if the position of the last end - and the current start differs by more than our set margin
-      if ((ABS(xMoveDif) > POSITION_MARGIN) || (ABS(yMoveDif) > POSITION_MARGIN) )
-      {
+      if ((ABS (xMoveDif) > POSITION_MARGIN) || (ABS (yMoveDif) > POSITION_MARGIN)) {
         // not on the same position, so we either do a MOVE
         // or do a Zero
 
         // the only left over criteria a the moment is - how far away from the last cursor position
         // if too far away, we throw in a zero ref
         // old:
-        //    consecutiveDraws > MAX_CONSECUTIVE_DRAWS;
-        //    resetPos += ABS((currentScale-GET_OPTIMAL_SCALE(xMoveDif, yMoveDif)) > 20);
-        int resetPos = ((ABS(xMoveDif)>resetToZeroDifMax) || (ABS(yMoveDif)>resetToZeroDifMax) );
+        // consecutiveDraws > MAX_CONSECUTIVE_DRAWS;
+        // resetPos += ABS((currentScale-GET_OPTIMAL_SCALE(xMoveDif, yMoveDif)) > 20);
+        int resetPos = ((ABS (xMoveDif) > resetToZeroDifMax) || (ABS (yMoveDif) > resetToZeroDifMax));
 
-        if ((resetPos) && (!zeroActive))
-        {
-          if (myDebug)  printf("Base CALC ZERO!\r\n");
+        if ((resetPos) && (!zeroActive)) {
+          if (myDebug)
+            printf ("Base CALC ZERO!\r\n");
           // do a zeroing!
           // copy paste from above
           pl[fpc].type = PL_ZERO;
           timingNow = DELAY_ZERO_VALUE;
 
-    // zero allways recalibs
-{
+          // zero always recalibs
+          {
 //        pl[fpc].flags = pl[fpc].flags | PL_CALIBRATE;
-  calibDone = 1;
-  currentMUX = MUX_X;
-  currentA = 0x100;
+            calibDone = 1;
+            currentMUX = MUX_X;
+            currentA = 0x100;
 //  currentY = 0;
-}
-
-
-
+          }
 
           // todo
           // zero timer in relation to current position
           // the less far from zero -> the less time needed!
           rampingNow = 0;
           lastMustFinish = 1;
-          if (beamState)
-          {
+          if (beamState) {
             pl[fpc].flags = pl[fpc].flags | PL_SWITCH_BEAM_OFF;
             beamState = 0;
           }
@@ -4046,41 +3813,39 @@ void handlePipeline()
     // b) we ARE correctly positioned -> do a DRAW
     // both are handled below
     /*****************************************************/
-    if ((cpb->force & PL_BASE_FORCE_RESET_ZERO_REF ) && (!calibDone))
-    {
-        if (myDebug)  printf("Base PL_CALIBRATE_0!\r\n");
-        pl[fpc].flags = pl[fpc].flags | PL_CALIBRATE_0;
-        currentA = 0;  // value in reg A (illegal)
-        currentMUX = MUX_X;
+    if ((cpb->force & PL_BASE_FORCE_RESET_ZERO_REF) && (!calibDone)) {
+      if (myDebug)
+        printf ("Base PL_CALIBRATE_0!\r\n");
+      pl[fpc].flags = pl[fpc].flags | PL_CALIBRATE_0;
+      currentA = 0;             // value in reg A (illegal)
+      currentMUX = MUX_X;
     }
-    if ((cpb->force & PL_BASE_FORCE_CALIBRATE_INTEGRATORS ) && (!calibDone))
-    {
-        if (myDebug)  printf("Base PL_CALIBRATE!\r\n");
-        pl[fpc].flags = pl[fpc].flags | PL_CALIBRATE;
-        currentA = 0x100;  // value in reg A (illegal)
-        currentMUX = MUX_X;
+    if ((cpb->force & PL_BASE_FORCE_CALIBRATE_INTEGRATORS) && (!calibDone)) {
+      if (myDebug)
+        printf ("Base PL_CALIBRATE!\r\n");
+      pl[fpc].flags = pl[fpc].flags | PL_CALIBRATE;
+      currentA = 0x100;         // value in reg A (illegal)
+      currentMUX = MUX_X;
     }
 
     /************ HANDLE start position of Vector ************/
     // fill secondary "optimized" pipeline with values
-    if ((cx != cpb->x0) || (cy != cpb->y0))
-    {
-      if (myDebug)  printf("Base MOVE!\r\n");
+    if ((cx != cpb->x0) || (cy != cpb->y0)) {
+      if (myDebug)
+        printf ("Base MOVE!\r\n");
       pl[fpc].type = PL_MOVE;
 
-      // we nust move to start the new vector
-      if (zeroActive)
-      {
+      // we must move to start the new vector
+      if (zeroActive) {
         zeroActive = 0;
         pl[fpc].flags = pl[fpc].flags | PL_DEACTIVATE_ZERO;
       }
-      if (beamState)
-      {
+      if (beamState) {
         beamState = 0;
         pl[fpc].flags = pl[fpc].flags | PL_SWITCH_BEAM_OFF;
       }
 
-      PL_CONTINUE_TO((cpb->x0-cx), (cpb->y0-cy));
+      PL_CONTINUE_TO ((cpb->x0 - cx), (cpb->y0 - cy));
       cx = cpb->x0;
       cy = cpb->y0;
 
@@ -4091,69 +3856,62 @@ void handlePipeline()
     /*********************************************************/
 
     /************ HANDLE draw position of Vector ************/
-    if ((cx != cpb->x1) || (cy != cpb->y1))
-    {
+    if ((cx != cpb->x1) || (cy != cpb->y1)) {
       pl[fpc].type = PL_DRAW;
 
       // we must move to start the new vector
-      if (zeroActive)
-      {
+      if (zeroActive) {
         zeroActive = 0;
         pl[fpc].flags = pl[fpc].flags | PL_DEACTIVATE_ZERO;
       }
 
       // before timer
-      if (beamOffBetweenConsecutiveDraws)
-      {
+      if (beamOffBetweenConsecutiveDraws) {
         if (beamState)
           pl[fpc].flags = pl[fpc].flags | PL_SWITCH_BEAM_OFF;
         beamState = 0;
       }
       // after timer
-      if (!beamState)
-      {
+      if (!beamState) {
         beamState = 1;
         pl[fpc].flags = pl[fpc].flags | PL_SWITCH_BEAM_ON;
       }
-      PL_CONTINUE_TO(cpb->x1-cpb->x0, cpb->y1-cpb->y0);
+      PL_CONTINUE_TO (cpb->x1 - cpb->x0, cpb->y1 - cpb->y0);
       cx = cpb->x1;
       cy = cpb->y1;
 
       // remember the "base" for possible debug informations
       // todo:
       // while debugging - prevent baselist switching!
-      pl[fpc].base=cpb;
+      pl[fpc].base = cpb;
       lastMustFinish = 1;
 
-      if ((cpb->pattern != 0) && (cpb->pattern != 0xff))
-      {
-        if (myDebug)  printf("Base PATTERN!\r\n");
+      if ((cpb->pattern != 0) && (cpb->pattern != 0xff)) {
+        if (myDebug)
+          printf ("Base PATTERN!\r\n");
         pl[fpc].type = PL_DRAW_PATTERN;
         pl[fpc].pattern = cpb->pattern;
         lastMustFinish = 0;
         rampingNow = 0;
-      }
-      else
-      {
-        if (myDebug)  printf("Base DRAW!\r\n");
+      } else {
+        if (myDebug)
+          printf ("Base DRAW!\r\n");
       }
 
       INIT_NEXT_PIPELINE_ITEM;
       consecutiveDraws++;
-    }
-    else
-    {
+    } else {
       // start and end coordinates are the same
       // do a "dot"
-      if (myDebug)  printf("Base DOT!\r\n");
+      if (myDebug)
+        printf ("Base DOT!\r\n");
       // remember the "base" for possible debug informations
       // todo:
       // while debugging - prevent baselist switching!
-      pl[fpc].base=cpb;
+      pl[fpc].base = cpb;
 
       pl[fpc].type = PL_DRAW_DOT;
-      if (!beamState)
-      {
+      if (!beamState) {
         beamState = 1;
         pl[fpc].flags = pl[fpc].flags | PL_SWITCH_BEAM_ON;
       }
@@ -4174,7 +3932,7 @@ void handlePipeline()
     /*********************************************************/
 
     // when calibrate?
-    // when calibareted calibration
+    // when calibrated calibration
     // user commands to SYNC etc
 
     // reset base -> ready to be reused next "round"
@@ -4192,10 +3950,11 @@ void handlePipeline()
 
   // setup next round
   pipelineCounter = 0;
-  pipelineAlt = pipelineAlt?0:1;
+  pipelineAlt = pipelineAlt ? 0 : 1;
   pl = _P[pipelineAlt];
   cpb = &pb[0];
 }
+
 #define LINE_DEBUG_OUT(...) \
         if (((browseMode) && (lineNo==currentBrowsline) && (currentDisplayedBrowseLine != currentBrowsline)) || (myDebug))  \
         { \
@@ -4204,285 +3963,256 @@ void handlePipeline()
 
 /* Waits until the specified minimum cycles before the next system timer
  * interrupt, then disables all Linux system interrupts. */
-void disableLinuxInterrupts(unsigned int minOffset)
-{
+void disableLinuxInterrupts (unsigned int minOffset) {
 #ifdef AVOID_TICKS
-	volatile uint32_t* paddr;
-	uint32_t clk;
-	uint32_t gap0;
-//	uint32_t gap1;
-	uint32_t gap2;
-	uint32_t gap3;
-	uint32_t comp0;
-//	uint32_t comp1;
-	uint32_t comp2;
-	uint32_t comp3;
+  volatile uint32_t *paddr;
+  uint32_t clk;
+  uint32_t gap0;
 
-	/* Wait until no timer interrupts are due within the expected drawing time,
-	   otherwise the system clock will get messed up: */
-	do
-	{
-	 clk = bcm2835_st_read() & 0xFFFFFFFF;
-         paddr = bcm2835_st + BCM2835_ST_COMP(0)/4;
-	 comp0 = bcm2835_peri_read(paddr);
+//      uint32_t gap1;
+  uint32_t gap2;
+  uint32_t gap3;
+  uint32_t comp0;
+
+//      uint32_t comp1;
+  uint32_t comp2;
+  uint32_t comp3;
+
+  /* Wait until no timer interrupts are due within the expected drawing time, otherwise the system clock will get messed up: */
+  do {
+    clk = bcm2835_st_read () & 0xFFFFFFFF;
+    paddr = bcm2835_st + BCM2835_ST_COMP (0) / 4;
+    comp0 = bcm2835_peri_read (paddr);
 //       paddr = bcm2835_st + BCM2835_ST_COMP(1)/4;
-//	 comp1 = bcm2835_peri_read(paddr);
-         paddr = bcm2835_st + BCM2835_ST_COMP(2)/4;
-	 comp2 = bcm2835_peri_read(paddr);
-         paddr = bcm2835_st + BCM2835_ST_COMP(3)/4;
-	 comp3 = bcm2835_peri_read(paddr);
+//       comp1 = bcm2835_peri_read(paddr);
+    paddr = bcm2835_st + BCM2835_ST_COMP (2) / 4;
+    comp2 = bcm2835_peri_read (paddr);
+    paddr = bcm2835_st + BCM2835_ST_COMP (3) / 4;
+    comp3 = bcm2835_peri_read (paddr);
 
-	 gap0 = (comp0 - clk);
-//	 gap1 = (comp1 - clk);
-	 gap2 = (comp2 - clk);
-	 gap3 = (comp3 - clk);
-	} while ( gap0 < minOffset || gap2 < minOffset || gap3 < minOffset);
+    gap0 = (comp0 - clk);
+//       gap1 = (comp1 - clk);
+    gap2 = (comp2 - clk);
+    gap3 = (comp3 - clk);
+  } while (gap0 < minOffset || gap2 < minOffset || gap3 < minOffset);
 
-	/* Save interrupt configuration and disable interrupts */
-	if (bcm2835_int != MAP_FAILED)
-	{
-	 paddr = bcm2835_int + BCM2835_INT_GPU_IER1/4;
-	 gpu_ier1 = bcm2835_peri_read(paddr);
-	 paddr = bcm2835_int + BCM2835_INT_GPU_IER2/4;
-	 gpu_ier2 = bcm2835_peri_read(paddr);
-	 paddr = bcm2835_int + BCM2835_INT_CPU_IER/4;
-	 cpu_ier = bcm2835_peri_read(paddr);
+  /* Save interrupt configuration and disable interrupts */
+  if (bcm2835_int != MAP_FAILED) {
+    paddr = bcm2835_int + BCM2835_INT_GPU_IER1 / 4;
+    gpu_ier1 = bcm2835_peri_read (paddr);
+    paddr = bcm2835_int + BCM2835_INT_GPU_IER2 / 4;
+    gpu_ier2 = bcm2835_peri_read (paddr);
+    paddr = bcm2835_int + BCM2835_INT_CPU_IER / 4;
+    cpu_ier = bcm2835_peri_read (paddr);
 
-	 paddr = bcm2835_int + BCM2835_INT_GPU_IDR1/4;
-	 bcm2835_peri_write(paddr,0xFFFFFFFF);
-	 paddr = bcm2835_int + BCM2835_INT_GPU_IDR2/4;
-	 bcm2835_peri_write(paddr,0xFFFFFFFF);
-	 paddr = bcm2835_int + BCM2835_INT_CPU_IDR/4;
-	 bcm2835_peri_write(paddr,0x0000007F);
+    paddr = bcm2835_int + BCM2835_INT_GPU_IDR1 / 4;
+    bcm2835_peri_write (paddr, 0xFFFFFFFF);
+    paddr = bcm2835_int + BCM2835_INT_GPU_IDR2 / 4;
+    bcm2835_peri_write (paddr, 0xFFFFFFFF);
+    paddr = bcm2835_int + BCM2835_INT_CPU_IDR / 4;
+    bcm2835_peri_write (paddr, 0x0000007F);
 
 #ifdef DISABLE_FIQ
-	 /* Disable Fast Interrupt Requests: */
-	 paddr = bcm2835_int + BCM2835_INT_FIQ/4;
-	 fiqtemp = bcm2835_peri_read(paddr); // read FIQ control register 0x20C
-	 fiqtemp &= ~(1 << 7);              // zero FIQ enable bit 7
-	 bcm2835_peri_write(paddr,fiqtemp);/* write back to register
-                                          attempting to clear bit 7 of *(intrupt+131) directly
-                                          will crash the system
-									   */
+    /* Disable Fast Interrupt Requests: */
+    paddr = bcm2835_int + BCM2835_INT_FIQ / 4;
+    fiqtemp = bcm2835_peri_read (paddr);        // read FIQ control register 0x20C
+    fiqtemp &= ~(1 << 7);                       // zero FIQ enable bit 7
+    bcm2835_peri_write (paddr, fiqtemp);        /* write back to register attempting to clear bit 7 of *(intrupt+131) directly will crash the system */
 #endif
-	}
-	else
-	{
-	 printf("Interrupt address mapping failed\r\n");
-	}
+  } else {
+    printf ("Interrupt address mapping failed\r\n");
+  }
 #endif
 }
 
 /* Restores interrupt configuration as it was when disabled. */
-void enableLinuxInterrupts()
-{
+void enableLinuxInterrupts (void) {
 #ifdef AVOID_TICKS
-	volatile uint32_t* paddr;
-//	printf("clk: %u | comp0: %u, comp2: %u, comp3: %u\nGap0: %u, Gap2: %u, Gap3: %u\n"
-//	 ,clk,comp0,comp2,comp3,gap0,gap2,gap3);
+  volatile uint32_t *paddr;
 
-	/* Re-enable interrupts with the previous settings */
-	if (bcm2835_int != MAP_FAILED)
-	{
-	 paddr = bcm2835_int + BCM2835_INT_GPU_IER1/4;
-	 bcm2835_peri_write(paddr,gpu_ier1);
-	 paddr = bcm2835_int + BCM2835_INT_GPU_IER2/4;
-	 bcm2835_peri_write(paddr,gpu_ier2);
-	 paddr = bcm2835_int + BCM2835_INT_CPU_IER/4;
-	 bcm2835_peri_write(paddr,cpu_ier);
+//      printf("clk: %u | comp0: %u, comp2: %u, comp3: %u\nGap0: %u, Gap2: %u, Gap3: %u\n"
+//       ,clk,comp0,comp2,comp3,gap0,gap2,gap3);
+
+  /* Re-enable interrupts with the previous settings */
+  if (bcm2835_int != MAP_FAILED) {
+    paddr = bcm2835_int + BCM2835_INT_GPU_IER1 / 4;
+    bcm2835_peri_write (paddr, gpu_ier1);
+    paddr = bcm2835_int + BCM2835_INT_GPU_IER2 / 4;
+    bcm2835_peri_write (paddr, gpu_ier2);
+    paddr = bcm2835_int + BCM2835_INT_CPU_IER / 4;
+    bcm2835_peri_write (paddr, cpu_ier);
 
 #ifdef DISABLE_FIQ
-	 /* Enable Fast Interrupt Requests: */
-	 paddr = bcm2835_int + BCM2835_INT_FIQ/4;
-	 fiqtemp = bcm2835_peri_read(paddr); // read FIQ control register 0x20C
-	 fiqtemp |= (1 << 7);               // set FIQ enable bit
-	 bcm2835_peri_write(paddr,fiqtemp);// write back to register
+    /* Enable Fast Interrupt Requests: */
+    paddr = bcm2835_int + BCM2835_INT_FIQ / 4;
+    fiqtemp = bcm2835_peri_read (paddr);        // read FIQ control register 0x20C
+    fiqtemp |= (1 << 7);        // set FIQ enable bit
+    bcm2835_peri_write (paddr, fiqtemp);        // write back to register
 #endif
-//	 printf("GPU IER1: 0x%X | GPU IER2: 0x%X | CPU IER: 0x%X\n",gpu_ier1,gpu_ier2,cpu_ier);
-	}
+//       printf("GPU IER1: 0x%X | GPU IER2: 0x%X | CPU IER: 0x%X\n",gpu_ier1,gpu_ier2,cpu_ier);
+  }
 #endif
 }
 
-void displayPipeline()
-{
+void displayPipeline (void) {
   int c = 0;
-  VectorPipeline *dpl = _P[pipelineAlt?0:1];
-  int delayedBeamOff=0;
-  if (myDebug) printf("Display pipeline started...!\r\n");
+  VectorPipeline *dpl = _P[pipelineAlt ? 0 : 1];
+  int delayedBeamOff = 0;
+
+  if (myDebug)
+    printf ("Display pipeline started...!\r\n");
 
 #ifdef AVOID_TICKS
   scaleTotal = (scaleTotal * DELAY_PI_CYCLE_EQUIVALENT) + ST_GAP_END;
-  disableLinuxInterrupts(scaleTotal);
+  disableLinuxInterrupts (scaleTotal);
 #endif
 
-  if (browseMode)
-  {
-    v_setBrightness(50);
+  if (browseMode) {
+    v_setBrightness (50);
   }
   int lineNo = 0;
 
-  while (dpl[c].type != PL_END)
-  {
-    if (browseMode)
-    {
-        if (lineNo ==currentBrowsline)
-        {
-          v_setBrightness(127);
-        }
-        if (lineNo ==currentBrowsline+1)
-        {
-          v_setBrightness(50);
-        }
+  while (dpl[c].type != PL_END) {
+    if (browseMode) {
+      if (lineNo == currentBrowsline) {
+        v_setBrightness (127);
+      }
+      if (lineNo == currentBrowsline + 1) {
+        v_setBrightness (50);
+      }
     }
 
-    switch (dpl[c].type)
-    {
-      case PL_DEFLOK:
+    switch (dpl[c].type) {
+    case PL_DEFLOK:
       {
-        LINE_DEBUG_OUT("PL DEFLOK\r\n");
+        LINE_DEBUG_OUT ("PL DEFLOK\r\n");
         // loop ensures that there are no pending draws/moves
-        if (dpl[c].flags & PL_SWITCH_BEAM_OFF) SWITCH_BEAM_OFF();
-        v_deflok();
-        LINE_DEBUG_OUT("PL DEFLOK CALIB \r\n");
-        v_resetIntegratorOffsets();
-        break;
-      }
-      case PL_ZERO:
-      {
-        LINE_DEBUG_OUT("PL ZERO: %i, %i\r\n", dpl[c+1].last_timing, dpl[c].this_timing);
-        #ifndef BEAM_LIGHT_BY_CNTL
         if (dpl[c].flags & PL_SWITCH_BEAM_OFF)
-          SWITCH_BEAM_OFF();
-        #endif
-        ZERO_AND_CONTINUE();
+          SWITCH_BEAM_OFF ();
+        v_deflok ();
+        LINE_DEBUG_OUT ("PL DEFLOK CALIB \r\n");
+        v_resetIntegratorOffsets ();
+        break;
+      }
+    case PL_ZERO:
+      {
+        LINE_DEBUG_OUT ("PL ZERO: %i, %i\r\n", dpl[c + 1].last_timing, dpl[c].this_timing);
+#ifndef BEAM_LIGHT_BY_CNTL
+        if (dpl[c].flags & PL_SWITCH_BEAM_OFF)
+          SWITCH_BEAM_OFF ();
+#endif
+        ZERO_AND_CONTINUE ();
         {
-          int timeDone =24;
+          int timeDone = 24;
+
           // TODO enable calib again when zeroing!
-          v_resetIntegratorOffsets();
-          dpl[c+1].last_timing = (dpl[c].this_timing - timeDone);
-          if (dpl[c+1].last_timing<0) dpl[c+1].last_timing=0;
+          v_resetIntegratorOffsets ();
+          dpl[c + 1].last_timing = (dpl[c].this_timing - timeDone);
+          if (dpl[c + 1].last_timing < 0)
+            dpl[c + 1].last_timing = 0;
         }
         break;
       }
-      case PL_SET_BRIGHTNESS:
+    case PL_SET_BRIGHTNESS:
       {
-        LINE_DEBUG_OUT("PL Brightness  A = %x\r\n", dpl[c].intensity);
-        if (browseMode) break;
-        if (dpl[c].flags & PL_I_A_MUST_BE_SET)
-        {
-          SET_WORD_ORDERED(VIA_port_b, 0x084, dpl[c].intensity);
+        LINE_DEBUG_OUT ("PL Brightness  A = %x\r\n", dpl[c].intensity);
+        if (browseMode)
+          break;
+        if (dpl[c].flags & PL_I_A_MUST_BE_SET) {
+          SET_WORD_ORDERED (VIA_port_b, 0x084, dpl[c].intensity);
+        } else {
+          SET (VIA_port_b, 0x84);       // MUX to intensity
         }
-        else
-        {
-          SET(VIA_port_b, 0x84); // MUX to intensity
-        }
-        DELAY_ZSH();
+        DELAY_ZSH ();
         break;
       }
-      case PL_DRAW_DOT:
+    case PL_DRAW_DOT:
       {
-        LINE_DEBUG_OUT ("PL DOT  %i, %i :%i\r\n    %s\r\n", dpl[c].x*dpl[c].this_timing, dpl[c].y*dpl[c].this_timing, dpl[c].this_timing, ((dpl[c].base != 0)?dpl[c].base->debug:""));
-        if (dpl[c].flags & PL_SWITCH_BEAM_ON)
-        {
-          SWITCH_BEAM_ON();
+        LINE_DEBUG_OUT ("PL DOT  %i, %i :%i\r\n    %s\r\n", dpl[c].x * dpl[c].this_timing, dpl[c].y * dpl[c].this_timing, dpl[c].this_timing,
+                        ((dpl[c].base != 0) ? dpl[c].base->debug : ""));
+        if (dpl[c].flags & PL_SWITCH_BEAM_ON) {
+          SWITCH_BEAM_ON ();
         }
         break;
       }
-      case PL_MOVE:
+    case PL_MOVE:
       {
-        LINE_DEBUG_OUT("PL MOVE %i, %i :%i\r\n", dpl[c].x*dpl[c].this_timing, dpl[c].y*dpl[c].this_timing, dpl[c].this_timing);
+        LINE_DEBUG_OUT ("PL MOVE %i, %i :%i\r\n", dpl[c].x * dpl[c].this_timing, dpl[c].y * dpl[c].this_timing, dpl[c].this_timing);
       }
-      case PL_DRAW_PATTERN:
+    case PL_DRAW_PATTERN:
       {
-        if (dpl[c].type == PL_DRAW_PATTERN)
-        {
-          LINE_DEBUG_OUT ("PL DRAW PATTERN \r\n    %s\r\n", ((dpl[c].base != 0)?dpl[c].base->debug:""));
+        if (dpl[c].type == PL_DRAW_PATTERN) {
+          LINE_DEBUG_OUT ("PL DRAW PATTERN \r\n    %s\r\n", ((dpl[c].base != 0) ? dpl[c].base->debug : ""));
         }
       }
-      case PL_DRAW:
+    case PL_DRAW:
       {
         int delayed = 1;
-        if (dpl[c].type ==PL_DRAW)
-        {
-          LINE_DEBUG_OUT ("PL DRAW \r\n    %s\r\n", ((dpl[c].base != 0)?dpl[c].base->debug:""));
+
+        if (dpl[c].type == PL_DRAW) {
+          LINE_DEBUG_OUT ("PL DRAW \r\n    %s\r\n", ((dpl[c].base != 0) ? dpl[c].base->debug : ""));
         }
 
-        if (dpl[c].flags & PL_CALIBRATE_0)
-        {
+        if (dpl[c].flags & PL_CALIBRATE_0) {
           LINE_DEBUG_OUT ("    PL D CALIB 0\r\n");
           SET (VIA_port_b, 0x81);
-          DELAY_PORT_B_BEFORE_PORT_A();
+          DELAY_PORT_B_BEFORE_PORT_A ();
           SET (VIA_port_a, 0x00);
-          DELAY_CYCLES(2);
-          SET (VIA_port_b, 0x82);    // mux=1, enable mux - integrator offset = 0
-          DELAY_CYCLES(2);
+          DELAY_CYCLES (2);
+          SET (VIA_port_b, 0x82);       // mux=1, enable mux - integrator offset = 0
+          DELAY_CYCLES (2);
           SET (VIA_port_b, 0x81);
-          DELAY_CYCLES(2);
-          delayed+=14;
-        }
-        else if (dpl[c].flags & PL_CALIBRATE)
-        {
+          DELAY_CYCLES (2);
+          delayed += 14;
+        } else if (dpl[c].flags & PL_CALIBRATE) {
           LINE_DEBUG_OUT ("    PL D CALIB \r\n");
-          v_resetIntegratorOffsets();
-          delayed+=24;
+          v_resetIntegratorOffsets ();
+          delayed += 24;
         }
 
         int afterYDelay = 0;
-        if (dpl[c].flags & PL_Y_MUST_BE_SET)
-        {
-          LINE_DEBUG_OUT("     Y MUST BE SET\r\n");
-          afterYDelay = 2; // cranky dependend
-          if (crankyFlag & CRANKY_BETWEEN_VIA_B)
-          {
-              afterYDelay += crankyFlag&0x0f;
+
+        if (dpl[c].flags & PL_Y_MUST_BE_SET) {
+          LINE_DEBUG_OUT ("     Y MUST BE SET\r\n");
+          afterYDelay = 2;      // cranky dependend
+          if (crankyFlag & CRANKY_BETWEEN_VIA_B) {
+            afterYDelay += crankyFlag & 0x0f;
           }
 
-          delayed+=2;
+          delayed += 2;
 
-          if (dpl[c].flags & PL_Y_A_MUST_BE_SET)
-          {
-            LINE_DEBUG_OUT("     YA MUST BE SET\r\n");
-            if (dpl[c].flags & PL_MUX_Y_MUST_BE_SET)
-            {
-              LINE_DEBUG_OUT("     YMUX MUST BE SET\r\n");
-              SET(VIA_port_b, 0x80);
-              DELAY_PORT_B_BEFORE_PORT_A();
-              SET(VIA_port_a, dpl[c].y);
-              delayed+=2+DELAY_PORT_B_BEFORE_PORT_A_VALUE;
+          if (dpl[c].flags & PL_Y_A_MUST_BE_SET) {
+            LINE_DEBUG_OUT ("     YA MUST BE SET\r\n");
+            if (dpl[c].flags & PL_MUX_Y_MUST_BE_SET) {
+              LINE_DEBUG_OUT ("     YMUX MUST BE SET\r\n");
+              SET (VIA_port_b, 0x80);
+              DELAY_PORT_B_BEFORE_PORT_A ();
+              SET (VIA_port_a, dpl[c].y);
+              delayed += 2 + DELAY_PORT_B_BEFORE_PORT_A_VALUE;
+            } else {
+              SET (VIA_port_a, dpl[c].y);
             }
-            else
-            {
-              SET(VIA_port_a, dpl[c].y);
-            }
-          }
-          else
-          {
-            if (dpl[c].flags & PL_MUX_Y_MUST_BE_SET)
-            {
-              SET(VIA_port_b, 0x80); // MUX to y integrator
+          } else {
+            if (dpl[c].flags & PL_MUX_Y_MUST_BE_SET) {
+              SET (VIA_port_b, 0x80);   // MUX to y integrator
             }
           }
-        }
-        else
-          LINE_DEBUG_OUT("     Y NEED NOT BE SET\r\n");
+        } else
+          LINE_DEBUG_OUT ("     Y NEED NOT BE SET\r\n");
 
-
-        if (dpl[c].flags & PL_DEACTIVATE_ZERO)
-        {
-            // attention!
-            // UNZERO is also a BEAM_OFF!
-          UNZERO();
-          delayed+=2;
+        if (dpl[c].flags & PL_DEACTIVATE_ZERO) {
+          // attention!
+          // UNZERO is also a BEAM_OFF!
+          UNZERO ();
+          delayed += 2;
           afterYDelay -= 2;
         }
 
-        if (dpl[c].flags & PL_Y_DELAY_TO_NULL)
-        {
-            if (crankyFlag & CRANKY_NULLING_WAIT)
-            {
-                // some crankies need additional waits here!
-                afterYDelay += CRANKY_DELAY_Y_TO_NULL_VALUE;
-            }
+        if (dpl[c].flags & PL_Y_DELAY_TO_NULL) {
+          if (crankyFlag & CRANKY_NULLING_WAIT) {
+            // some crankies need additional waits here!
+            afterYDelay += CRANKY_DELAY_Y_TO_NULL_VALUE;
+          }
 
         }
 
@@ -4493,304 +4223,273 @@ void displayPipeline()
         // for the beam to be switched off from last drawing we have
         // to wait alltogether for "DELAY_AFTER_T1_END_VALUE" cycles
         // now we do the wait / wait we still need
-        if (afterYDelay<0) afterYDelay=0;
-        if (delayedBeamOff==3)
-        {
-          int toDelayOff = DELAY_AFTER_T1_END_VALUE-delayed;
-          if (dpl[c].type == PL_DRAW) toDelayOff-=5; // consecutive draws wait less ;-)
+        if (afterYDelay < 0)
+          afterYDelay = 0;
+        if (delayedBeamOff == 3) {
+          int toDelayOff = DELAY_AFTER_T1_END_VALUE - delayed;
 
-          if (toDelayOff >= afterYDelay)
-          {
+          if (dpl[c].type == PL_DRAW)
+            toDelayOff -= 5;    // consecutive draws wait less ;-)
+
+          if (toDelayOff >= afterYDelay) {
             // todo
             // theoretically we could check the difference
             // do a part delay here
             // and set the X value as a "delayer"
 
-            if (toDelayOff>0)
-              DELAY_CYCLES(toDelayOff);
-            SWITCH_BEAM_OFF();
-          }
-          else
-          {
-            if (toDelayOff>0)
-              DELAY_CYCLES(toDelayOff);
+            if (toDelayOff > 0)
+              DELAY_CYCLES (toDelayOff);
+            SWITCH_BEAM_OFF ();
+          } else {
+            if (toDelayOff > 0)
+              DELAY_CYCLES (toDelayOff);
             else
               toDelayOff = 0;
-            SWITCH_BEAM_OFF();
-            DELAY_CYCLES(afterYDelay - toDelayOff);
+            SWITCH_BEAM_OFF ();
+            DELAY_CYCLES (afterYDelay - toDelayOff);
           }
-        }
-        else
-        {
-          DELAY_CYCLES(afterYDelay); // EQ DELAY_AFTER_YSH_VALUE this is cranky dependend!
+        } else {
+          DELAY_CYCLES (afterYDelay);   // EQ DELAY_AFTER_YSH_VALUE this is cranky dependend!
         }
 
         // not checking - since we also do ramp with B
         // if (dpl[c].flags & PL_MUX_X_MUST_BE_SET;
-        SET(VIA_port_b, 0x81);
-        if (dpl[c].flags & PL_X_A_MUST_BE_SET)
-        {
+        SET (VIA_port_b, 0x81);
+        if (dpl[c].flags & PL_X_A_MUST_BE_SET) {
           // to test only if cranky?dpl[c].x
-          DELAY_PORT_B_BEFORE_PORT_A();
-          SET(VIA_port_a, dpl[c].x);
+          DELAY_PORT_B_BEFORE_PORT_A ();
+          SET (VIA_port_a, dpl[c].x);
         }
         // sync()
-        setMarkStart();
+        setMarkStart ();
         // start T1 timer
-        if (dpl[c].flags & PL_T1_LO_EQUALS)
-        {
-          SET(VIA_t1_cnt_hi, (dpl[c].this_timing)>>8);
-        }
-        else
-        {
-          SETW_inverse(VIA_t1, dpl[c].this_timing);  /* scale due to "enlargement" is 16 bit! */
+        if (dpl[c].flags & PL_T1_LO_EQUALS) {
+          SET (VIA_t1_cnt_hi, (dpl[c].this_timing) >> 8);
+        } else {
+          SETW_inverse (VIA_t1, dpl[c].this_timing);    /* scale due to "enlargement" is 16 bit! */
         }
 
-
-
-        if (dpl[c].type ==PL_DRAW)
+        if (dpl[c].type == PL_DRAW) {
+          LINE_DEBUG_OUT ("     %i, %i :%i \r\n", dpl[c].x * dpl[c].this_timing, dpl[c].y * dpl[c].this_timing, dpl[c].this_timing);
+          if (dpl[c].flags & PL_SWITCH_BEAM_ON) {
+            SWITCH_BEAM_ON ();
+          }
+        } else if (dpl[c].type == PL_DRAW_PATTERN)      // this must be (dpl[c].type == PL_DRAW_PATTERN))
         {
-            LINE_DEBUG_OUT ("     %i, %i :%i \r\n", dpl[c].x*dpl[c].this_timing, dpl[c].y*dpl[c].this_timing, dpl[c].this_timing);
-            if (dpl[c].flags & PL_SWITCH_BEAM_ON)
-            {
-              SWITCH_BEAM_ON();
-            }
-        }
-        else if (dpl[c].type == PL_DRAW_PATTERN)// this must be  (dpl[c].type == PL_DRAW_PATTERN))
-        {
-            LINE_DEBUG_OUT ("     %i, %i :%i - $%02x\r\n", dpl[c].x*dpl[c].this_timing, dpl[c].y*dpl[c].this_timing, dpl[c].this_timing, dpl[c].pattern);
-            int patternAnds[] = {128,64,32,16,8,4,2,1};
-            int pCount = 0;
-            while ((GET (VIA_int_flags) & 0x40) == 0)
-            {
+          LINE_DEBUG_OUT ("     %i, %i :%i - $%02x\r\n", dpl[c].x * dpl[c].this_timing, dpl[c].y * dpl[c].this_timing, dpl[c].this_timing, dpl[c].pattern);
+          int patternAnds[] = { 128, 64, 32, 16, 8, 4, 2, 1 };
+          int pCount = 0;
+
+          while ((GET (VIA_int_flags) & 0x40) == 0) {
 #ifdef BEAM_LIGHT_BY_CNTL
-                if (dpl[c].pattern & patternAnds[pCount])
-                    SWITCH_BEAM_ON();
-                else
-                    SWITCH_BEAM_OFF();
-                pCount=pCount+1;
-                if (pCount==8) pCount=0;
+            if (dpl[c].pattern & patternAnds[pCount])
+              SWITCH_BEAM_ON ();
+            else
+              SWITCH_BEAM_OFF ();
+            pCount = pCount + 1;
+            if (pCount == 8)
+              pCount = 0;
 #endif
 #ifdef BEAM_LIGHT_BY_SHIFT
-                if (pCount==0)
-                {
-                    SET_SHIFT_REG(dpl[c].pattern);
-                    pCount=18;
-                }
-                else
-                    pCount-=2;
+            if (pCount == 0) {
+              SET_SHIFT_REG (dpl[c].pattern);
+              pCount = 18;
+            } else
+              pCount -= 2;
 #endif
-            }
-            int delayT1 = DELAY_AFTER_T1_END_VALUE;
-            while (delayT1>0)
-            {
+          }
+          int delayT1 = DELAY_AFTER_T1_END_VALUE;
+
+          while (delayT1 > 0) {
 #ifdef BEAM_LIGHT_BY_CNTL
-                if (dpl[c].pattern & patternAnds[pCount])
-                    SWITCH_BEAM_ON();
-                else
-                    SWITCH_BEAM_OFF();
-                pCount=pCount+1;
-                if (pCount==8) pCount=0;
+            if (dpl[c].pattern & patternAnds[pCount])
+              SWITCH_BEAM_ON ();
+            else
+              SWITCH_BEAM_OFF ();
+            pCount = pCount + 1;
+            if (pCount == 8)
+              pCount = 0;
 #endif
 #ifdef BEAM_LIGHT_BY_SHIFT
-                if (pCount==0)
-                {
-                    SET_SHIFT_REG(dpl[c].pattern);
-                    pCount=18;
-                }
-                else
-                    pCount-=2;
+            if (pCount == 0) {
+              SET_SHIFT_REG (dpl[c].pattern);
+              pCount = 18;
+            } else
+              pCount -= 2;
 #endif
-                delayT1-=2;
-            }
-            SWITCH_BEAM_OFF();
-            if ((browseMode) && (dpl[c].type == PL_DRAW_PATTERN))
-            {
-              if (lineNo==currentBrowsline)
-                currentDisplayedBrowseLine = currentBrowsline;
-              lineNo++;
-            }
+            delayT1 -= 2;
+          }
+          SWITCH_BEAM_OFF ();
+          if ((browseMode) && (dpl[c].type == PL_DRAW_PATTERN)) {
+            if (lineNo == currentBrowsline)
+              currentDisplayedBrowseLine = currentBrowsline;
+            lineNo++;
+          }
         }
         break;
       }
-      default:
-        break;
+    default:
+      break;
     }
     delayedBeamOff = 0;
     c++;
-    if (myDebug)   printf("handled %i display elements...!\r\n", c);
+    if (myDebug)
+      printf ("handled %i display elements...!\r\n", c);
 
-    if (dpl[c].flags & PL_LAST_MUST_FINISH )
-    {
-      if (dpl[c].flags & PL_LAST_IS_RAMPING)
-      {
-        while ((GET (VIA_int_flags) & 0x40) == 0);
+    if (dpl[c].flags & PL_LAST_MUST_FINISH) {
+      if (dpl[c].flags & PL_LAST_IS_RAMPING) {
+        while ((GET (VIA_int_flags) & 0x40) == 0) ;
 
-        if ((dpl[c].flags & PL_SWITCH_BEAM_OFF)/* && (dpl[c].type != PL_ZERO)*/)
-        {
+        if ((dpl[c].flags & PL_SWITCH_BEAM_OFF) /* && (dpl[c].type != PL_ZERO) */ ) {
           // is drawing
-          if ((dpl[c].type == PL_MOVE) || (dpl[c].type == PL_DRAW))
-          {
+          if ((dpl[c].type == PL_MOVE) || (dpl[c].type == PL_DRAW)) {
             delayedBeamOff = 1;
+          } else {
+            DELAY_T1_OFF ();
           }
-          else
-          {
-            DELAY_T1_OFF();
-          }
-        }
-        else
-        {
+        } else {
           // is Moving
           // finish move - is not as bad is BEAM
-          //          DELAY_T1_OFF();
-          DELAY_CYCLES(8);
-          if (dpl[c].type == PL_DRAW_DOT)
-          {
+          // DELAY_T1_OFF();
+          DELAY_CYCLES (8);
+          if (dpl[c].type == PL_DRAW_DOT) {
             // since we switch the light DIRECTLY ON...
             // better wait some cycles more!
-            DELAY_CYCLES(4);
+            DELAY_CYCLES (4);
           }
         }
-      }
-      else
-      {
+      } else {
         // e.g. zeroing
         // dots
-        DELAY_CYCLES(dpl[c].last_timing);
+        DELAY_CYCLES (dpl[c].last_timing);
       }
-      if ((browseMode) && ((dpl[c-1].type ==PL_DRAW)||(dpl[c-1].type ==PL_DRAW_DOT)||(dpl[c-1].type ==PL_DRAW_PATTERN)   ))
-      {
-        if (lineNo==currentBrowsline)
+      if ((browseMode) && ((dpl[c - 1].type == PL_DRAW) || (dpl[c - 1].type == PL_DRAW_DOT) || (dpl[c - 1].type == PL_DRAW_PATTERN))) {
+        if (lineNo == currentBrowsline)
           currentDisplayedBrowseLine = currentBrowsline;
         lineNo++;
       }
     }
 
-    if ((dpl[c].flags & PL_SWITCH_BEAM_OFF)/* && (dpl[c].type != PL_ZERO)*/)
-    {
-      if (delayedBeamOff == 0)
-      {
-        SWITCH_BEAM_OFF();
-      }
-      else
-      {
-        delayedBeamOff+=2;
+    if ((dpl[c].flags & PL_SWITCH_BEAM_OFF) /* && (dpl[c].type != PL_ZERO) */ ) {
+      if (delayedBeamOff == 0) {
+        SWITCH_BEAM_OFF ();
+      } else {
+        delayedBeamOff += 2;
       }
 
     }
   }
 
   // safety only
-  SWITCH_BEAM_OFF();
-  ZERO_AND_CONTINUE();
+  SWITCH_BEAM_OFF ();
+  ZERO_AND_CONTINUE ();
 
 #ifdef AVOID_TICKS
- enableLinuxInterrupts();
- scaleTotal = 0;
+  enableLinuxInterrupts ();
+  scaleTotal = 0;
 #endif
 }
 
-
+// malban bitmap! (arbitrary raster drawing is broken at the moment)
 //  0x50, 0x09
-unsigned char uniDirectional[] =
-{
-  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000101, 0b00000000, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00001111, 0b11100000, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00111111, 0b11110000, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000001, 0b10000000, 0b01111111, 0b11111000, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000011, 0b11111001, 0b11111111, 0b11111100, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000111, 0b11111111, 0b11111111, 0b11111110, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00001111, 0b11111111, 0b11111111, 0b11111111, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00001111, 0b11111111, 0b11111111, 0b11111111, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00011111, 0b11111111, 0b11111111, 0b11111111, 0b10000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00011111, 0b11111111, 0b11111111, 0b11111111, 0b11000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b01111111, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b01111111, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b01111111, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b11111111, 0b11110000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b11111111, 0b11110000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b11111111, 0b11110000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00011111, 0b11111111, 0b11111111, 0b11111111, 0b11111000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00011111, 0b11111111, 0b11111111, 0b11111111, 0b11111000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00011111, 0b11111111, 0b11111111, 0b11110111, 0b11111000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b00000000, 0b10111000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00001111, 0b11111111, 0b11111000, 0b00000000, 0b00111000, 0b11000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b01111111, 0b11111000, 0b00011111, 0b01111000, 0b11000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00111111, 0b11111000, 0b00000111, 0b11111000, 0b11000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00111000, 0b00001111, 0b11110000, 0b00000001, 0b11111000, 0b11100000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00100000, 0b00000111, 0b11100010, 0b00010001, 0b11111101, 0b11100000, 0b00000000, //forward
-  0b00000000, 0b00010000, 0b11000000, 0b01000011, 0b11000011, 0b00011111, 0b11111101, 0b11000000, 0b00000000, //forward
-  0b00000000, 0b00010000, 0b11000100, 0b01001011, 0b11001111, 0b11111111, 0b11111101, 0b11000000, 0b00000000, //forward
-  0b00000000, 0b00010000, 0b11100100, 0b11111001, 0b11011111, 0b11111111, 0b11111101, 0b11000000, 0b00000000, //forward
-  0b00000000, 0b00001001, 0b11111111, 0b11111001, 0b11011111, 0b11111111, 0b11111001, 0b11000000, 0b00000000, //forward
-  0b00000000, 0b00001001, 0b11111111, 0b11111101, 0b11111111, 0b11111111, 0b11111001, 0b11000000, 0b00000000, //forward
-  0b00000000, 0b00001001, 0b11111111, 0b11111001, 0b11111111, 0b11111111, 0b11111001, 0b11000000, 0b00000000, //forward
-  0b00000000, 0b00001001, 0b11111111, 0b11111001, 0b11001111, 0b11111111, 0b11110001, 0b11000000, 0b00000000, //forward
-  0b00000000, 0b00001001, 0b11111111, 0b11111001, 0b11001111, 0b11111111, 0b11110001, 0b11000000, 0b00000000, //forward
-  0b00000000, 0b00000001, 0b11111111, 0b11111001, 0b11101111, 0b11111111, 0b11110001, 0b10000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b11111111, 0b11111011, 0b11100011, 0b11111111, 0b11110011, 0b10000000, 0b00000000, //forward
-  0b00000000, 0b00000100, 0b11111111, 0b11110011, 0b11110011, 0b11111111, 0b11110011, 0b10000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b11111111, 0b11100011, 0b11111001, 0b11111111, 0b11110011, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000010, 0b01111111, 0b11100111, 0b11111111, 0b11111111, 0b11110000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000010, 0b01111111, 0b11101011, 0b11100011, 0b11111111, 0b11110000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b01111111, 0b11110000, 0b11000111, 0b11111111, 0b11110000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00111111, 0b11111000, 0b00011111, 0b11111111, 0b11110000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b11111111, 0b11110000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111001, 0b10111111, 0b11100000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00011111, 0b10000111, 0b11111101, 0b11011111, 0b11100000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00011111, 0b10011111, 0b11111111, 0b11111111, 0b11100000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00011111, 0b11111111, 0b11111110, 0b00111111, 0b11100000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00011111, 0b11110111, 0b11100000, 0b00111111, 0b11000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00011111, 0b11000000, 0b00000001, 0b11111111, 0b10010000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00001111, 0b11100000, 0b00111111, 0b11111111, 0b10010000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000111, 0b11111111, 0b11111111, 0b11111111, 0b00110000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000011, 0b11111111, 0b11101111, 0b11111110, 0b00110000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000001, 0b11111100, 0b00000011, 0b11111110, 0b01110000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b11111110, 0b00011111, 0b11111100, 0b01100000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b01111111, 0b11111111, 0b11111000, 0b11110000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b01111111, 0b11111111, 0b11110001, 0b11110000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11100011, 0b11100000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00011111, 0b11111111, 0b11000111, 0b11100000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00001111, 0b11111111, 0b10001111, 0b11100000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00000011, 0b11111101, 0b00011111, 0b11100000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000000, 0b00000001, 0b11111000, 0b00111111, 0b11000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000001, 0b00000000, 0b00000000, 0b01111111, 0b11000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000001, 0b10000000, 0b00000001, 0b11111111, 0b10000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000001, 0b10000000, 0b00111111, 0b11111111, 0b10000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000001, 0b11000011, 0b11111111, 0b11111110, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000001, 0b11100001, 0b11111111, 0b11110000, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000001, 0b11110001, 0b11111111, 0b11000000, 0b00000000, 0b00000000, 0b00000000, //forward
-  0b00000000, 0b00000000, 0b00000001, 0b11111100, 0b11111110, 0b00000000, 0b00000000, 0b00000000, 0b00000000, //forward
+// 'b' prefix is a gcc extension.
+unsigned char uniDirectional[] = {
+  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000101, 0b00000000, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00001111, 0b11100000, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00111111, 0b11110000, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000001, 0b10000000, 0b01111111, 0b11111000, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000011, 0b11111001, 0b11111111, 0b11111100, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000111, 0b11111111, 0b11111111, 0b11111110, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00001111, 0b11111111, 0b11111111, 0b11111111, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00001111, 0b11111111, 0b11111111, 0b11111111, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00011111, 0b11111111, 0b11111111, 0b11111111, 0b10000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00011111, 0b11111111, 0b11111111, 0b11111111, 0b11000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b01111111, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b01111111, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b01111111, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b11111111, 0b11100000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b11111111, 0b11110000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b11111111, 0b11110000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b11111111, 0b11110000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00011111, 0b11111111, 0b11111111, 0b11111111, 0b11111000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00011111, 0b11111111, 0b11111111, 0b11111111, 0b11111000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00011111, 0b11111111, 0b11111111, 0b11110111, 0b11111000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b00000000, 0b10111000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00001111, 0b11111111, 0b11111000, 0b00000000, 0b00111000, 0b11000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b01111111, 0b11111000, 0b00011111, 0b01111000, 0b11000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00111111, 0b11111000, 0b00000111, 0b11111000, 0b11000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00111000, 0b00001111, 0b11110000, 0b00000001, 0b11111000, 0b11100000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00100000, 0b00000111, 0b11100010, 0b00010001, 0b11111101, 0b11100000, 0b00000000,  // forward
+  0b00000000, 0b00010000, 0b11000000, 0b01000011, 0b11000011, 0b00011111, 0b11111101, 0b11000000, 0b00000000,  // forward
+  0b00000000, 0b00010000, 0b11000100, 0b01001011, 0b11001111, 0b11111111, 0b11111101, 0b11000000, 0b00000000,  // forward
+  0b00000000, 0b00010000, 0b11100100, 0b11111001, 0b11011111, 0b11111111, 0b11111101, 0b11000000, 0b00000000,  // forward
+  0b00000000, 0b00001001, 0b11111111, 0b11111001, 0b11011111, 0b11111111, 0b11111001, 0b11000000, 0b00000000,  // forward
+  0b00000000, 0b00001001, 0b11111111, 0b11111101, 0b11111111, 0b11111111, 0b11111001, 0b11000000, 0b00000000,  // forward
+  0b00000000, 0b00001001, 0b11111111, 0b11111001, 0b11111111, 0b11111111, 0b11111001, 0b11000000, 0b00000000,  // forward
+  0b00000000, 0b00001001, 0b11111111, 0b11111001, 0b11001111, 0b11111111, 0b11110001, 0b11000000, 0b00000000,  // forward
+  0b00000000, 0b00001001, 0b11111111, 0b11111001, 0b11001111, 0b11111111, 0b11110001, 0b11000000, 0b00000000,  // forward
+  0b00000000, 0b00000001, 0b11111111, 0b11111001, 0b11101111, 0b11111111, 0b11110001, 0b10000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b11111111, 0b11111011, 0b11100011, 0b11111111, 0b11110011, 0b10000000, 0b00000000,  // forward
+  0b00000000, 0b00000100, 0b11111111, 0b11110011, 0b11110011, 0b11111111, 0b11110011, 0b10000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b11111111, 0b11100011, 0b11111001, 0b11111111, 0b11110011, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000010, 0b01111111, 0b11100111, 0b11111111, 0b11111111, 0b11110000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000010, 0b01111111, 0b11101011, 0b11100011, 0b11111111, 0b11110000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b01111111, 0b11110000, 0b11000111, 0b11111111, 0b11110000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00111111, 0b11111000, 0b00011111, 0b11111111, 0b11110000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111111, 0b11111111, 0b11110000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11111001, 0b10111111, 0b11100000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00011111, 0b10000111, 0b11111101, 0b11011111, 0b11100000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00011111, 0b10011111, 0b11111111, 0b11111111, 0b11100000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00011111, 0b11111111, 0b11111110, 0b00111111, 0b11100000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00011111, 0b11110111, 0b11100000, 0b00111111, 0b11000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00011111, 0b11000000, 0b00000001, 0b11111111, 0b10010000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00001111, 0b11100000, 0b00111111, 0b11111111, 0b10010000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000111, 0b11111111, 0b11111111, 0b11111111, 0b00110000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000011, 0b11111111, 0b11101111, 0b11111110, 0b00110000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000001, 0b11111100, 0b00000011, 0b11111110, 0b01110000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b11111110, 0b00011111, 0b11111100, 0b01100000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b01111111, 0b11111111, 0b11111000, 0b11110000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b01111111, 0b11111111, 0b11110001, 0b11110000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00111111, 0b11111111, 0b11100011, 0b11100000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00011111, 0b11111111, 0b11000111, 0b11100000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00001111, 0b11111111, 0b10001111, 0b11100000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00000011, 0b11111101, 0b00011111, 0b11100000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000000, 0b00000001, 0b11111000, 0b00111111, 0b11000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000001, 0b00000000, 0b00000000, 0b01111111, 0b11000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000001, 0b10000000, 0b00000001, 0b11111111, 0b10000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000001, 0b10000000, 0b00111111, 0b11111111, 0b10000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000001, 0b11000011, 0b11111111, 0b11111110, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000001, 0b11100001, 0b11111111, 0b11110000, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000001, 0b11110001, 0b11111111, 0b11000000, 0b00000000, 0b00000000, 0b00000000,  // forward
+  0b00000000, 0b00000000, 0b00000001, 0b11111100, 0b11111110, 0b00000000, 0b00000000, 0b00000000, 0b00000000,  // forward
 };
 
-void v_directMove32n(int32_t xEnd, int32_t yEnd)
-{
-  v_zeroWait();
-  int32_t x = xEnd*sizeX+offsetX;
-  int32_t y = yEnd*sizeY+offsetY;
+void v_directMove32n (int32_t xEnd, int32_t yEnd) {
+  v_zeroWait ();
+  int32_t x = xEnd * sizeX + offsetX;
+  int32_t y = yEnd * sizeY + offsetY;
 
-  UNZERO(); // ensure vector beam can be moves
-  SET_OPTIMAL_SCALE(x, y);
-  SET_YSH16(y);
-  SET_XSH16(x);
-  START_T1_TIMER();
-  consecutiveDraws=0;
+  UNZERO ();                    // ensure vector beam can be moved
+  SET_OPTIMAL_SCALE (x, y);
+  SET_YSH16 (y);
+  SET_XSH16 (x);
+  START_T1_TIMER ();
+  consecutiveDraws = 0;
   currentCursorX = x;
   currentCursorY = y;
-  WAIT_T1_END();
+  WAIT_T1_END ();
 }
 
 // This is broken in current release. I've added in some of the code from the last working version that
@@ -4799,8 +4498,7 @@ void v_directMove32n(int32_t xEnd, int32_t yEnd)
 // test program is hello_world/pacman.c
 
 // 8 bit for now
-void v_printBitmapUni(unsigned char *bitmapBlob, int width, int height, int sizeX, int x, int y)
-{
+void v_printBitmapUni (unsigned char *bitmapBlob, int width, int height, int sizeX, int x, int y) {
 //  v_readButtons(); 
 //  bitmapBlob=uniDirectional;
 //  width = 0x09;
@@ -4808,86 +4506,78 @@ void v_printBitmapUni(unsigned char *bitmapBlob, int width, int height, int size
 //  x = -(9*4);
 //  y = 0x28;
 //    v_setBrightness(64);
-  
-	int patternAnds[] = {128,64,32,16,8,4,2,1};
-	// uni directional
-    
-	for (int yy=0;yy<height;yy++)
-	{
-    currentYSH=currentPortA=0x100;
 
-        // ? v_directMove32n(x*128,(y-yy)*128);
-        v_directMove32n(x*128,(y-yy-yy)*128);
+  int patternAnds[] = { 128, 64, 32, 16, 8, 4, 2, 1 };
+  // uni directional
+
+  for (int yy = 0; yy < height; yy++) {
+    currentYSH = currentPortA = 0x100;
+
+    // ? v_directMove32n(x*128,(y-yy)*128);
+    v_directMove32n (x * 128, (y - yy - yy) * 128);
 
 ////////////////
 // Prepare line print
 
+    int afterYDelay = 6;          // cranky dependend
 
-        int afterYDelay = 6; // cranky dependend
-		if (crankyFlag & CRANKY_BETWEEN_VIA_B)
-		{
-			afterYDelay += crankyFlag&0x0f;
-		}
+    if (crankyFlag & CRANKY_BETWEEN_VIA_B) {
+      afterYDelay += crankyFlag & 0x0f;
+    }
 
-		SET(VIA_port_b, 0x80);
-		DELAY_PORT_B_BEFORE_PORT_A();
-		SET(VIA_port_a, 0);
+    SET (VIA_port_b, 0x80);
+    DELAY_PORT_B_BEFORE_PORT_A ();
+    SET (VIA_port_a, 0);
 
 //        UNZERO();
-        afterYDelay -= 2;
+    afterYDelay -= 2;
 
-		if (crankyFlag & CRANKY_NULLING_WAIT)
-		{
-			// some crankies need additional waits here!
-			afterYDelay += CRANKY_DELAY_Y_TO_NULL_VALUE;
-		}
-		if (afterYDelay>0)
-          DELAY_CYCLES(afterYDelay);
+    if (crankyFlag & CRANKY_NULLING_WAIT) {
+      // some crankies need additional waits here!
+      afterYDelay += CRANKY_DELAY_Y_TO_NULL_VALUE;
+    }
+    if (afterYDelay > 0)
+      DELAY_CYCLES (afterYDelay);
 
-        SET(VIA_port_b, 0x81);
-        DELAY_PORT_B_BEFORE_PORT_A();
+    SET (VIA_port_b, 0x81);
+    DELAY_PORT_B_BEFORE_PORT_A ();
 
 //      SET(VIA_port_a, sizeX);
-        SET(VIA_port_a, 120);
+    SET (VIA_port_a, 120);
 //      SET(VIA_port_a, sizeX*2); // GT:
 
-	////////////////
-        // prepare for raster output
+    // //////////////
+    // prepare for raster output
 
-        SET(VIA_aux_cntl, 0x00);
+    SET (VIA_aux_cntl, 0x00);
 //DELAY_CYCLES(1);
-		// now print one line pattern
+    // now print one line pattern
 
-		SET(VIA_port_b, 0x01); // enable ramp, mux = y integrator, disable mux
-        for (int xx=0;xx<width;xx++)
-		{
-			for (int bit=0;bit<8;bit++)
-			{
-				// output one raster dot - or not
-                if (*bitmapBlob & patternAnds[bit])
-                {
-                  vectrexwrite_short(VIA_cntl, 0xee);
+    SET (VIA_port_b, 0x01);     // enable ramp, mux = y integrator, disable mux
+    for (int xx = 0; xx < width; xx++) {
+      for (int bit = 0; bit < 8; bit++) {
+        // output one raster dot - or not
+        if (*bitmapBlob & patternAnds[bit]) {
+          vectrexwrite_short (VIA_cntl, 0xee);
 //                    SWITCH_BEAM_ON();
-                }
-                else
-                {
-                  vectrexwrite_short(VIA_cntl, 0xce);
+        } else {
+          vectrexwrite_short (VIA_cntl, 0xce);
 //                    SWITCH_BEAM_OFF();
-                }
-			}
-			bitmapBlob++;
-		}
+        }
+      }
+      bitmapBlob++;
+    }
 
 #ifdef NEVER
-	        // switch off, if last bit was on!
-                if (*bitmapBlob & 1)
-	                vectrexwrite_short(VIA_cntl, 0xce); /* off by 1 error on final bit of bitmap? Just turn off regardless? */
-#endif		
-		
-		SET(VIA_port_b, 0x81); // disable ramp, mux = y integrator, disable mux
-		// assume lightning is done CNTL
-		SET (VIA_aux_cntl, 0x80); // Shift reg mode = 000 free disable, T1 PB7 enabled
-	}
+    // switch off, if last bit was on!
+    if (*bitmapBlob & 1)
+      vectrexwrite_short (VIA_cntl, 0xce);      /* off by 1 error on final bit of bitmap? Just turn off regardless? */
+#endif
+
+    SET (VIA_port_b, 0x81);     // disable ramp, mux = y integrator, disable mux
+    // assume lightning is done CNTL
+    SET (VIA_aux_cntl, 0x80);   // Shift reg mode = 000 free disable, T1 PB7 enabled
+  }
 }
 
 // TODO

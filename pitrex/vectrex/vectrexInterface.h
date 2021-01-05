@@ -37,7 +37,12 @@ uint8_t v_readButtons(void);
 void v_readJoystick1Digital(void);
 void v_readJoystick1Analog(void);
 void v_printString(int8_t x, int8_t y, char* string, uint8_t textSize, uint8_t brightness);
-int v_printStringRaster(int8_t x, int8_t y, char* _string, int8_t xSize, int8_t ySize, unsigned char delimiter);
+int v_printStringRaster(int8_t x, int8_t y, char* _string, int8_t xSize, int8_t ySize, unsigned char delimiter); // returns 6809 cycles used
+void v_set_font(unsigned char **userfont); // set the font for v_printStringRaster
+// Parameter is a pointer to an array of 7 elements, each of which is a pointer to an array of 96 bytes
+// A null parameter resets to the system font, which is only 64 characters and not the same layout
+// as 7-bit ascii.
+
 
 void v_setScale(uint16_t s);
 void v_moveToImmediate8(int8_t xLen, int8_t yLen);

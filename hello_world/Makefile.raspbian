@@ -14,14 +14,14 @@ CC := gcc
 .PHONY: dirCheck
 
 
-all:	dirCheck pitrexLib hello calibrate window bootmsg maze perspective drawships pacman cube gimms
+all:	dirCheck pitrexLib hello fonttest calibrate window bootmsg maze perspective drawships pacman cube gimms
 	echo All up to date
 
 dirCheck:
 	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
 
 clean:
-	$(RM) $(BUILD_DIR)*.* *~ hello bootmsg calibrate window maze perspective
+	$(RM) $(BUILD_DIR)*.* *~ hello fonttest bootmsg calibrate window maze perspective
 
 pitrexLib:
 	$(MAKE) -C $(PITREX_DIR) -f Makefile.raspbian all
@@ -39,6 +39,19 @@ hello: $(BUILD_DIR)hello.o pitrexLib
 	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
 	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
 	$(BUILD_DIR)hello.o
+
+$(BUILD_DIR)fonttest.o: fonttest.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)fonttest.o -c fonttest.c
+
+fonttest: $(BUILD_DIR)fonttest.o pitrexLib
+	$(RM) fonttest
+	$(CC) $(CFLAGS) -o fonttest \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)fonttest.o
 
 $(BUILD_DIR)pacman.o: pacman.c
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)pacman.o -c pacman.c

@@ -3179,7 +3179,7 @@ do{ \
   t1_timingSet=timingNow; \
 } while (0)
 
-#ifndef AVOID_TICKS   /* BUG FIXED 2021/01/04 - was AVIOD_TICKS */
+#ifndef AVIOD_TICKS   /* I tried changing this to the correct 'AVOID_TICKS' but that broke both SBTs! */
 #define INIT_NEXT_PIPELINE_ITEM \
   pl[fpc].this_timing = timingNow; \
   pl[fpc].last_timing = timingLast; \

@@ -295,7 +295,7 @@ inline void via_write(uint16_t address, uint8_t data)
 		VIA.ifr &= 0xbf; /* remove timer 1 interrupt flag */
 #ifdef AVOID_TICKS
 		if (linuxIntGap == 0)
-		 linuxIntGap = VIA.t1ll;//(VIA.t1c + SCALETOTAL_OFFSET) * DELAY_PI_CYCLE_EQUIVALENT;
+		 linuxIntGap = (VIA.t1ll + ST_GAP_END) * 0.6;//(VIA.t1c + SCALETOTAL_OFFSET) * DELAY_PI_CYCLE_EQUIVALENT;
 #endif
 		VIA.t1on = 1; /* timer 1 starts running */
 		VIA.t1int = 1;

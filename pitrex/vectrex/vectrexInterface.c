@@ -540,7 +540,7 @@ struct sched_param sp = {.sched_priority = 99 };
 /***********************************************************************/
 
 /*
- System timer runs at 250 Mhz
+ "ARM" System timer runs at 250 Mhz
  -> 1 tick = 1/250000000
 
  0,000000004s
@@ -3179,7 +3179,7 @@ do{ \
   t1_timingSet=timingNow; \
 } while (0)
 
-#ifndef AVIOD_TICKS   /* I tried changing this to the correct 'AVOID_TICKS' but that broke both SBTs! */
+#ifndef AVOID_TICKS   /* I tried changing this to the correct 'AVOID_TICKS' but that broke both SBTs! */
 #define INIT_NEXT_PIPELINE_ITEM \
   pl[fpc].this_timing = timingNow; \
   pl[fpc].last_timing = timingLast; \
@@ -3195,8 +3195,9 @@ do{ \
   rampingLast = rampingNow;  \
   rampingNow = 0;
 #else
+/*  scaleTotal += timingNow + SCALETOTAL_OFFSET; */
 #define INIT_NEXT_PIPELINE_ITEM \
-  scaleTotal += timingNow + SCALETOTAL_OFFSET; \
+  scaleTotal += timingNow; \
   pl[fpc].this_timing = timingNow; \
   pl[fpc].last_timing = timingLast; \
   fpc++; \
@@ -3967,34 +3968,57 @@ void disableLinuxInterrupts (unsigned int minOffset) {
 #ifdef AVOID_TICKS
   volatile uint32_t *paddr;
   uint32_t clk;
-  uint32_t gap0;
+//     uint32_t gap0;
 
-//      uint32_t gap1;
-  uint32_t gap2;
+//     uint32_t gap1;
+//     uint32_t gap2;
   uint32_t gap3;
-  uint32_t comp0;
+//     uint32_t comp0;
 
-//      uint32_t comp1;
-  uint32_t comp2;
+//     uint32_t comp1;
+//     uint32_t comp2;
   uint32_t comp3;
 
+  int64_t clk_diff;
+  /* Only look at the lower register, because this is the only part that the compare registers compare against:
+   * NOTE: Unlike the "ARM timer", this "system timer" is clocked at 1MHz (confirmed in kernel source code) instead of 250MHz */
+  paddr = bcm2835_st + BCM2835_ST_CLO/4;
+  uint32_t clk_start = bcm2835_peri_read(paddr);
+  clk = clk_start;
   /* Wait until no timer interrupts are due within the expected drawing time, otherwise the system clock will get messed up: */
   do {
-    clk = bcm2835_st_read () & 0xFFFFFFFF;
-    paddr = bcm2835_st + BCM2835_ST_COMP (0) / 4;
-    comp0 = bcm2835_peri_read (paddr);
+//       paddr = bcm2835_st + BCM2835_ST_COMP (0) / 4; //Only used by the video output?
+//       comp0 = bcm2835_peri_read (paddr);
 //       paddr = bcm2835_st + BCM2835_ST_COMP(1)/4;
 //       comp1 = bcm2835_peri_read(paddr);
-    paddr = bcm2835_st + BCM2835_ST_COMP (2) / 4;
-    comp2 = bcm2835_peri_read (paddr);
+//       paddr = bcm2835_st + BCM2835_ST_COMP (2) / 4; //Only used by the video output?
+//       comp2 = bcm2835_peri_read (paddr);
     paddr = bcm2835_st + BCM2835_ST_COMP (3) / 4;
     comp3 = bcm2835_peri_read (paddr);
 
-    gap0 = (comp0 - clk);
+//       gap0 = (comp0 - clk);
 //       gap1 = (comp1 - clk);
-    gap2 = (comp2 - clk);
+//       gap2 = (comp2 - clk);
     gap3 = (comp3 - clk);
-  } while (gap0 < minOffset || gap2 < minOffset || gap3 < minOffset);
+
+    /* Give up if it's been so long that the user might start to notice */
+    clk_diff = clk - clk_start;
+    if (clk_diff < 0)
+    {
+//     printf (" timer_loop");
+     break;
+    }
+    if (clk_diff > ST_GAP_TIMEOUT)
+    {
+//     printf (" clk_timeout");
+     break;
+    }
+
+    paddr = bcm2835_st + BCM2835_ST_CLO/4;
+    clk = bcm2835_peri_read(paddr);
+//    printf("offset: %u | clk: %u | comp0: %u, comp2: %u, comp3: %u\nGap0: %u, Gap2: %u, Gap3: %u\n",
+//     minOffset,clk,comp0,comp2,comp3,gap0,gap2,gap3);
+  } while (gap3 < minOffset); //|| gap2 < minOffset || gap0 < minOffset);
 
   /* Save interrupt configuration and disable interrupts */
   if (bcm2835_int != MAP_FAILED) {
@@ -4020,7 +4044,7 @@ void disableLinuxInterrupts (unsigned int minOffset) {
     bcm2835_peri_write (paddr, fiqtemp);        /* write back to register attempting to clear bit 7 of *(intrupt+131) directly will crash the system */
 #endif
   } else {
-    printf ("Interrupt address mapping failed\r\n");
+    printf ("Interrupt address mapping failed - Not root?\r\n");
   }
 #endif
 }
@@ -4029,9 +4053,6 @@ void disableLinuxInterrupts (unsigned int minOffset) {
 void enableLinuxInterrupts (void) {
 #ifdef AVOID_TICKS
   volatile uint32_t *paddr;
-
-//      printf("clk: %u | comp0: %u, comp2: %u, comp3: %u\nGap0: %u, Gap2: %u, Gap3: %u\n"
-//       ,clk,comp0,comp2,comp3,gap0,gap2,gap3);
 
   /* Re-enable interrupts with the previous settings */
   if (bcm2835_int != MAP_FAILED) {
@@ -4063,8 +4084,21 @@ void displayPipeline (void) {
     printf ("Display pipeline started...!\r\n");
 
 #ifdef AVOID_TICKS
-  scaleTotal = (scaleTotal * DELAY_PI_CYCLE_EQUIVALENT) + ST_GAP_END;
-  disableLinuxInterrupts (scaleTotal);
+//  scaleTotal = (scaleTotal * DELAY_PI_CYCLE_EQUIVALENT) + ST_GAP_END;
+  //
+  scaleTotal = scaleTotal + ST_GAP_END;
+  /* The BCM2835 system timer runs at 1MHz, but the VIA counts the "scale" at 1.5MHz - only count 2/3 scale cycles */
+  disableLinuxInterrupts ( scaleTotal*0.6 );
+//  scaleTotal = scaleTotal + ST_GAP_END;
+/*
+  if (scaleTotal < ST_GAP_MAX)
+   disableLinuxInterrupts (scaleTotal);
+  else
+  {
+   disableLinuxInterrupts (ST_GAP_MAX);
+   printf ("gap max. (%u)\n",scaleTotal);
+  }
+*/
 #endif
 
   if (browseMode) {

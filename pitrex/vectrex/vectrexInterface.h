@@ -64,7 +64,8 @@ extern int (*executeDebugger)(int);
 #ifdef AVOID_TICKS
 #define BCM2835_ST_COMP(n)  (0x0c + (n) * 4)
 #define SCALETOTAL_OFFSET	15 /* approximate number of vectrex cycles required for VIA writes/delays before/after each draw operation */
-#define ST_GAP_END 80  /* Extra time to allow before next Linux interrupt after drawing finished (in microseconds @ 1GHz system clock) */
+#define ST_GAP_END 4  /* Extra time to allow before next Linux interrupt after drawing finished (in Vectrex cycles) */
+#define ST_GAP_TIMEOUT 5000 /* maximum delay waiting for gap, in microseconds - this the time after which a delay may be noticable */
 #define BCM2835_INT_BASE  0xb000
 #define BCM2835_INT_GPU_IER1  0x210
 #define BCM2835_INT_GPU_IER2  0x214

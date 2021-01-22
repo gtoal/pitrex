@@ -1,5 +1,5 @@
 /* Translation of SVGAlib function calls into calls to the Vector drawing library for the PiTrex Vectrex interface cartridge.
-   Version 0.3 - only bare minimum of functions implemented to get something working.
+   Version 0.4 - only bare minimum of functions implemented to get something working.
    Changes:
     2020-06-16 V. 0.2 - Added colour to intensity translation.
     2020-09-10 V. 0.3 - Additions for xhyperoid. Tells Vectrex Interface lib. the program name before v_init.
@@ -221,6 +221,7 @@ extern int vga_init(void)
 	vgacolor = 0xFF;
 	vgabackgroundcolor = 0;
 	beamintensity = 100;
+	v_setRefresh (70);
 #ifdef WINDOW
 	v_window(0, infotable[vgamode].ydim, infotable[vgamode].xdim, 0, NO_CLIP);
 #endif

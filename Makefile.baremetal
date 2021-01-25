@@ -7,7 +7,7 @@ LD	= arm-none-eabi-ld
 AR	= arm-none-eabi-ar
 
 
-all:
+all: /usr/bin/banner
 	( cd piTrexBoot; banner loader; make -f Makefile )
 	( cd redbaron; banner redbaron; make -f Makefile.baremetal )
 	( cd lunar; banner lunar; make -f Makefile.baremetal )
@@ -24,6 +24,9 @@ all:
 	( cd tempest; banner tempest; make -f Makefile.baremetal )
 	( cd cinematronics; banner cinema; make -f Makefile.baremetal )
 	( cd hello_world; banner hellow; make -f Makefile.baremetal )
+
+/usr/bin/banner:
+	sudo apt-get install -y sysvbanner
 
 clean:
 	( cd piTrexBoot; make -f Makefile clean )

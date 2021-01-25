@@ -7,109 +7,41 @@ LD	= arm-none-eabi-ld
 AR	= arm-none-eabi-ar
 
 
-all:	redbaron tailgunner loader vecx vecx2 asteroids gyrocks battlezone gravitar spaceduel tempest blackwidow deluxe lunar Cine helloWorld
-
-	
-loader: 
-	cd piTrexBoot; make -f Makefile
-	cd ..
-
-redbaron: 
-	cd redbaron; make -f Makefile.baremetal
-	cd ..
-
-lunar: 
-	cd lunar; make -f Makefile.baremetal
-	cd ..
-
-deluxe: 
-	cd deluxe; make -f Makefile.baremetal
-	cd ..
-
-blackwidow: 
-	cd blackwidow; make -f Makefile.baremetal
-	cd ..
-
-tailgunner: 
-	cd tailgunner; make -f Makefile.baremetal
-	cd ..
-
-vecx: 
-	cd vecx.emulated; make -f Makefile.baremetal
-	cd ..
-
-vecx2: 
-	cd vecx.direct; make -f Makefile.baremetal
-	cd ..
-
-asteroids: 
-	cd asteroids_sbt; make -f Makefile.baremetal
-	cd ..
-
-gyrocks: 
-	cd gyrocks; make -f Makefile.baremetal
-	cd ..
-
-battlezone: 
-	cd battlezone; make -f Makefile.baremetal
-	cd ..
-
-gravitar: 
-	cd gravitar; make -f Makefile.baremetal
-	cd ..
-
-spaceduel: 
-	cd spaceduel; make -f Makefile.baremetal
-	cd ..
-	
-tempest: 
-	cd tempest; make -f Makefile.baremetal
-	cd ..
-	
-Cine:
-	cd cinematronics; make -f Makefile.baremetal
-	cd ..
-
-helloWorld:
-	cd hello_world; make -f Makefile.baremetal
-	cd ..
+all:
+	( cd piTrexBoot; banner loader; make -f Makefile )
+	( cd redbaron; banner redbaron; make -f Makefile.baremetal )
+	( cd lunar; banner lunar; make -f Makefile.baremetal )
+	( cd deluxe; banner deluxe; make -f Makefile.baremetal )
+	( cd blackwidow; banner blackwidow; make -f Makefile.baremetal )
+	( cd tailgunner; banner tailgunner; make -f Makefile.baremetal )
+	( cd vecx.emulated; banner vecx; make -f Makefile.baremetal )
+	( cd vecx.direct; banner vecx2; make -f Makefile.baremetal )
+	( cd asteroids_sbt; banner asteroids; make -f Makefile.baremetal )
+	( cd gyrocks; banner gyrocks; make -f Makefile.baremetal )
+	( cd battlezone; banner battlezone; make -f Makefile.baremetal )
+	( cd gravitar; banner gravitar; make -f Makefile.baremetal )
+	( cd spaceduel; banner spaceduel; make -f Makefile.baremetal )
+	( cd tempest; banner tempest; make -f Makefile.baremetal )
+	( cd cinematronics; banner cinema; make -f Makefile.baremetal )
+	( cd hello_world; banner hellow; make -f Makefile.baremetal )
 
 clean:
-	cd piTrexBoot; make -f Makefile clean
-	cd ..
-	cd lunar; make -f Makefile.baremetal clean
-	cd ..
-	cd redbaron; make -f Makefile.baremetal clean
-	cd ..
-	cd deluxe; make -f Makefile.baremetal clean
-	cd ..
-	cd blackwidow; make -f Makefile.baremetal clean
-	cd ..
-	cd tailgunner; make -f Makefile.baremetal clean
-	cd ..
-	cd vecx.emulated; make -f Makefile.baremetal clean
-	cd ..
-	cd vecx.direct; make -f Makefile.baremetal clean
-	cd ..
-	cd asteroids_sbt; make -f Makefile.baremetal clean
-	cd ..
-	cd gyrocks; make -f Makefile.baremetal clean
-	cd ..
-	cd battlezone; make -f Makefile.baremetal clean
-	cd ..
-	cd gravitar; make -f Makefile.baremetal clean
-	cd ..
-	cd spaceduel; make -f Makefile.baremetal clean
-	cd ..
-	cd tempest; make -f Makefile.baremetal clean
-	cd ..
-	cd sim; make -f Makefile.baremetal clean
-	cd ..
-	cd cinematronics; make -f Makefile.baremetal clean
-	cd ..
-	cd hello_world; make -f Makefile.baremetal clean
-	cd ..
-	cd pitrex/pitrex; make -f Makefile.baremetal clean
-	cd ..
-	cd pitrex/vectrex; make -f Makefile.baremetal clean
-	cd ..
+	( cd piTrexBoot; make -f Makefile clean )
+	( cd lunar; make -f Makefile.baremetal clean )
+	( cd redbaron; make -f Makefile.baremetal clean )
+	( cd deluxe; make -f Makefile.baremetal clean )
+	( cd blackwidow; make -f Makefile.baremetal clean )
+	( cd tailgunner; make -f Makefile.baremetal clean )
+	( cd vecx.emulated; make -f Makefile.baremetal clean )
+	( cd vecx.direct; make -f Makefile.baremetal clean )
+	( cd asteroids_sbt; make -f Makefile.baremetal clean )
+	( cd gyrocks; make -f Makefile.baremetal clean )
+	( cd battlezone; make -f Makefile.baremetal clean )
+	( cd gravitar; make -f Makefile.baremetal clean )
+	( cd spaceduel; make -f Makefile.baremetal clean )
+	( cd tempest; make -f Makefile.baremetal clean )
+	( cd sim; make -f Makefile.baremetal clean )
+	( cd cinematronics; make -f Makefile.baremetal clean )
+	( cd hello_world; make -f Makefile.baremetal clean )
+	( cd pitrex/pitrex; make -f Makefile.baremetal clean )
+	( cd pitrex/vectrex; make -f Makefile.baremetal clean )

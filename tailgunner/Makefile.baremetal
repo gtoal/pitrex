@@ -74,7 +74,7 @@ tailgunner.img : pitrexLib loaderObjects $(BUILD_DIR)tailgunner.o $(BUILD_DIR)op
 	-lm -lff12c  -ldebug  -lhal -lutils -lconsole -lff12c -lbob -li2c -lbcm2835 -larm $(LIB_DIR)/linkerHeapDefBoot.ld
 	$(RM) tailgunner.img
 	arm-none-eabi-objcopy $(BUILD_DIR)tailgunner.elf.img -O binary tailgunner.img
-	arm-none-eabi-objdump -l -S -D $(BUILD_DIR)tailgunner.elf.img > $(BUILD_DIR)tailgunner.img.s
+	##arm-none-eabi-objdump -l -S -D $(BUILD_DIR)tailgunner.elf.img > $(BUILD_DIR)tailgunner.img.s
 ifdef MAKE_IMAGE
 	cp tailgunner.img /media/psf/Home/ubuntu64
 	cp tailgunner.img /media/psf/macRoot/Volumes/baremetal

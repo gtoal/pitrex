@@ -1,17 +1,16 @@
-INSTALL=@echo sudo cp -v 
+INSTALL=sudo cp -v 
 
 # should merge this or something like it with Makefile.baremetal ?  This is a first draft...
 
-all:     /boot/asteroids.img      /boot/deluxe.img      /boot/spaceduel.img   /boot/vecxemuld.img \
+all:     /boot/deluxe.img         /boot/spaceduel.img   /boot/vecxemuld.img \
          /boot/asteroids_sbt.img  /boot/battlezone.img  /boot/gravitar.img    /boot/vecxemul.img \
          /boot/blackwidow.img     /boot/gyrocks.img     /boot/lunar.img       /boot/tailgunner.img \
          /boot/cine.img           /boot/hello.img       /boot/redbaron.img    /boot/tempest.img \
-	 /boot/kernel.img         /boot/loader.pit
+	 /boot/kernel.img         /boot/loader.pit	# /boot/asteroids.img
 	@echo All up to date.
 
 /boot/linux.img: /boot/kernel.img
 	@file /boot/kernel.img | fgrep "Linux kernel ARM boot executable zImage" >/dev/null && ( echo "Backing up original linux kernel to /boot/linux.img"; ${INSTALL} /boot/kernel.img /boot/linux.img ) || (file /boot/linux.img | fgrep "Linux kernel ARM boot executable zImage" >/dev/null || echo "/boot/kernel.img already replaced - make sure /boot/linux.img contains a copy of the real linux kernel.img" )
-
 
 /boot/loader.pit: /boot/linux.img piTrexBoot/loader.pit
 	${INSTALL} piTrexBoot/loader.pit /boot/loader.pit

@@ -321,7 +321,7 @@ int openIniFile (const char *filename)
 
    if (readSize != tempSize)
    {
-      printf ("Error: While reading file \"%s\"(%i/%i)\r\n", filename, readSize, tempSize);
+      printf ("Error: While reading file \"%s\"(%i/%li)\r\n", filename, readSize, tempSize);
       fclose (inFile);
       // IniBfr = 0;
       return (iniErrOpen);

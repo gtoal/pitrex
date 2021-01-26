@@ -764,10 +764,10 @@ void setup_game (void)
       init_earom();
       setup_roms_and_tags (tempest_roms, tempest_tags);
 
-      mem [0x11b].tagr = TEMPEST_PROTECTTION_0;
-      mem [0x455].tagr = TEMPEST_PROTECTTION_0;
-      mem [0x11f].tagr = TEMPEST_PROTECTTION_0;
-      mem [0x720].tagr = TEMPEST_PROTECTTION_0;
+      mem [0x11b].tagr = TEMPEST_PROTECTION_0;
+      mem [0x455].tagr = TEMPEST_PROTECTION_0;
+      mem [0x11f].tagr = TEMPEST_PROTECTION_0;
+      mem [0x720].tagr = TEMPEST_PROTECTION_0;
 /*      
 00011B  1  xx           copyr_vid_cksum1
 000455  1  xx           copyr_vid_cksum2

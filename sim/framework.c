@@ -116,7 +116,7 @@ char *getFlagString(int CC)
   return flagsString;
 }
 
-int nextDraw = 30000;
+long nextDraw = 30000L;
 extern int frame;
 long long cyclesAll;
 void sim_6502 (void)
@@ -155,7 +155,7 @@ void sim_6502 (void)
         if (nextDraw <totcycles)
         {
           avg_draw_vector_list_t();
-          nextDraw = totcycles+30000;
+          nextDraw = totcycles+30000L;
         }
       }
 
@@ -166,7 +166,7 @@ void sim_6502 (void)
 {
 
 
-//#define DEBUG_OUT(...) do { if (v_directReadButtons() & 0x08){ disasm_6502(PC);if (!debugf) debugf = fopen("debug-sim.log", "w"); if (debugf) { fprintf(debugf,__VA_ARGS__); fflush(debugf); }} } while(0)
+//#define DEBUG_OUT(...) do { if (v_directReadButtons() & 0x08){ disasm_6502(PC);if (!debugf) debugf = fopen("debug-sim.log", "w"); if (debugf) { fprintf(debugf,__VA_ARGS__); fflush(debugf); fprintf(stderr,__VA_ARGS__); }} } while(0)
 #define DEBUG_OUT(...) 
 DEBUG_OUT( "%-27s PC=%04x, A=%02x, X=%02x, Y=%02x, SP=%04x, %s, Cyc: %ld\r\n",disbuffer, PC, A, X, Y, SP + 0x100, getFlagString(CC), totcycles);
 }

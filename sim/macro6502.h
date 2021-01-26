@@ -20,6 +20,26 @@
  * $Id: macro6502.h,v 1.1 2018/07/31 01:19:45 pi Exp $
  */
 
+/*
+   WARNING:
+    there are a lot of TR_ macros, similar to:
+
+       #define TR_JMP   do { PC = addr; continue; } while (0)
+    which do a 'continue' inside the do { ... } while (0) statement,
+    a form that is used only to protect the macro call from awkward
+    problems if used in an 'if' statement.
+
+    Unfortunately the continue in this context jumps to the 'while (0)' test,
+    NOT the test of some larger inclusive loop around the program translation.
+
+    Depending on the details of that loop and what follows these TR_ calls,
+    the possibility exists of wrong code execution, e.g. dropping through
+    to a following instruction.
+
+    This has not yet been looked into at the point of call.  We need to
+    scan this file for 'continue' statements, and then check all instances
+    where those macros are instantiated.
+*/
 
 /***********************************************************************
 *

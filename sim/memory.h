@@ -120,7 +120,7 @@ extern elem *mem;
 #define RB_SND          51
 #define RB_SND_RST      52
 #define RB_JOY          53
-#define TEMPEST_PROTECTTION_0 54
+#define TEMPEST_PROTECTION_0 54
 #define BREAKTAG  0x80
 
 #define memrd(addr,PC,cyc) (mem[addr].tagr?MEMRD(addr,PC,cyc):mem[addr].cell)

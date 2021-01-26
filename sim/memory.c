@@ -197,13 +197,13 @@ byte MEMRD(unsigned addr, int PC, unsigned long cyc)
     case MEMORY:
       result = mem[addr].cell;
       break;
-    case TEMPEST_PROTECTTION_0:
-      // always read 0, than nothing bad can happen :-)
+    case TEMPEST_PROTECTION_0:
+      // always read 0, then nothing bad can happen :-)
       result = 0;
       break;
-	case COLORRAM:
+    case COLORRAM:
       result = mem[addr].cell;
-	  break;
+      break;
     case COININ:
       result =
 	((! check_switch_decr (& cslot_right))) |

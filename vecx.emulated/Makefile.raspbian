@@ -60,3 +60,8 @@ vecx: pitrexLib dirCheck \
 clean:
 	$(RM) $(BUILD_DIR)*.*
 	$(RM) vecx
+
+install:
+	mkdir -p /opt/pitrex/roms/vectrex
+	cp bios.bin /opt/pitrex/roms/vectrex
+	install -o root -g games -m 6555 vecx /opt/pitrex/bin/vecxemul

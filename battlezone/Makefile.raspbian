@@ -56,3 +56,5 @@ $(EMU_NAME): $(BUILD_DIR)main.o $(BUILD_DIR)sim.o pitrexLib simLib
 clean:
 	$(RM) $(BUILD_DIR)*.*
 	$(RM) $(EMU_NAME)
+install:
+	install -o root -g games -m 6555 $(EMU_NAME) /opt/pitrex/bin

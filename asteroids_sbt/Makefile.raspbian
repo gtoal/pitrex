@@ -82,3 +82,6 @@ asteroids_sbt: dirCheck pitrexLib $(BUILD_DIR)gmain.o $(BUILD_DIR)dvg.o
 clean:
 	$(RM) $(BUILD_DIR)*.*
 	rm -f asteroids_sbt
+
+install:
+	install -o root -g games -m 6555 asteroids_sbt /opt/pitrex/bin

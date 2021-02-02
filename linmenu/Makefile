@@ -39,3 +39,16 @@ clean:
 	$(RM) $(BUILD_DIR)*.*
 	$(RM) linmenu
 
+install:
+	install -o root -g games -m 6555 linmenu /opt/pitrex/bin
+	mkdir -p /opt/pitrex/share/linmenu
+	if [ -f /boot/pitrexSample.raw ]; then \
+	  cp /boot/pitrexSample.raw /opt/pitrex/share/linmenu; \
+	else \
+	  cp ../to_baremetal/pitrexSample.raw /opt/pitrex/share/linmenu; \
+	fi
+	if [ -f /boot/menu.ym ]; then \
+	  cp /boot/menu.ym /opt/pitrex/share/linmenu; \
+	else \
+	  cp ../to_baremetal/menu.ym /opt/pitrex/share/linmenu; \
+	fi

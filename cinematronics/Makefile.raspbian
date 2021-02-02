@@ -4,7 +4,7 @@ COMMON = $(BASE)pitrex/
 PITREX = $(COMMON)pitrex/
 VECTREX = $(COMMON)vectrex/
 
-INI_DIR = /opt/pitrex/ini
+INI_DIR = /opt/pitrex/share/cinemu/ini
 
 CFLAGS = -DPITREX=1  -DPIZERO -DRPI0 -Ofast -I$(BASE) -I$(PITREX) -I$(VECTREX)  -I$(COMMON) -DINI_DIR="\"$(INI_DIR)\""
 
@@ -58,3 +58,8 @@ cinemu: pitrexLib \
 clean:
 	$(RM) $(BUILD_DIR)*.*
 	$(RM) cinemu
+
+install:
+	install -o root -g games -m 6555 cinemu /opt/pitrex/bin
+	mkdir -p /opt/pitrex/share/cinemu/ini
+	cp ini_install/* /opt/pitrex/share/cinemu/ini

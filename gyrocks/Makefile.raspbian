@@ -45,3 +45,6 @@ gyrocks: $(BUILD_DIR)gyrocks.o $(BUILD_DIR)objects.o  $(BUILD_DIR)hershey_font.o
 clean:
 	$(RM) $(BUILD_DIR)*.*
 	$(RM) gyrocks
+
+install:
+	install -o root -g games -m 6555 gyrocks /opt/pitrex/bin

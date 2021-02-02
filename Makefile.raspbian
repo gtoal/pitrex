@@ -123,3 +123,43 @@ clean:
 	cd ..
 	cd zblast; make -f Makefile clean
 	cd ..
+
+install:
+	cd lunar; make -f Makefile.raspbian install
+	cd ..
+	cd deluxe; make -f Makefile.raspbian install
+	cd ..
+	cd redbaron; make -f Makefile.raspbian install
+	cd ..
+	cd blackwidow; make -f Makefile.raspbian install
+	cd ..
+	cd tailgunner; make -f Makefile.raspbian install
+	cd ..
+	cd vecx.emulated; make -f Makefile.raspbian install
+	cd ..
+	cd vecx.direct; make -f Makefile.raspbian install
+	cd ..
+	cd asteroids_sbt; make -f Makefile.raspbian install
+	cd ..
+	cd gyrocks; make -f Makefile.raspbian install
+	cd ..
+	cd battlezone; make -f Makefile.raspbian install
+	cd ..
+	cd gravitar; make -f Makefile.raspbian install
+	cd ..
+	cd spaceduel; make -f Makefile.raspbian install
+	cd ..
+	cd tempest; make -f Makefile.raspbian install
+	cd ..
+	cd cinematronics; make -f Makefile.raspbian install
+	cd ..
+	cd hello_world; make -f Makefile.raspbian install
+	cd ..
+	cd linmenu; make -f Makefile install
+	cd ..
+	cd VMMenu; make -f Makefile.raspbian install
+	cd ..
+	cd xhyperoid; make -f Makefile install
+	cd ..
+	cd zblast; make -f Makefile install
+	cd ..

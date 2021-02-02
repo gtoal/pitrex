@@ -154,3 +154,16 @@ drawships: $(BUILD_DIR)drawships.o $(BUILD_DIR)window.o \
 	        	   $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
 	$(RM) drawships
 	$(CC) $(CFLAGS) -o drawships $(BUILD_DIR)drawships.o $(BUILD_DIR)window.o $(PITREX_DIR)$(BUILD_DIR)bcm2835.o $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
+
+install:
+	install -o root -g games -m 6555 hello /opt/pitrex/bin
+	install -o root -g games -m 6555 fonttest /opt/pitrex/bin
+	install -o root -g games -m 6555 pacman /opt/pitrex/bin
+	install -o root -g games -m 6555 bootmsg /opt/pitrex/bin
+	install -o root -g games -m 6555 maze /opt/pitrex/bin
+	install -o root -g games -m 6555 perspective /opt/pitrex/bin
+	install -o root -g games -m 6555 cube /opt/pitrex/bin
+	install -o root -g games -m 6555 gimms /opt/pitrex/bin
+	install -o root -g games -m 6555 calibrate /opt/pitrex/bin
+	install -o root -g games -m 6555 window /opt/pitrex/bin
+	install -o root -g games -m 6555 drawships /opt/pitrex/bin

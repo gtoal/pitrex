@@ -50,3 +50,6 @@ tailgunner: dirCheck pitrexLib $(BUILD_DIR)tailgunner.o $(BUILD_DIR)ops.o
 clean:
 	$(RM) $(BUILD_DIR)*.* tailgunr-ops.c tailgunner-data.i tailgunner
 	$(MAKE) -C ./translate -f Makefile clean
+
+install:
+	install -o root -g games -m 6555 tailgunner /opt/pitrex/bin

@@ -2,7 +2,7 @@ BUILD_DIR_PURE := build.raspbian
 BUILD_DIR := $(BUILD_DIR_PURE)/
 PITREX_DIR := ../pitrex/pitrex/
 VECTREX_DIR := ../pitrex/vectrex/
-SETTINGS := /opt/pitrex/share/vmmenu
+SETTINGS := /opt/pitrex/share/vmmenu/
 ##CFLAGS := -W -Wall -O2 -s -g -ggdb3 -I../pitrex/ -DPITREX -DPIZERO -DRPI0 # -Ofast
 ##CFLAGS := -W -Wall -s -g -I../pitrex/ -DPITREX -DPIZERO -DRPI0 # -Ofast
 CFLAGS := -W -Wall -s -Ofast -DSETTINGS_DIR="\"$(SETTINGS)\"" -I../pitrex/ -DPITREX -DPIZERO -DRPI0 # -Ofast

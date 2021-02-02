@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef PITREX
+#include <unistd.h>
 #include <pitrex/pitrexio-gpio.h>
 #include <vectrex/vectrexInterface.h>
 #include "../PiTrex/window.h"
@@ -659,16 +660,19 @@ void RunGame(char *gameargs, char *zvgargs)
       {
          zvgFrameClose();              // Close the ZVG
       }
-      sprintf(command, "./vmm.sh '%s' '%s'", gameargs, zvgargs);
+      sprintf(command, "vmm.sh '%s' '%s'", gameargs, zvgargs);
    }
    else
    {
-      sprintf(command, "./vmm.sh \"%s\"", gameargs);
+      sprintf(command, "vmm.sh \"%s\"", gameargs);
    }
    printf("Launching: [%s]\n", command);
    err = system(command);
    if (optz[o_redozvg] && ZVGPresent)  // Re-open the ZVG if MAME closed it
    {
+#ifdef PITREX
+      usleep(500000); //Should just disable 1+2+3+4 exit function for 1s instead.
+#endif
       err = zvgFrameOpen();            // initialize everything
       if (err)
       {

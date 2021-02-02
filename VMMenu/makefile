@@ -76,6 +76,7 @@ ifeq ($(target),linuxpitrex)
    VPATH=VMMSrc iniparser Linux VMMSDL
    INC = `sdl2-config --cflags` -I./VMMSrc -I./Linux -I./iniparser -I./VMMSDL
    LIBS= `sdl2-config --libs` -lSDL2 -lSDL2_mixer -lm
+   CFLAGS = $(CFLAGS) -DSETTINGS_DIR=/opt/pitrex/share/vmmenu
    EXEC = vmmenu
    RM = rm -f
    RMDIR = rm -rf
@@ -166,9 +167,11 @@ clean:
 
 # install
 install:
-#	cp $(EXEC) /usr/local/sbin
-	chown root $(EXEC)
-	chmod u+s $(EXEC)
+	install -o root -g games -m 6555 $(EXEC) /opt/pitrex/bin
+	install -o root -g games vmm.sh /opt/pitrex/bin
+	mkdir -p /opt/pitrex/share/vmmenu
+	cp vmmenu.ini /opt/pitrex/share/vmmenu
+	cp vmmenu.cfg /opt/pitrex/share/vmmenu
 
 # Flags for linker
 $(EXEC) : $(OBJS)

@@ -30,7 +30,7 @@ and for homebrew free text is often used instead.
 #define MAX_GAME_STR      32
 #define MAX_HEADER_SIZE   0x100
 
-#define ROMDIR  "/usr/local/share/advance/image/vectrex"
+#define ROMDIR  "/opt/pitrex/roms/vectrex"
 
 typedef struct
 {

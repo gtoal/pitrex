@@ -177,7 +177,7 @@ int main(int argc, char *argv[])
    int          mpx = 0, mpy = 0;
    vObject      sega, cinematronics, atari, centuri, vbeam, midway, vectrex;
    FILE         *inifp;
-   char         *ini_name = "vmmenu.cfg";
+   char         *ini_name = SETTINGS_DIR"vmmenu.cfg";
 
    vectorgames = createlist();
    totalnumgames=printlist(vectorgames);
@@ -453,7 +453,7 @@ int main(int argc, char *argv[])
                }
                if (cc == keyz[k_start])                                                      // launch VMAME
                {
-                  RunGame(sel_clone->clone, zvgargs);
+                  RunGame(sel_clone->clone, vectorgames->name);
                }
                if (cc == keyz[k_nclone])                                                     // [Right]: go to next clone in list
                {
@@ -540,6 +540,14 @@ int main(int argc, char *argv[])
             drawshape(centuri);
          }
          else if (!strcmp(mytext, "CINEMATRONICS"))
+         {
+            cinematronics.pos.x = -(xmax-130);
+            cinematronics.scale.x = width;
+            drawshape(cinematronics);
+            cinematronics.pos.x = xmax-130;
+            drawshape(cinematronics);
+         }
+         else if (!strcmp(mytext, "CINEMU"))
          {
             cinematronics.pos.x = -(xmax-130);
             cinematronics.scale.x = width;

@@ -5,13 +5,17 @@ then the DVG, and now the PiTrex) but in order for the linux-hosted version to w
 display ... and this causes the SDL code to fail to initialise.  At first it looked like we'ld have to remove the SDL
 calls, but then we found a sneaky hack where we started the menu with HDMI enabled and then rapidly shut it off.
 
+Update: Instead of the script, you can just run it will the SDL_VIDEODRIVER environment variable set to "dummy", eg.
+$ sudo SDL_VIDEODRIVER=dummy ./vmmenu
+
 At some point it'll be better to remove the SDL entirely.
 
 It would be nice if we could add the PiTrex code completely conditionally so that this still works with both
 the ZVG and DVG, but be prepared for an expedient decision to remove the legacy code if need be.
 
 We need to move the sounds from the Pi side to the Vectrex side.  Or at a minimum, disable them since the Pi Zero
-doesn't have sound output anyway (at least not when the HDMI is off)
+doesn't have sound output anyway (at least not when the HDMI is off) [Kevin: it does if you use USB or Bluetooth
+audio output]
 
 The graphics.c code duplicates some code handled by this package.  Unless window.c moves into the library,
 it might be worth cutting down considerably.

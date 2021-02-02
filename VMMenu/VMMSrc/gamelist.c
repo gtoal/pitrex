@@ -207,7 +207,7 @@ m_node* createlist()
    m_node   *man_root = NULL, *man_cursor = NULL, *man_last = NULL;
    g_node   *game_root = NULL, *game_cursor = NULL, *game_last = NULL;
 
-   fp = fopen ("vmmenu.ini","rt" );
+   fp = fopen (SETTINGS_DIR"/vmmenu.ini","rt" );
    if (fp == NULL)
    {
       printf("* Fatal Error - Unable to open menu file vmmenu.ini\n");

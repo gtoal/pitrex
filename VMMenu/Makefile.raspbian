@@ -2,9 +2,10 @@ BUILD_DIR_PURE := build.raspbian
 BUILD_DIR := $(BUILD_DIR_PURE)/
 PITREX_DIR := ../pitrex/pitrex/
 VECTREX_DIR := ../pitrex/vectrex/
+SETTINGS := /opt/pitrex/share/vmmenu
 ##CFLAGS := -W -Wall -O2 -s -g -ggdb3 -I../pitrex/ -DPITREX -DPIZERO -DRPI0 # -Ofast
 ##CFLAGS := -W -Wall -s -g -I../pitrex/ -DPITREX -DPIZERO -DRPI0 # -Ofast
-CFLAGS := -W -Wall -s -Ofast -I../pitrex/ -DPITREX -DPIZERO -DRPI0 # -Ofast
+CFLAGS := -W -Wall -s -Ofast -DSETTINGS_DIR="\"$(SETTINGS)\"" -I../pitrex/ -DPITREX -DPIZERO -DRPI0 # -Ofast
 CC = gcc
 LINK = gcc
 OBJ_DIR = obj
@@ -56,11 +57,12 @@ vmmenu: dirCheck pitrexLib $(OBJS) $(PITREX_DIR)$(BUILD_DIR)bcm2835.o $(PITREX_D
 	      $(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
 	      $(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o
 
-# install
 install:
-#	cp vmmenu /usr/local/sbin
-	chown root vmmenu
-	chmod u+s vmmenu
+	install -o root -g games -m 6555 vmmenu /opt/pitrex/bin
+	install -o root -g games vmm.sh /opt/pitrex/bin
+	mkdir -p /opt/pitrex/share/vmmenu
+	cp vmmenu.ini /opt/pitrex/share/vmmenu
+	cp vmmenu.cfg /opt/pitrex/share/vmmenu
 
 $(OBJ_DIR)/vmmenu.o: VMMSrc/vmmenu.c
 	$(CC) $(CFLAGS) -c $(INC) -o $@ VMMSrc/vmmenu.c

@@ -13,12 +13,12 @@ case "$2" in
    echo "Vectrex Game Selected"
    echo "Command Line: vecx \"$1\""
    # /opt/pitrex/bin/advmess vectrex -cart "$1"
-   vecx "/opt/pitrex/roms/$1"
+   vecx "$1"
   ;;
 
- "Cinemu" )
+ "CinEmu" )
    echo "Running Cinematronics emulator for: $1"
-   cinemu "/opt/pitrex/roms/$1"
+   cinemu "$1"
   ;;
 
  * )

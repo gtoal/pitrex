@@ -280,6 +280,7 @@ int inCalibration;
 
 int selectedCalibrationMenu;
 int selectionCalibrationMade;
+char v_detectExitEvents;
 uint8_t ioDone;                 // vectrex IO should only be done once per "round"
 
 uint32_t timerMark;
@@ -467,6 +468,7 @@ struct sched_param sp = {.sched_priority = 99 };
   pl = _P[pipelineAlt];
   cpb = &pb[pipelineCounter];   // current base pipeline
 
+  v_detectExitEvents = 1;
   inCalibration = 0;
   currentCursorX = 0;           // 16 bit positioning value X
   currentCursorY = 0;           // 16 bit positioning value Y
@@ -1162,7 +1164,7 @@ void v_WaitRecal_buffered (int buildBuffer) {
 #endif
 
   v_resetDetection ();
-  if (currentButtonState == 0xf)        // button 1 + 2 + 3 + 4 -> go menu
+  if ((currentButtonState == 0xf) && v_detectExitEvents)        // button 1 + 2 + 3 + 4 -> go menu
   {
 #ifndef FREESTANDING
     v_noSound ();
@@ -1223,7 +1225,7 @@ void v_WaitRecal_buffered (int buildBuffer) {
 // which atm we do...
 
 void v_resetDetection (void) {
-  if ((GET (VIA_DDR_a) == 0) && (GET (VIA_DDR_b) == 0)) {
+  if ((GET (VIA_DDR_a) == 0) && (GET (VIA_DDR_b) == 0) && v_detectExitEvents) {
     printf ("Reset detected!\r\n");
     // wait till reset is finished
     while ((GET (VIA_DDR_a) == 0) && (GET (VIA_DDR_b) == 0)) {

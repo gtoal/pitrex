@@ -643,7 +643,6 @@ void drawvector(point p1, point p2, float x_trans, float y_trans)
    }
 }
 
-
 /********************************************************************
    Close SDL and execute MAME, restart SDL when done
 ********************************************************************/
@@ -667,11 +666,15 @@ void RunGame(char *gameargs, char *zvgargs)
       sprintf(command, "vmm.sh \"%s\"", gameargs);
    }
    printf("Launching: [%s]\n", command);
+#ifdef PITREX
+   v_detectExitEvents = 0;
+#endif
    err = system(command);
    if (optz[o_redozvg] && ZVGPresent)  // Re-open the ZVG if MAME closed it
    {
 #ifdef PITREX
       usleep(500000); //Should just disable 1+2+3+4 exit function for 1s instead.
+      v_init();
 #endif
       err = zvgFrameOpen();            // initialize everything
       if (err)

@@ -130,6 +130,7 @@ extern Command *userCommandList;
 extern int browseMode;
 extern int currentBrowsline;
 extern int currentDisplayedBrowseLine;
+extern char v_detectExitEvents;
 
 void v_error(char *message); // halts the program and displays an the message on the vectrex!
 void v_errori(char *message, int i);

@@ -96,11 +96,11 @@ static void quit(void)
 }
 void initEmulator();
 
-void main()
+void main(int argc, char **argv)
 {
 
 	if (!init()) quit();
-	initEmulator();
+	initEmulator(argc, argv);
 	resize();
 	emuloop();
 	quit();
@@ -126,9 +126,48 @@ void translateName(char *from, char *to);
 int fillDirNames(int startWith);
 void loadSelected(int selected);
 
+static int filelength(FILE *fd)        // also used in inifile.c so not static
+{
+   int fsize;
+   fseek (fd, 0, SEEK_END);
+// my book says return 0 on success!
+   fsize = ftell(fd); 
+   (void) fseek (fd, 0, SEEK_SET);
+   return fsize;
+}
+
+void loadRom (char *pathName)
+{
+  uint8_t *loadMem = cart;
+
+  printf("Loading: %s \r\n", pathName);
+
+  FILE *f;
+  f = fopen(pathName, "r");
+  if (f == 0)
+  {
+            printf("Could not open file %s (%i) \r\n", pathName, errno);
+  }
+  else
+  {
+    unsigned int fsize = filelength(f);
+    int sizeRead = fread(loadMem, 1,fsize , f);
+    if ( sizeRead== 0)
+    {
+        fclose(f);
+        printf("File not loaded\r\n");
+    }
+    else
+    {
+        fclose(f);
+        // file is loaded
+        printf("Starting loaded file...\r\n");
+    }
+  }
+}
 
 int maxInDir = 0;
-void initEmulator()
+void initEmulator(int argc, char **argv)
 {
 #ifdef FREESTANDING
     char *vectrexDir = "roms/vectrex";
@@ -140,6 +179,13 @@ void initEmulator()
 	    printf("NO vectrex directory found...!\r\n");
 	    return;
     }
+    /* load ROM specified as command argument */
+    if (argc > 1)
+    {
+     loadRom(argv[1]);
+     return;
+    }
+
     // see if there is a directory "vectrex"
     int startWith = 0;
     int nameResult = fillDirNames(startWith);
@@ -203,20 +249,10 @@ void initEmulator()
 	}
     }
 }
-static int filelength(FILE *fd)        // also used in inifile.c so not static
-{
-   int fsize;
-   fseek (fd, 0, SEEK_END);
-// my book says return 0 on success!
-   fsize = ftell(fd); 
-   (void) fseek (fd, 0, SEEK_SET);
-   return fsize;
-}
 
 void loadSelected(int selected)
 {
   char *selectedName = names[selected];
-  uint8_t *loadMem = cart;
 
 
   // prepareName
@@ -236,35 +272,8 @@ void loadSelected(int selected)
     loadName[c++]=selectedName[ii];
     if (selectedName[ii]==0) break;
   }
-
-
-
-  printf("Loading: %s \r\n", loadName);
-  
-  FILE *f;
-  f = fopen(loadName, "r");
-  if (f == 0)
-  {
-            printf("Could not open file %s (%i) \r\n", loadName, errno);
-  }
-  else
-  {
-    unsigned int fsize = filelength(f);
-    int sizeRead = fread(loadMem, 1,fsize , f);
-    if ( sizeRead== 0)
-    {
-        fclose(f);
-        printf("File not loaded\r\n");
-    }
-    else
-    {
-        fclose(f);
-        // file is loaded
-        printf("Starting loaded file...\r\n");
-    }
-  }
+  loadRom (loadName);
 }
-
 
 // to upper case :-)
 void translateName(char *from, char *to)

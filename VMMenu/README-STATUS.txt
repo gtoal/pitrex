@@ -30,5 +30,6 @@ The display is a bit flickery when there is a lot of text on the screen.  Maybe 
 that can be listed at once from 13 to 8 or less?  If you force a reset0-ref on every vector the flicker
 becomes unacceptable on all screens.  I currently only do it when there's a move, but not for abutting vectors.
 Would be nicer to do it at a higher level only when actually necessary.
+- Game list items now reduced to 8.
 
 (Slightly tangential: add a linux command line as a menu option.)

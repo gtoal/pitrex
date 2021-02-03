@@ -603,23 +603,23 @@ int main(int argc, char *argv[])
 
 
          // If we have a long list then we scroll it...
-         if (totgames>13)
+         if (totgames>8)
          {
-            if (gamenum<(totgames-5))                                            // print a down arrow if there are games off the bottom
+            if (gamenum<(totgames-3))                                            // print a down arrow if there are games off the bottom
             {
                setcolour(colours[c_col][c_arrow], colours[c_int][c_arrow]);
                PrintString(">", 0, -330, 270, 6, 6, 0);
             }
             gamenumtemp=gamenum;
-            while ((gamenumtemp>7) && (gamenumtemp<(totgames-5)))                // If we are in the middle zone, scroll the list
+            while ((gamenumtemp>5) && (gamenumtemp<(totgames-3)))                // If we are in the middle zone, scroll the list
 
             {
                gamelist_root = gamelist_root->next;
                gamenumtemp--;
             }
-            if (gamenumtemp>=(totgames-5))                                       // If we are in the last 5 games of the list, stop scrolling
+            if (gamenumtemp>=(totgames-3))                                       // If we are in the last 5 games of the list, stop scrolling
             {
-               for (gamenumtemp=0;gamenumtemp<(totgames-13);gamenumtemp++)
+               for (gamenumtemp=0;gamenumtemp<(totgames-8);gamenumtemp++)
                {
                   gamelist_root = gamelist_root->next;
                }
@@ -654,7 +654,7 @@ int main(int argc, char *argv[])
             top -= 35;
             printed++;
          }
-         while ((gamelist_root != vectorgames->firstgame) && (printed<13));
+         while ((gamelist_root != vectorgames->firstgame) && (printed<8));
       }
       timeout ++;                                       // screensaver timer
       ticks=(ticks+1)%360;                              // counter

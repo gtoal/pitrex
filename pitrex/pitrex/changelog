@@ -1,4 +1,8 @@
-Pitrex IO Lib Changes for V1.0:
+Pitrex IO Lib Changes for V1.1:
+
+*Fixed wrong value written to bcm2835_gpio_GPFSEL2 in short routines.
+
+V1.0:
 
 *Integrates Chris' "short" read/write functions.
 *Automatically detects the Raspberry Pi model that it's running on in Linux, and uses the corresponding UART configuration.

@@ -1,7 +1,7 @@
 /* PiTrex I/O functions for initialising Raspberry Pi GPIO, and Reading/Writing from/to Vectrex
  * Kevin Koster, 2020.
  * "Short" I/O routines by Chris Salomon.
- * V. 1.0
+ * V. 1.1
  */
 
 #include <unistd.h>
@@ -101,8 +101,8 @@ volatile uint32_t *bcm2835_gpio_GPLEV0;
 
 
 // GPIO Pins 10-13 = OUTPUT| 14-15 = TTY | 16-19 = INPUT
-#define PIN_READ_DEF do{*bcm2835_gpio_GPFSEL1=readconfig_GPFSEL1;__sync_synchronize();*bcm2835_gpio_GPFSEL2=readconfig_GPFSEL1;} while(0)
-#define PIN_WRITE_DEF do{*bcm2835_gpio_GPFSEL1=writeconfig_GPFSEL1;__sync_synchronize();*bcm2835_gpio_GPFSEL2=writeconfig_GPFSEL1;} while(0)
+#define PIN_READ_DEF do{*bcm2835_gpio_GPFSEL1=readconfig_GPFSEL1;__sync_synchronize();*bcm2835_gpio_GPFSEL2=0x8000;} while(0)
+#define PIN_WRITE_DEF do{*bcm2835_gpio_GPFSEL1=writeconfig_GPFSEL1;__sync_synchronize();*bcm2835_gpio_GPFSEL2=0x8249;} while(0)
 
 // -1 unkown
 // 1 = yes we are in write mode
@@ -190,6 +190,7 @@ unsigned char vectrexread_short(unsigned int address)
 // Write a byte to the Vectrex at the specified address
 void vectrexwrite_short(unsigned int address, unsigned char data)
 {
+
 	//Sets 2 bits of A12 AND A14. Result is ORed with lowest four bits of address.
 	//Shifted to position on 32bit bus
 	unsigned long shortaddress = (0x30 | (address & 0x0F)) << 7;

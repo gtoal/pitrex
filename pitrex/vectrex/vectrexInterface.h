@@ -560,11 +560,11 @@ typedef struct {
 
 #define MAX_PIPELINE 3000
 
-VectorPipelineBase pb[MAX_PIPELINE];
-int usePipeline;
-int pipelineCounter;
-VectorPipelineBase *cpb;
-int pipelineAlt;
+extern VectorPipelineBase pb[MAX_PIPELINE];
+extern int usePipeline;
+extern int pipelineCounter;
+extern VectorPipelineBase *cpb;
+extern int pipelineAlt;
 
 extern int commonHints;
 

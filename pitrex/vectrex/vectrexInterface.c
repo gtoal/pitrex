@@ -177,6 +177,12 @@ int myDebug;
 #include "baremetalUtil.h"
 #include "osWrapper.h"
 
+VectorPipelineBase pb[MAX_PIPELINE];
+int usePipeline;
+int pipelineCounter;
+VectorPipelineBase *cpb;
+
+
 #include "vectorFont.i"         // includes font definition and string printing routines
 #include "rasterFont.i"         // includes font definition and string printing routines. Supports user fonts.
 

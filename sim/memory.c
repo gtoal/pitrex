@@ -48,7 +48,7 @@ static unsigned char CS2 = 0x10;
 // internal state
 unsigned char       m_control_state;
 unsigned char       m_address;
-unsigned char       m_data;
+unsigned char       m_datam;
 
 
 void init_earom()
@@ -64,8 +64,8 @@ void update_state()
         // write mode; erasing is required, so we perform an AND against previous
         // data to simulate incorrect behavior if erasing was not done
         case 0:
-            m_rom_data[m_address] &= m_data;
-//            LOG("Write %02X = %02X\n", m_address, m_data);
+            m_rom_data[m_address] &= m_datam;
+//            LOG("Write %02X = %02X\n", m_address, m_datam);
             break;
 
         // erase mode
@@ -107,8 +107,8 @@ void earom_set_clk(unsigned char state)
         // read mode (C2 is "Don't Care")
         if ((m_control_state & C1) == C1)
         {
-            m_data = m_rom_data[m_address];
-//            LOG("Read %02X = %02X\n", m_address, m_data);
+            m_datam = m_rom_data[m_address];
+//            LOG("Read %02X = %02X\n", m_address, m_datam);
         }
 
         update_state();
@@ -117,13 +117,13 @@ void earom_set_clk(unsigned char state)
 
 unsigned char earom_read()
 {
-    return m_data;
+    return m_datam;
 }
 
 void earom_write(unsigned char offset, unsigned char data)
 {
     m_address = offset & 0x3f;
-    m_data = data;
+    m_datam = data;
 }
 
 

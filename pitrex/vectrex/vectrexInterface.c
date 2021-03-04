@@ -177,12 +177,6 @@ int myDebug;
 #include "baremetalUtil.h"
 #include "osWrapper.h"
 
-VectorPipelineBase pb[MAX_PIPELINE];
-int usePipeline;
-int pipelineCounter;
-VectorPipelineBase *cpb;
-
-
 #include "vectorFont.i"         // includes font definition and string printing routines
 #include "rasterFont.i"         // includes font definition and string printing routines. Supports user fonts.
 
@@ -314,6 +308,13 @@ uint16_t SCALE_STRENGTH_DIF;
 unsigned int Vec_Rfrsh;         // 30000 cylces (vectrex) = $7530, little endian = $3075
 unsigned int cycleEquivalent;
 int optimizationON;
+
+VectorPipelineBase pb[MAX_PIPELINE];
+int usePipeline;
+int pipelineCounter;
+VectorPipelineBase *cpb;
+int pipelineAlt;
+
 int commonHints;
 
 int clipActive;
@@ -2297,7 +2298,7 @@ unsigned int psgDoubleBuffer[16];
 unsigned int psgShadow[16];
 uint16_t ymLength;
 uint16_t ymPos;
-uint8_t *ymBuffer;
+uint8_t *ymBuffer_pointer;
 int ymloop;
 unsigned int sfx_status_1;
 unsigned int sfx_status_2;
@@ -2415,7 +2416,7 @@ void v_initSound (void) {
   sfx_priority2 = 0;
   sfx_priority3 = 0;
   ymLength = 0;
-  ymBuffer = 0;
+  ymBuffer_pointer = 0;
   ymloop = 1;
   v_noSound ();
 }
@@ -2496,7 +2497,7 @@ uint8_t directData = GET (VIA_port_a);  // Read buttons
 }
 
 void v_initYM (uint8_t * b, uint16_t length, int l) {
-  ymBuffer = b;
+  ymBuffer_pointer = b;
   ymloop = l;
   ymLength = length;
   ymPos = 0;
@@ -2509,7 +2510,7 @@ int v_playYM (void) {
     else
       return 0;
   }
-  uint8_t *currentPointer = ymBuffer + ymPos * 14;
+  uint8_t *currentPointer = ymBuffer_pointer + ymPos * 14;
 
   ymPos++;
   for (int i = 0; i < 14; i++) {

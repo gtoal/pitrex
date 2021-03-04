@@ -44,11 +44,13 @@ install:
 	mkdir -p /opt/pitrex/share/linmenu
 	if [ -f /boot/pitrexSample.raw ]; then \
 	  cp /boot/pitrexSample.raw /opt/pitrex/share/linmenu; \
-	else \
+	else if [ -f ../to_baremetal/pitrexSample.raw ]; then \
 	  cp ../to_baremetal/pitrexSample.raw /opt/pitrex/share/linmenu; \
+	 fi \
 	fi
 	if [ -f /boot/menu.ym ]; then \
 	  cp /boot/menu.ym /opt/pitrex/share/linmenu; \
-	else \
+	else if [ -f ../to_baremetal/menu.ym ]; then \
 	  cp ../to_baremetal/menu.ym /opt/pitrex/share/linmenu; \
+	 fi \
 	fi

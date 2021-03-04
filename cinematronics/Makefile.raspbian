@@ -62,4 +62,5 @@ clean:
 install:
 	install -o root -g games -m 6555 cinemu /opt/pitrex/bin
 	mkdir -p /opt/pitrex/share/cinemu/ini
-	cp ini_install/* /opt/pitrex/share/cinemu/ini
+	cp ini/* /opt/pitrex/share/cinemu/ini
+	sed -i 's/roms\//\/opt\/pitrex\/roms\//g' /opt/pitrex/share/cinemu/ini/*.ini

@@ -3,8 +3,9 @@
 
 BUILD_DIR_PURE := build.raspbian
 BUILD_DIR := $(BUILD_DIR_PURE)/
+PITREX_DIR = /opt/pitrex/
 
-CFLAGS := -Wall -Ofast -I../pitrex/ -DPIZERO -DRPI0
+CFLAGS := -Wall -Ofast -I../pitrex/ -DPIZERO -DRPI0 -DPITREX_DIR="\"$(PITREX_DIR)\""
 CC := gcc
 
 .PHONY: dirCheck

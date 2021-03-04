@@ -688,7 +688,6 @@ void tag_area (unsigned addr, unsigned len, int dir, int tag)
     }
 }
 
-
 void setup_roms_and_tags (rom_info *rom_list, tag_info *tag_list)
 {
   while (rom_list->name != NULL)

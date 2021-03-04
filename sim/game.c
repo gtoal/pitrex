@@ -26,6 +26,7 @@
 
 #ifdef FREESTANDING
 #include <vectrex/osWrapper.h>
+#define PITREX_DIR
 #endif
 //#include <vectrex/vectrexInterface.h>
 
@@ -94,17 +95,17 @@ char *game_name (int game)
 
 rom_info black_widow_roms [] =
 {
-  { "roms/BlackWidow/136017.101", 0x9000, 0x1000, 0 },
-  { "roms/BlackWidow/136017.102", 0xa000, 0x1000, 0 },
-  { "roms/BlackWidow/136017.103", 0xb000, 0x1000, 0 },
-  { "roms/BlackWidow/136017.104", 0xc000, 0x1000, 0 },
-  { "roms/BlackWidow/136017.105", 0xd000, 0x1000, 0 },
-  { "roms/BlackWidow/136017.106", 0xe000, 0x1000, 0 },
+  { PITREX_DIR "roms/BlackWidow/136017.101", 0x9000, 0x1000, 0 },
+  { PITREX_DIR "roms/BlackWidow/136017.102", 0xa000, 0x1000, 0 },
+  { PITREX_DIR "roms/BlackWidow/136017.103", 0xb000, 0x1000, 0 },
+  { PITREX_DIR "roms/BlackWidow/136017.104", 0xc000, 0x1000, 0 },
+  { PITREX_DIR "roms/BlackWidow/136017.105", 0xd000, 0x1000, 0 },
+  { PITREX_DIR "roms/BlackWidow/136017.106", 0xe000, 0x1000, 0 },
 
-  { "roms/BlackWidow/136017.107", 0x2800, 0x0800, 0 },
-  { "roms/BlackWidow/136017.108", 0x3000, 0x1000, 0 },
-  { "roms/BlackWidow/136017.109", 0x4000, 0x1000, 0 },
-  { "roms/BlackWidow/136017.110", 0x5000, 0x1000, 0 },
+  { PITREX_DIR "roms/BlackWidow/136017.107", 0x2800, 0x0800, 0 },
+  { PITREX_DIR "roms/BlackWidow/136017.108", 0x3000, 0x1000, 0 },
+  { PITREX_DIR "roms/BlackWidow/136017.109", 0x4000, 0x1000, 0 },
+  { PITREX_DIR "roms/BlackWidow/136017.110", 0x5000, 0x1000, 0 },
 
   { NULL,   0,      0,      0 }
 };
@@ -145,17 +146,17 @@ tag_info black_widow_tags [] =
 
 rom_info gravitar_roms [] =
 {
-  { "roms/Gravitar/136010.201", 0x9000, 0x1000, 0 },
-  { "roms/Gravitar/136010.202", 0xa000, 0x1000, 0 },
-  { "roms/Gravitar/136010.203", 0xb000, 0x1000, 0 },
-  { "roms/Gravitar/136010.204", 0xc000, 0x1000, 0 },
-  { "roms/Gravitar/136010.205", 0xd000, 0x1000, 0 },
-  { "roms/Gravitar/136010.206", 0xe000, 0x1000, 0 },
+  { PITREX_DIR "roms/Gravitar/136010.201", 0x9000, 0x1000, 0 },
+  { PITREX_DIR "roms/Gravitar/136010.202", 0xa000, 0x1000, 0 },
+  { PITREX_DIR "roms/Gravitar/136010.203", 0xb000, 0x1000, 0 },
+  { PITREX_DIR "roms/Gravitar/136010.204", 0xc000, 0x1000, 0 },
+  { PITREX_DIR "roms/Gravitar/136010.205", 0xd000, 0x1000, 0 },
+  { PITREX_DIR "roms/Gravitar/136010.206", 0xe000, 0x1000, 0 },
       
-  { "roms/Gravitar/136010.210", 0x2800, 0x0800, 0 },
-  { "roms/Gravitar/136010.207", 0x3000, 0x1000, 0 },
-  { "roms/Gravitar/136010.208", 0x4000, 0x1000, 0 },
-  { "roms/Gravitar/136010.209", 0x5000, 0x1000, 0 },
+  { PITREX_DIR "roms/Gravitar/136010.210", 0x2800, 0x0800, 0 },
+  { PITREX_DIR "roms/Gravitar/136010.207", 0x3000, 0x1000, 0 },
+  { PITREX_DIR "roms/Gravitar/136010.208", 0x4000, 0x1000, 0 },
+  { PITREX_DIR "roms/Gravitar/136010.209", 0x5000, 0x1000, 0 },
 
   { NULL,   0,      0,      0 }
 };
@@ -191,14 +192,14 @@ tag_info gravitar_tags [] =
 
 rom_info space_duel_roms [] =
 {
-  { "roms/SpaceDuel/136006.201", 0x4000, 0x1000, 0 },
-  { "roms/SpaceDuel/136006.102", 0x5000, 0x1000, 0 },
-  { "roms/SpaceDuel/136006.103", 0x6000, 0x1000, 0 },
-  { "roms/SpaceDuel/136006.104", 0x7000, 0x1000, 0 },
-  { "roms/SpaceDuel/136006.105", 0x8000, 0x1000, 0 },
+  { PITREX_DIR "roms/SpaceDuel/136006.201", 0x4000, 0x1000, 0 },
+  { PITREX_DIR "roms/SpaceDuel/136006.102", 0x5000, 0x1000, 0 },
+  { PITREX_DIR "roms/SpaceDuel/136006.103", 0x6000, 0x1000, 0 },
+  { PITREX_DIR "roms/SpaceDuel/136006.104", 0x7000, 0x1000, 0 },
+  { PITREX_DIR "roms/SpaceDuel/136006.105", 0x8000, 0x1000, 0 },
 
-  { "roms/SpaceDuel/136006.106", 0x2800, 0x0800, 0 },
-  { "roms/SpaceDuel/136006.107", 0x3000, 0x1000, 0 },
+  { PITREX_DIR "roms/SpaceDuel/136006.106", 0x2800, 0x0800, 0 },
+  { PITREX_DIR "roms/SpaceDuel/136006.107", 0x3000, 0x1000, 0 },
 
   { NULL,         0,      0,      0 }
 };
@@ -235,12 +236,12 @@ tag_info space_duel_tags [] =
 
 rom_info tempest_roms [] =
 {
-  { "roms/Tempest/136002-133.d1", 0x9000, 0x1000, 0 },
-  { "roms/Tempest/136002-134.f1", 0xa000, 0x1000, 0 },
-  { "roms/Tempest/136002-235.j1", 0xb000, 0x1000, 0 },  /* or .235 */
-  { "roms/Tempest/136002-136.lm1", 0xc000, 0x1000, 0 },
-  { "roms/Tempest/136002-237.p1", 0xd000, 0x1000, 0 },  /* or .237 */
-  { "roms/Tempest/136002-138.np3", 0x3000, 0x1000, 0 },
+  { PITREX_DIR "roms/Tempest/136002-133.d1", 0x9000, 0x1000, 0 },
+  { PITREX_DIR "roms/Tempest/136002-134.f1", 0xa000, 0x1000, 0 },
+  { PITREX_DIR "roms/Tempest/136002-235.j1", 0xb000, 0x1000, 0 },  /* or .235 */
+  { PITREX_DIR "roms/Tempest/136002-136.lm1", 0xc000, 0x1000, 0 },
+  { PITREX_DIR "roms/Tempest/136002-237.p1", 0xd000, 0x1000, 0 },  /* or .237 */
+  { PITREX_DIR "roms/Tempest/136002-138.np3", 0x3000, 0x1000, 0 },
 
 
   { NULL,         0,      0,      0 }
@@ -282,15 +283,15 @@ tag_info tempest_tags [] =
 
 rom_info battlezone_roms [] =
 {
-  { "roms/Battlezone/036414.01", 0x5000, 0x0800, 0 },
-  { "roms/Battlezone/036413.01", 0x5800, 0x0800, 0 },
-  { "roms/Battlezone/036412.01", 0x6000, 0x0800, 0 },
-  { "roms/Battlezone/036411.01", 0x6800, 0x0800, 0 },
-  { "roms/Battlezone/036410.01", 0x7000, 0x0800, 0 },
-  { "roms/Battlezone/036409.01", 0x7800, 0x0800, 0 },
+  { PITREX_DIR "roms/Battlezone/036414.01", 0x5000, 0x0800, 0 },
+  { PITREX_DIR "roms/Battlezone/036413.01", 0x5800, 0x0800, 0 },
+  { PITREX_DIR "roms/Battlezone/036412.01", 0x6000, 0x0800, 0 },
+  { PITREX_DIR "roms/Battlezone/036411.01", 0x6800, 0x0800, 0 },
+  { PITREX_DIR "roms/Battlezone/036410.01", 0x7000, 0x0800, 0 },
+  { PITREX_DIR "roms/Battlezone/036409.01", 0x7800, 0x0800, 0 },
 
-  { "roms/Battlezone/036422.01", 0x3000, 0x0800, 0 },
-  { "roms/Battlezone/036421.01", 0x3800, 0x0800, 0 },
+  { PITREX_DIR "roms/Battlezone/036422.01", 0x3000, 0x0800, 0 },
+  { PITREX_DIR "roms/Battlezone/036421.01", 0x3800, 0x0800, 0 },
 
   { NULL,   0,      0,           0 }
 };
@@ -326,21 +327,21 @@ tag_info battlezone_tags [] =
 rom_info red_baron_roms [] =
 {
 #if 1 /* Battlezone conversion - uses a 2732 with a disgusting hack */
-  { "roms/RedBaron/037587-01.fh1",  0x4800, 0x0800, 0 },
-  { "roms/RedBaron/037000-01.e1", 0x5000, 0x0800, 0 },
-  { "roms/RedBaron/037587-01.fh1",  0x5800, 0x0800, 0x0800 },
+  { PITREX_DIR "roms/RedBaron/037587-01.fh1",  0x4800, 0x0800, 0 },
+  { PITREX_DIR "roms/RedBaron/037000-01.e1", 0x5000, 0x0800, 0 },
+  { PITREX_DIR "roms/RedBaron/037587-01.fh1",  0x5800, 0x0800, 0x0800 },
 #else
-  { "roms/RedBaron/037001.01E", 0x4800, 0x0800, 0 },?
-  { "roms/RedBaron/037000-01.e1", 0x5000, 0x0800, 0 },
-  { "roms/RedBaron/036999.01E", 0x5800, 0x0800, 0 },
+  { PITREX_DIR "roms/RedBaron/037001.01E", 0x4800, 0x0800, 0 },?
+  { PITREX_DIR "roms/RedBaron/037000-01.e1", 0x5000, 0x0800, 0 },
+  { PITREX_DIR "roms/RedBaron/036999.01E", 0x5800, 0x0800, 0 },
 #endif
-  { "roms/RedBaron/036998-01.j1", 0x6000, 0x0800, 0 },
-  { "roms/RedBaron/036997-01.k1", 0x6800, 0x0800, 0 },
-  { "roms/RedBaron/036996-01.lm1", 0x7000, 0x0800, 0 },
-  { "roms/RedBaron/036995-01.n1", 0x7800, 0x0800, 0 },
+  { PITREX_DIR "roms/RedBaron/036998-01.j1", 0x6000, 0x0800, 0 },
+  { PITREX_DIR "roms/RedBaron/036997-01.k1", 0x6800, 0x0800, 0 },
+  { PITREX_DIR "roms/RedBaron/036996-01.lm1", 0x7000, 0x0800, 0 },
+  { PITREX_DIR "roms/RedBaron/036995-01.n1", 0x7800, 0x0800, 0 },
 
-  { "roms/RedBaron/037006-01.bc3", 0x3000, 0x0800, 0 },
-  { "roms/RedBaron/037007-01.a3", 0x3800, 0x0800, 0 },
+  { PITREX_DIR "roms/RedBaron/037006-01.bc3", 0x3000, 0x0800, 0 },
+  { PITREX_DIR "roms/RedBaron/037007-01.a3", 0x3800, 0x0800, 0 },
 
   { NULL,         0,      0,      0 }
 };
@@ -382,14 +383,14 @@ tag_info red_baron_tags [] =
 
 rom_info lunar_lander_roms [] =
 {
-  { "roms/LunarLander/034572.02", 0x6000, 0x0800, 0 },
-  { "roms/LunarLander/034571.02", 0x6800, 0x0800, 0 },
-  { "roms/LunarLander/034570.02", 0x7000, 0x0800, 0 },
-  { "roms/LunarLander/034569.02", 0x7800, 0x0800, 0 },
+  { PITREX_DIR "roms/LunarLander/034572.02", 0x6000, 0x0800, 0 },
+  { PITREX_DIR "roms/LunarLander/034571.02", 0x6800, 0x0800, 0 },
+  { PITREX_DIR "roms/LunarLander/034570.02", 0x7000, 0x0800, 0 },
+  { PITREX_DIR "roms/LunarLander/034569.02", 0x7800, 0x0800, 0 },
 
-  { "roms/LunarLander/034599.01", 0x4800, 0x0800, 0 },
-  { "roms/LunarLander/034598.01", 0x5000, 0x0800, 0 },
-  { "roms/LunarLander/034597.01", 0x5800, 0x0800, 0 },
+  { PITREX_DIR "roms/LunarLander/034599.01", 0x4800, 0x0800, 0 },
+  { PITREX_DIR "roms/LunarLander/034598.01", 0x5000, 0x0800, 0 },
+  { PITREX_DIR "roms/LunarLander/034597.01", 0x5800, 0x0800, 0 },
 
   { NULL,        0,      0,      0 }
 };
@@ -423,11 +424,11 @@ tag_info lunar_lander_tags [] =
 
 rom_info asteroids_roms [] =
 {
-  { "roms/Asteroids/035145.02", 0x6800, 0x0800, 0 },
-  { "roms/Asteroids/035144.02", 0x7000, 0x0800, 0 },
-  { "roms/Asteroids/035143.02", 0x7800, 0x0800, 0 },
+  { PITREX_DIR "roms/Asteroids/035145.02", 0x6800, 0x0800, 0 },
+  { PITREX_DIR "roms/Asteroids/035144.02", 0x7000, 0x0800, 0 },
+  { PITREX_DIR "roms/Asteroids/035143.02", 0x7800, 0x0800, 0 },
 
-  { "roms/Asteroids/035127.02", 0x5000, 0x0800, 0 },
+  { PITREX_DIR "roms/Asteroids/035127.02", 0x5000, 0x0800, 0 },
 
   { NULL,   0,      0,           0 }
 };
@@ -465,19 +466,19 @@ tag_info asteroids_tags [] =
 rom_info asteroidsdx_roms [] =
 {
 #ifdef OLD_AD
-  { "roms/AsteroidsDeluxe/036430.01", 0x6000, 0x0800, 0 },
-  { "roms/AsteroidsDeluxe/036431.01", 0x6800, 0x0800, 0 },
-  { "roms/AsteroidsDeluxe/036432.01", 0x7000, 0x0800, 0 },
-  { "roms/AsteroidsDeluxe/036433.02", 0x7800, 0x0800, 0 },
-  { "roms/AsteroidsDeluxe/036800.01", 0x4800, 0x0800, 0 },
-  { "roms/AsteroidsDeluxe/036799.01", 0x5000, 0x0800, 0 },
+  { PITREX_DIR "roms/AsteroidsDeluxe/036430.01", 0x6000, 0x0800, 0 },
+  { PITREX_DIR "roms/AsteroidsDeluxe/036431.01", 0x6800, 0x0800, 0 },
+  { PITREX_DIR "roms/AsteroidsDeluxe/036432.01", 0x7000, 0x0800, 0 },
+  { PITREX_DIR "roms/AsteroidsDeluxe/036433.02", 0x7800, 0x0800, 0 },
+  { PITREX_DIR "roms/AsteroidsDeluxe/036800.01", 0x4800, 0x0800, 0 },
+  { PITREX_DIR "roms/AsteroidsDeluxe/036799.01", 0x5000, 0x0800, 0 },
 #else
-  { "roms/AsteroidsDeluxe/036430.02", 0x6000, 0x0800, 0 },
-  { "roms/AsteroidsDeluxe/036431.02", 0x6800, 0x0800, 0 },
-  { "roms/AsteroidsDeluxe/036432.02", 0x7000, 0x0800, 0 },
-  { "roms/AsteroidsDeluxe/036433.03", 0x7800, 0x0800, 0 },
-  { "roms/AsteroidsDeluxe/036800.02", 0x4800, 0x0800, 0 },
-  { "roms/AsteroidsDeluxe/036799.01", 0x5000, 0x0800, 0 },
+  { PITREX_DIR "roms/AsteroidsDeluxe/036430.02", 0x6000, 0x0800, 0 },
+  { PITREX_DIR "roms/AsteroidsDeluxe/036431.02", 0x6800, 0x0800, 0 },
+  { PITREX_DIR "roms/AsteroidsDeluxe/036432.02", 0x7000, 0x0800, 0 },
+  { PITREX_DIR "roms/AsteroidsDeluxe/036433.03", 0x7800, 0x0800, 0 },
+  { PITREX_DIR "roms/AsteroidsDeluxe/036800.02", 0x4800, 0x0800, 0 },
+  { PITREX_DIR "roms/AsteroidsDeluxe/036799.01", 0x5000, 0x0800, 0 },
 #endif
   { NULL,          0,      0,      0 }
 };
@@ -510,16 +511,16 @@ tag_info asteroidsdx_tags [] =
 rom_info major_havoc_roms [] =
 {
   /* this is copied from Gravitar and hasn't yet been updated! */
-  { "roms/MajorHavoc/136025.104", 0x9000, 0x4000, 0 },
-  { "roms/MajorHavoc/136010.103", 0xa000, 0x4000, 0 },
-  { "roms/MajorHavoc/136010.109", 0xb000, 0x4000, 0 },
-  { "roms/MajorHavoc/136010.101", 0xc000, 0x4000, 0 },
-  { "roms/MajorHavoc/136010.106", 0xd000, 0x4000, 0 },
-  { "roms/MajorHavoc/136010.107", 0xe000, 0x4000, 0 },
-  { "roms/MajorHavoc/136010.108", 0x3000, 0x4000, 0 },
+  { PITREX_DIR "roms/MajorHavoc/136025.104", 0x9000, 0x4000, 0 },
+  { PITREX_DIR "roms/MajorHavoc/136010.103", 0xa000, 0x4000, 0 },
+  { PITREX_DIR "roms/MajorHavoc/136010.109", 0xb000, 0x4000, 0 },
+  { PITREX_DIR "roms/MajorHavoc/136010.101", 0xc000, 0x4000, 0 },
+  { PITREX_DIR "roms/MajorHavoc/136010.106", 0xd000, 0x4000, 0 },
+  { PITREX_DIR "roms/MajorHavoc/136010.107", 0xe000, 0x4000, 0 },
+  { PITREX_DIR "roms/MajorHavoc/136010.108", 0x3000, 0x4000, 0 },
 
   /* vector generator */
-  { "roms/MajorHavoc/136010.110", 0x2000, 0x2000, 0 },
+  { PITREX_DIR "roms/MajorHavoc/136010.110", 0x2000, 0x2000, 0 },
 
   { NULL,   0,      0,      0 }
 };
@@ -779,7 +780,7 @@ void setup_game (void)
       
       
       
-	  read_rom_image_to("roms/Tempest/136002-125.d7", 0, 256, 0, avg_prom);
+	  read_rom_image_to(PITREX_DIR "roms/Tempest/136002-125.d7", 0, 256, 0, avg_prom);
       vector_mem_offset = 0x2000;
 	  avg_init(vector_mem_offset, 0x800);
 	  

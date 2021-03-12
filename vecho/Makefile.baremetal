@@ -1,0 +1,83 @@
+# -DLOADER_START=0x4000000
+# must also be defined/changed in *.S files, since they do not parse defines
+# REMEMBER in bcm2835
+# MEM_COHERENT_REGION s defined now as 0x3f00000 !!!!
+
+BUILD_DIR_PURE := build.baremetal
+BUILD_DIR := $(BUILD_DIR_PURE)/
+
+LIB_DIR :=../pitrex/baremetal
+INC_DIR_PITREX := ../pitrex
+INC_DIR_LIBRARY := $(LIB_DIR)/lib2835
+PITREX_DIR := ../pitrex/pitrex/
+VECTREX_DIR := ../pitrex/vectrex/
+LOADER_DIR := ../piTrexBoot/
+
+CFLAGS := -Ofast -I$(INC_DIR_PITREX) -I$(INC_DIR_LIBRARY) -L$(LIB_DIR) -mfloat-abi=hard -nostartfiles -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -DRPI0 -DFREESTANDING -DPITREX_DEBUG -DMHZ1000 -DLOADER_START=0x4000000
+CC	= arm-none-eabi-gcc
+AS	= $(CC)
+LD	= arm-none-eabi-ld
+AR	= arm-none-eabi-ar
+
+.PHONY: pitrexLib
+.PHONY: dirCheck
+
+#bootmsg.img doesn't make sense in baremetal
+
+all:	dirCheck pitrexLib vecho.img vecho_omitted.img
+	echo All up to date
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
+
+clean:
+	$(RM) $(BUILD_DIR)*.* *~ vecho.img vecho_omitted.img
+
+pitrexLib:
+	$(MAKE) -C $(PITREX_DIR) -f Makefile.baremetal all
+	$(MAKE) -C $(VECTREX_DIR) -f Makefile.baremetal all
+	$(MAKE) -C $(LOADER_DIR) -f Makefile all
+
+$(BUILD_DIR)vecho.o: vecho.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)vecho.o -c vecho.c
+
+vecho.img: $(BUILD_DIR)vecho.o # pitrexLib
+	$(RM) vecho.img
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)vecho.elf.img \
+	$(LOADER_DIR)$(BUILD_DIR)baremetalEntry.o \
+	$(LOADER_DIR)$(BUILD_DIR)bareMetalMain.o \
+	$(LOADER_DIR)$(BUILD_DIR)cstubs.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-armtimer.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-aux.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-gpio.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-interrupts.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-systimer.o \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)vecho.o -lm -lff12c  -ldebug  -lhal -lutils -lconsole -lff12c -lbob -li2c -lbcm2835 -larm $(LIB_DIR)/linkerHeapDefBoot.ld
+	arm-none-eabi-objcopy $(BUILD_DIR)vecho.elf.img -O binary vecho.img
+
+$(BUILD_DIR)vecho_omitted.o: vecho.c
+	$(CC) $(CFLAGS) -DDISPLAY_STRING="\"OMITTED DUE TO COPYRIGHT CONCERNS\"" -o $(BUILD_DIR)vecho_omitted.o -c vecho.c
+
+vecho_omitted.img: $(BUILD_DIR)vecho_omitted.o # pitrexLib
+	$(RM) vecho_omitted.img
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)vecho_omitted.elf.img \
+	$(LOADER_DIR)$(BUILD_DIR)baremetalEntry.o \
+	$(LOADER_DIR)$(BUILD_DIR)bareMetalMain.o \
+	$(LOADER_DIR)$(BUILD_DIR)cstubs.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-armtimer.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-aux.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-gpio.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-interrupts.o \
+	$(LOADER_DIR)$(BUILD_DIR)rpi-systimer.o \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)vecho.o -lm -lff12c  -ldebug  -lhal -lutils -lconsole -lff12c -lbob -li2c -lbcm2835 -larm $(LIB_DIR)/linkerHeapDefBoot.ld
+	arm-none-eabi-objcopy $(BUILD_DIR)vecho_omitted.elf.img -O binary vecho_omitted.img

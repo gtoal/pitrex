@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 
   else
   {
-    tlength = sizeof(DISPLAY_STRING);
+    tlength = sizeof(DISPLAY_STRING) - 1;
   }
 
   char b = 1;

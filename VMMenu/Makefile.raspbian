@@ -3,9 +3,10 @@ BUILD_DIR := $(BUILD_DIR_PURE)/
 PITREX_DIR := ../pitrex/pitrex/
 VECTREX_DIR := ../pitrex/vectrex/
 SETTINGS := /opt/pitrex/share/vmmenu/
+SND_DIR := $(SETTINGS)VMMsnd
 ##CFLAGS := -W -Wall -O2 -s -g -ggdb3 -I../pitrex/ -DPITREX -DPIZERO -DRPI0 # -Ofast
 ##CFLAGS := -W -Wall -s -g -I../pitrex/ -DPITREX -DPIZERO -DRPI0 # -Ofast
-CFLAGS := -W -Wall -s -Ofast -DSETTINGS_DIR="\"$(SETTINGS)\"" -I../pitrex/ -DPITREX -DPIZERO -DRPI0 # -Ofast
+CFLAGS := -W -Wall -s -Ofast -DSETTINGS_DIR="\"$(SETTINGS)\"" -DSND_DIR="\"$(SND_DIR)\"" -I../pitrex/ -DPITREX -DPIZERO -DRPI0 # -Ofast
 CC = gcc
 LINK = gcc
 OBJ_DIR = obj
@@ -60,9 +61,10 @@ vmmenu: dirCheck pitrexLib $(OBJS) $(PITREX_DIR)$(BUILD_DIR)bcm2835.o $(PITREX_D
 install:
 	install -o root -g games -m 6555 vmmenu /opt/pitrex/bin
 	install -o root -g games vmm.sh /opt/pitrex/bin
-	mkdir -p /opt/pitrex/share/vmmenu
+	mkdir -p /opt/pitrex/share/vmmenu/VMMsnd
 	cp vmmenu.ini /opt/pitrex/share/vmmenu
 	cp vmmenu.cfg /opt/pitrex/share/vmmenu
+	cp VMMsnd/* /opt/pitrex/share/vmmenu/VMMsnd
 
 $(OBJ_DIR)/vmmenu.o: VMMSrc/vmmenu.c
 	$(CC) $(CFLAGS) -c $(INC) -o $@ VMMSrc/vmmenu.c

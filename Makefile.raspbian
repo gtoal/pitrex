@@ -125,6 +125,9 @@ clean:
 	cd ..
 
 install:
+	mkdir -p /opt/pitrex/bin
+	mkdir -p /opt/pitrex/man
+	mkdir -p /opt/pitrex/share
 	cd lunar; make -f Makefile.raspbian install
 	cd ..
 	cd deluxe; make -f Makefile.raspbian install

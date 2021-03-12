@@ -149,7 +149,6 @@ static       dictionary* ini;
 
 extern int   MouseX, MouseY;
 int          ZVGPresent = 1;
-int          SDL_VC, SDL_VB;            // colour and brightness for SDL vectors
 int          mousefound=0;
 
 m_node       *vectorgames;

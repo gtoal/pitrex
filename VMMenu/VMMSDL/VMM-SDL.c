@@ -192,37 +192,37 @@ void InitialiseSDL(int start)
    //else printf("SDL Mixer initialised\n");
    
    //Load sound effects
-   gSFury = Mix_LoadWAV( "VMMsnd/sfury9.wav" );
+   gSFury = Mix_LoadWAV( SND_DIR "/sfury9.wav" );
    if( gSFury == NULL )
    {
        printf( "Failed to load sfury9 sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
    }
-   gFire1 = Mix_LoadWAV( "VMMsnd/elim2.wav" );
+   gFire1 = Mix_LoadWAV( SND_DIR "/elim2.wav" );
    if( gFire1 == NULL )
    {
        printf( "Failed to load elim2 sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
    }
-   gExplode1 = Mix_LoadWAV( "VMMsnd/explode1.wav" );
+   gExplode1 = Mix_LoadWAV( SND_DIR "/explode1.wav" );
    if( gExplode1 == NULL )
    {
        printf( "Failed to load explode1 sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
    }
-   gExplode2 = Mix_LoadWAV( "VMMsnd/explode2.wav" );
+   gExplode2 = Mix_LoadWAV( SND_DIR "/explode2.wav" );
    if( gExplode2 == NULL )
    {
        printf( "Failed to load explode2 sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
    }
-   gExplode3 = Mix_LoadWAV( "VMMsnd/explode3.wav" );
+   gExplode3 = Mix_LoadWAV( SND_DIR "/explode3.wav" );
    if( gExplode3 == NULL )
    {
        printf( "Failed to load explode3 sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
    }
-   gFire2 = Mix_LoadWAV( "VMMsnd/efire.wav" );
+   gFire2 = Mix_LoadWAV( SND_DIR "/efire.wav" );
    if( gFire2 == NULL )
    {
        printf( "Failed to load efire sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
    }
-   gNuke = Mix_LoadWAV( "VMMsnd/nuke1.wav" );
+   gNuke = Mix_LoadWAV( SND_DIR "/nuke1.wav" );
    if( gNuke == NULL )
    {
       printf( "Failed to load nuke1 sound effect! SDL_mixer Error: %s\n", Mix_GetError() );

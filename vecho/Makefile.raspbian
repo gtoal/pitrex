@@ -1,0 +1,56 @@
+# I prefer "handmade" make files, it is a little bit of more worktime to start with
+# but I can read them, others can, and I know what they do!
+
+BUILD_DIR_PURE := build.raspbian
+BUILD_DIR := $(BUILD_DIR_PURE)/
+
+PITREX_DIR := ../pitrex/pitrex/
+VECTREX_DIR := ../pitrex/vectrex/
+CFLAGS := -g -I../pitrex/ -DPIZERO -DRPI0
+CC := gcc
+
+.PHONY: pitrexLib
+.PHONY: dirCheck
+
+
+all:	dirCheck pitrexLib vecho vecho_omitted
+	echo All up to date
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
+
+clean:
+	$(RM) $(BUILD_DIR)*.* *~ vecho vecho_omitted
+
+pitrexLib:
+	$(MAKE) -C $(PITREX_DIR) -f Makefile.raspbian all
+	$(MAKE) -C $(VECTREX_DIR) -f Makefile.raspbian all
+
+$(BUILD_DIR)vecho.o: vecho.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)vecho.o -c vecho.c
+
+vecho: $(BUILD_DIR)vecho.o pitrexLib
+	$(RM) vecho
+	$(CC) $(CFLAGS) -o vecho \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)vecho.o
+
+$(BUILD_DIR)vecho_omitted.o: vecho.c
+	$(CC) $(CFLAGS) -DDISPLAY_STRING="\"OMITTED DUE TO COPYRIGHT CONCERNS\"" -o $(BUILD_DIR)vecho_omitted.o -c vecho.c
+
+vecho_omitted: $(BUILD_DIR)vecho_omitted.o pitrexLib
+	$(RM) vecho_omitted
+	$(CC) $(CFLAGS) -o vecho_omitted \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)vecho_omitted.o
+
+install:
+	install -o root -g games -m 6555 vecho /opt/pitrex/bin

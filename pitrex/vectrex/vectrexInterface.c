@@ -516,7 +516,7 @@ struct sched_param sp = {.sched_priority = 99 };
   v_readButtons ();             // read buttons to check if we should enter calibration on init
 
   // calibrate if button 1 is pressed on startup
-  if ((currentButtonState & 0x08) == (0x08))
+  if (currentButtonState & 1)
     inCalibration = 1;
 
   defaultName = "default";

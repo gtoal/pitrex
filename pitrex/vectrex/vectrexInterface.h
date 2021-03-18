@@ -81,7 +81,7 @@ extern int (*executeDebugger)(int);
  * library functions. eg. VecX.direct.
  */
 void disableLinuxInterrupts(unsigned int minOffset);
-void enableLinuxInterrupts();
+void enableLinuxInterrupts(void); 
 
 ////////////////////////////////////////////////////////////////////////////
 // sound stuff

@@ -219,7 +219,7 @@ int ty (int y) {				// and y
    return (int) (((((int64_t) y) + ScaleYOffsetPre) * ScaleYMul) / ScaleYDiv + ScaleYOffsetPost);
 }
 
-int frameCounter = 0;
+int frameCounter = 0; // as long as this framework only runs one game once.
 static int cineTwinkle = 255;	// off by default
 void line (int xl, int yb, int xr, int yt, int col)
 {
@@ -229,7 +229,7 @@ void line (int xl, int yb, int xr, int yt, int col)
       tmp = xr; xr = yt; yt = tmp;
       xl = v_xr - (xl - v_xl);
       xr = v_xr - (xr - v_xl);
-   }
+  }
 
    if ((ccpu_game_id == GAME_TAILGUNNER) && (xl==xr) && (yb==yt)) {
      // stars...  tweak the intensity according to the distance from the center
@@ -252,6 +252,7 @@ void line (int xl, int yb, int xr, int yt, int col)
      if (col <= cineTwinkle) {
        v_directDraw32 (tx (xl), ty (yb), tx (xr), ty (yt), (col + 1) * 8 - 1);
      } else { // twinkle parameter denotes flash.
+       // check armor attack - cineTwinkle SHOULD be 255, but is it?
        v_directDraw32 (tx (xl), ty (yb), tx (xr), ty (yt), (127 * (sine[(frameCounter<<3)&255]+16384+32768)) / 65536); // brightness 63..127
      }
    }
@@ -260,21 +261,20 @@ void line (int xl, int yb, int xr, int yt, int col)
 void window (int xl, int yb, int xr, int yt)
 {
    // We will use normalised viewport coordinates of x = -18000:18000 and y = -24000:24000 for consistency
-   int64_t width, height;
+   int64_t width, height, owidth, oheight;
    int xc, yc;
-   int oxl = xl, oyb = yb, oxr = xr, oyt = yt;
 
    v_xl = xl; v_yb = yb; v_xr = xr; v_yt = yt;
+   owidth = width = (int64_t) xr - (int64_t) xl;
+   oheight = height = (int64_t) yt - (int64_t) yb;
 
-   width = (int64_t) xr - (int64_t) xl;
-   height = (int64_t) yt - (int64_t) yb;
    // However, if OS tells us that vectrex is on its side, we'll handle these differently.
    // For now, though, Malban's orientation code is doing the rotation behind the scenes
    // so we don't want to do it twice.  Need to think about whether that solution is OK
    // or has to be changed. Although it doesn't matter too much in terms of what is displayed,
    // it makes a different with respect to loading and saving configs and using the same
    // default for multiple games.
-   if (width * 4 > height * 3) {
+   if (width * 4 >= height * 3) {
       // window is wider than aspect ratio, so we will have black bars at the top and bottom
       height = (width * 4) / 3;
       yc = (yb + yt) / 2;
@@ -288,23 +288,45 @@ void window (int xl, int yb, int xr, int yt)
       xl = xc - width / 2;
       xr = xc + width / 2;
    }
+
+   printf("old window: (%d,%d) to (%d,%d)\n", v_xl,v_yb, v_xr,v_yt);
+   printf("new window: (%d,%d) to (%d,%d)\n", xl,yb, xr,yt);
    
    ScaleXMul = 36000LL;
    ScaleXDiv = width;
-   ScaleXOffsetPre = -width / 2LL;
+
+   //ScaleXOffsetPre = -width / 2LL;
+   ScaleXOffsetPre = 0LL;
    ScaleXOffsetPost = 0LL;
-   ScaleXOffsetPost = (tx (xr) - tx (oxr)) / 2LL;
+   // adjust center of window to center of screen
+   ScaleXOffsetPost =  -(tx (v_xr)+tx (v_xl)) / 2LL;
+
+   
+   //int tx (int x) {				// convert x from window to viewport
+   //   if (v_flip_x) x = v_xr - (x - v_xl);
+   //   return (int) (((((int64_t) x) + ScaleXOffsetPre) * ScaleXMul) / ScaleXDiv + ScaleXOffsetPost);
+   //}
 
    ScaleYMul = 48000LL;
    ScaleYDiv = height;
-   ScaleYOffsetPre = -height / 2LL;
-   ScaleYOffsetPost = 0LL;
-   ScaleYOffsetPost = (ty (yt) - ty (oyt)) / 2LL;
 
-   // setCustomClipping(TRUE, tx(oxl), ty(oyb), tx(oxr), ty(oyt));
+   ScaleYOffsetPre = 0LL; // -height / 2LL;
+   ScaleYOffsetPost = 0LL;
+   // adjust center of window to center of screen
+   ScaleYOffsetPost = -(ty (v_yt)+ty (v_yb)) / 2LL;
+
+   printf("X: scale %d, pre %d, post %d\n", ScaleXMul/ScaleXDiv,  ScaleXOffsetPre,  ScaleXOffsetPost);
+   printf("Y: scale %d, pre %d, post %d\n", ScaleYMul/ScaleYDiv,  ScaleYOffsetPre,  ScaleYOffsetPost);
+   printf("new transformed window: (%d,%d) to (%d,%d)\n", tx(xl),ty(yb), tx(xr),ty(yt));
+   //int ty (int y) {				// and y
+   //   if (v_flip_y) y = v_yt - (y - v_yb);
+   //   return (int) (((((int64_t) y) + ScaleYOffsetPre) * ScaleYMul) / ScaleYDiv + ScaleYOffsetPost);
+   //}
+
+   setCustomClipping(TRUE, tx(v_xl), ty(v_yb), tx(v_xr), ty(v_yt));
        // transform world (window) coordinates to viewport (normalised device
        // coordinates) before clipping.  That way clipping code does not need to know about world
-       // coordinates.  Not implemented as I don't have the updated library yet
+       // coordinates. NOT SURE IF THIS IS WORKING. Speedfreak seems to draw lines outside the window.
 }
 
 // end of window library
@@ -318,6 +340,19 @@ void startFrame (void)		// generic default
    v_readButtons ();
    v_readJoystick1Analog ();
    // v_playAllSFX();
+   if (frameCounter < 500) {
+     if (v_rotate) {
+       line(v_yb,v_xl, v_yt,v_xl, 6);
+       line(v_yt,v_xl, v_yt,v_xr, 6);
+       line(v_yt,v_xr, v_yb,v_xr, 6);
+       line(v_yb,v_xr, v_yb,v_xl, 6);
+     } else {
+       line(v_xl,v_yb, v_xl,v_yt, 6);
+       line(v_xl,v_yt, v_xr,v_yt, 6);
+       line(v_xr,v_yt, v_xr,v_yb, 6);
+       line(v_xr,v_yb, v_xl,v_yb, 6);
+     }
+   }
 }
 
 void startFrame_ripoff(void) {
@@ -440,6 +475,19 @@ void startFrame_ripoff(void) {
  LLeft   = 00000000,FFFFFFFE,00000001,FFFFFFFF
    */
 #endif
+   if (frameCounter < 500) {
+     if (v_rotate) {
+       line(v_yb,v_xl, v_yt,v_xl, 6);
+       line(v_yt,v_xl, v_yt,v_xr, 6);
+       line(v_yt,v_xr, v_yb,v_xr, 6);
+       line(v_yb,v_xr, v_yb,v_xl, 6);
+     } else {
+       line(v_xl,v_yb, v_xl,v_yt, 6);
+       line(v_xl,v_yt, v_xr,v_yt, 6);
+       line(v_xr,v_yt, v_xr,v_yb, 6);
+       line(v_xr,v_yb, v_xl,v_yb, 6);
+     }
+   }
 }
 
 #ifdef NEVER
@@ -633,6 +681,19 @@ void startFrame_spacewars(void) {
  RHyper  = 00000000,FFF7FFFF,00080000,FFFFFFFF
    */
 #endif
+   if (frameCounter < 500) {
+     if (v_rotate) {
+       line(v_yb,v_xl, v_yt,v_xl, 6);
+       line(v_yt,v_xl, v_yt,v_xr, 6);
+       line(v_yt,v_xr, v_yb,v_xr, 6);
+       line(v_yb,v_xr, v_yb,v_xl, 6);
+     } else {
+       line(v_xl,v_yb, v_xl,v_yt, 6);
+       line(v_xl,v_yt, v_xr,v_yt, 6);
+       line(v_xr,v_yt, v_xr,v_yb, 6);
+       line(v_xr,v_yb, v_xl,v_yb, 6);
+     }
+   }
 }
 
 void startFrame_boxingbugs(void) {
@@ -690,6 +751,30 @@ void startFrame_boxingbugs(void) {
  AcctOff = 00000040,FFFFFFFF,00000000,FFFFFFFF ; Accounting Info Off
    */
 #endif
+}
+
+static int armor_cx = 0, armor_cy = 0;
+void armor_moveto(int x, int y, int q) {
+  int dx=2048, dy=2048;
+  x -= dx; y -= dy;
+  if (q&1) x = -x;
+  if (q&2) y = -y;
+  x+=dx; y+=dy;
+  armor_cx = x; armor_cy = y;
+}
+
+void armor_lineto(int x, int y, int q) {
+  // coordinates from pseudo-overlay code extracted from Mame
+  // needed to be rescaled and a small Y offset applied to match
+  // the internal coordinates used by the game.
+  int dx=2048, dy=2048;
+  x -= dx; y -= dy;
+  if (q&1) x = -x;
+  if (q&2) y = -y;
+  x+=dx; y+=dy;
+  
+  line (armor_cx/4, armor_cy*2/11 + 10, x/4, y*2/11 + 10, 6);
+  armor_cx = x; armor_cy = y;
 }
 
 void startFrame_armorattack(void) {
@@ -814,6 +899,63 @@ void startFrame_armorattack(void) {
  LLeft   = 00000000,FFFFFFFE,00000001,FFFFFFFF
    */
 #endif
+   {int q;
+     for (q = 0; q < 4; q++) {
+  // Upper Right Quadrant
+  // Outer structure
+  armor_moveto(3446, 2048, q);
+  armor_lineto(3446, 2224, q); //
+  armor_lineto(3958, 2224, q);
+  armor_lineto(3958, 3059, q);
+  armor_lineto(3323, 3059, q);
+  armor_lineto(3323, 3225, q);
+  armor_lineto(3194, 3225, q);
+  armor_lineto(3194, 3393, q);
+  armor_lineto(3067, 3393, q);
+  armor_lineto(3067, 3901, q);
+  armor_lineto(2304, 3901, q);
+  armor_lineto(2304, 3225, q);
+  armor_lineto(2048, 3225, q);
+  // Center structure
+  armor_moveto(2048, 2373, q);
+  armor_lineto(2562, 2373, q); //
+  armor_lineto(2562, 2738, q);
+  armor_lineto(2430, 2738, q);
+  armor_lineto(2430, 2893, q);
+  armor_lineto(2306, 2893, q);
+  armor_lineto(2306, 3065, q);
+  armor_lineto(2048, 3065, q);
+  // Big structure
+  armor_moveto(2938, 2209, q);
+  armor_lineto(3198, 2209, q); //
+  armor_lineto(3198, 2383, q);
+  armor_lineto(3706, 2383, q);
+  armor_lineto(3706, 2738, q);
+  armor_lineto(2938, 2738, q);
+  armor_lineto(2938, 2209, q);
+  // Small structure
+  armor_moveto(2551, 3055, q);
+  armor_lineto(2816, 3055, q); //
+  armor_lineto(2816, 3590, q);
+  armor_lineto(2422, 3590, q);
+  armor_lineto(2422, 3231, q);
+  armor_lineto(2555, 3231, q);
+  armor_lineto(2555, 3055, q);
+     }
+   }
+   if (frameCounter < 500) {
+     if (v_rotate) {
+       line(v_yb,v_xl, v_yt,v_xl, 6);
+       line(v_yt,v_xl, v_yt,v_xr, 6);
+       line(v_yt,v_xr, v_yb,v_xr, 6);
+      line(v_yb,v_xr, v_yb,v_xl, 6);
+     } else {
+       line(v_xl,v_yb, v_xl,v_yt, 6);
+       line(v_xl,v_yt, v_xr,v_yt, 6);
+       line(v_xr,v_yt, v_xr,v_yb, 6);
+       line(v_xr,v_yb, v_xl,v_yb, 6);
+     }
+   }
 }
 
 void startFrame_starcastle(void) {
@@ -997,6 +1139,19 @@ void startFrame_starhawk(void) {
  LFire   = 00000000,FFFDFFFF,00020000,FFFFFFFF
    */
 #endif
+   if (frameCounter < 500) {
+     if (v_rotate) {
+       line(v_yb,v_xl, v_yt,v_xl, 6);
+       line(v_yt,v_xl, v_yt,v_xr, 6);
+       line(v_yt,v_xr, v_yb,v_xr, 6);
+       line(v_yb,v_xr, v_yb,v_xl, 6);
+     } else {
+       line(v_xl,v_yb, v_xl,v_yt, 6);
+       line(v_xl,v_yt, v_xr,v_yt, 6);
+       line(v_xr,v_yt, v_xr,v_yb, 6);
+       line(v_xr,v_yb, v_xl,v_yb, 6);
+     }
+   }
 }
 
 void startFrame_solarquest(void) {
@@ -1161,6 +1316,17 @@ void startFrame_waroftheworlds(void) {
 #endif
 }
 
+static int warrior_cx = 0, warrior_cy = 0;
+void warrior_moveto(int x, int y) {
+  warrior_cx = x; warrior_cy = y;
+}
+
+void warrior_lineto(int x, int y) {
+  line (warrior_cx/4, warrior_cy*2/11 + 10, x/4, y*2/11 + 10, 6);
+  warrior_cx = x; warrior_cy = y;
+}
+
+
 void startFrame_warrior(void) {
   static int prevButtonState;	// for debouncing
 
@@ -1272,6 +1438,35 @@ void startFrame_warrior(void) {
  KeyF = 00000000,FFFF7FFF,00008000,FFFFFFFF
    */
 #endif
+  warrior_moveto(1187, 2232);
+  warrior_lineto(1863, 2232);
+  warrior_moveto(1187, 1372);
+  warrior_lineto(1863, 1372);
+  warrior_moveto(1187, 2232);
+  warrior_lineto(1187, 1372);
+  warrior_moveto(1863, 2232);
+  warrior_lineto(1863, 1372);
+  warrior_moveto(2273, 2498);
+  warrior_lineto(2949, 2498);
+  warrior_moveto(2273, 1658);
+  warrior_lineto(2949, 1658);
+  warrior_moveto(2273, 2498);
+  warrior_lineto(2273, 1658);
+  warrior_moveto(2949, 2498);
+  warrior_lineto(2949, 1658);
+   if (frameCounter < 500) {
+     if (v_rotate) {
+       line(v_yb,v_xl, v_yt,v_xl, 6);
+       line(v_yt,v_xl, v_yt,v_xr, 6);
+       line(v_yt,v_xr, v_yb,v_xr, 6);
+       line(v_yb,v_xr, v_yb,v_xl, 6);
+     } else {
+       line(v_xl,v_yb, v_xl,v_yt, 6);
+       line(v_xl,v_yt, v_xr,v_yt, 6);
+       line(v_xr,v_yt, v_xr,v_yb, 6);
+       line(v_xr,v_yb, v_xl,v_yb, 6);
+     }
+   }
 }
 
 void startFrame_barrier(void) {
@@ -1392,6 +1587,19 @@ void startFrame_barrier(void) {
 
    */
 #endif
+   if (frameCounter < 500) {
+     if (v_rotate) {
+       line(v_yb,v_xl, v_yt,v_xl, 6);
+       line(v_yt,v_xl, v_yt,v_xr, 6);
+       line(v_yt,v_xr, v_yb,v_xr, 6);
+       line(v_yb,v_xr, v_yb,v_xl, 6);
+     } else {
+       line(v_xl,v_yb, v_xl,v_yt, 6);
+       line(v_xl,v_yt, v_xr,v_yt, 6);
+       line(v_xr,v_yt, v_xr,v_yb, 6);
+       line(v_xr,v_yb, v_xl,v_yb, 6);
+     }
+   }
 }
 
 void startFrame_sundance(void) {
@@ -1583,6 +1791,19 @@ void startFrame_sundance(void) {
  Hatch9L = 0000A080,FFFFFAFF,0000A580,FFFFFFFF 
    */
 #endif
+   if (frameCounter < 500) {
+     if (v_rotate) {
+       line(v_yb,v_xl, v_yt,v_xl, 6);
+       line(v_yt,v_xl, v_yt,v_xr, 6);
+       line(v_yt,v_xr, v_yb,v_xr, 6);
+       line(v_yb,v_xr, v_yb,v_xl, 6);
+     } else {
+       line(v_xl,v_yb, v_xl,v_yt, 6);
+       line(v_xl,v_yt, v_xr,v_yt, 6);
+       line(v_xr,v_yt, v_xr,v_yb, 6);
+       line(v_xr,v_yb, v_xl,v_yb, 6);
+     }
+   }
 }
 
 void startFrame_qb3(void) {
@@ -1669,6 +1890,19 @@ void startFrame_tailgunner (void)
    if (currentButtonState & VEC_BUTTON_1_2) ioInputs &= ~TG_IO_START;
    if (currentButtonState & VEC_BUTTON_1_3) ioInputs &= ~TG_IO_SHIELDS;
    if (currentButtonState & VEC_BUTTON_1_4) ioInputs &= ~TG_IO_FIRE;
+   if (frameCounter < 500) {
+     if (v_rotate) {
+       line(v_yb,v_xl, v_yt,v_xl, 6);
+       line(v_yt,v_xl, v_yt,v_xr, 6);
+       line(v_yt,v_xr, v_yb,v_xr, 6);
+       line(v_yb,v_xr, v_yb,v_xl, 6);
+     } else {
+       line(v_xl,v_yb, v_xl,v_yt, 6);
+       line(v_xl,v_yt, v_xr,v_yt, 6);
+       line(v_xr,v_yt, v_xr,v_yb, 6);
+       line(v_xr,v_yb, v_xl,v_yb, 6);
+     }
+   }
 }
 
 void startFrame_demon (void)
@@ -1737,6 +1971,19 @@ void startFrame_demon (void)
    if (currentButtonState & VEC_BUTTON_2_2) ioInputs &= ~DE_IO_P2RIGHT;
    if (currentButtonState & VEC_BUTTON_2_3) ioInputs &= ~DE_IO_P2WALK;
    if (currentButtonState & VEC_BUTTON_2_4) ioInputs &= ~DE_IO_P2FIRE;
+   if (frameCounter < 500) {
+     if (v_rotate) {
+       line(v_yb,v_xl, v_yt,v_xl, 6);
+       line(v_yt,v_xl, v_yt,v_xr, 6);
+       line(v_yt,v_xr, v_yb,v_xr, 6);
+       line(v_yb,v_xr, v_yb,v_xl, 6);
+     } else {
+       line(v_xl,v_yb, v_xl,v_yt, 6);
+       line(v_xl,v_yt, v_xr,v_yt, 6);
+       line(v_xr,v_yt, v_xr,v_yb, 6);
+       line(v_xr,v_yb, v_xl,v_yb, 6);
+     }
+   }
 }
 
 void startFrame_speedfreak (void)
@@ -1849,6 +2096,19 @@ void startFrame_speedfreak (void)
    } else {
       // release should not be necessary, shift is cleared each round!
       ioInputs = ioInputs & 0xfff0;
+   }
+   if (frameCounter < 500) {
+     if (v_rotate) {
+       line(v_yb,v_xl, v_yt,v_xl, 6);
+       line(v_yt,v_xl, v_yt,v_xr, 6);
+       line(v_yt,v_xr, v_yb,v_xr, 6);
+       line(v_yb,v_xr, v_yb,v_xl, 6);
+     } else {
+       line(v_xl,v_yb, v_xl,v_yt, 6);
+       line(v_xl,v_yt, v_xr,v_yt, 6);
+       line(v_xr,v_yt, v_xr,v_yb, 6);
+       line(v_xr,v_yb, v_xl,v_yb, 6);
+     }
    }
 }
 

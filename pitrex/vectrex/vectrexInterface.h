@@ -16,6 +16,7 @@ void waitCycleMarkEnd(uint32_t cycles);
 int waitFullMicro(void);
 void measureTime(void); // debug and measure only
 
+extern void setCustomClipping(int enabled, int x0, int y0, int x1, int y1);
 void v_setBrightness(uint8_t brightness);
 void v_directDeltaMove32start(int32_t xLen, int32_t yLen);
 void v_directDeltaMoveEnd(void);

@@ -553,7 +553,7 @@ int rtnWinSize (char *parm)
       }
       value[ii] = strtoul (parm, &parm, 10);	// get next value
    }
-
+#ifdef NEVER
    if (value[0] < -100 || value[0] > 100 ||
        value[1] < -100 || value[1] > 100 ||
        value[2] < 924 || value[2] > 1124 ||
@@ -561,6 +561,7 @@ int rtnWinSize (char *parm)
       pIniError ("Must be: -100 to 100, -100 to 100, 924 to 1124, 668 to 868");
       return (iniErrOpt);
    }
+#endif
    OptWinXmin = (int) value[0];
    OptWinYmin = (int) value[1];
    OptWinXmax = (int) value[2];

@@ -301,6 +301,7 @@ int openIniFile (const char *filename)
    long tempSize;
 
    // open INI file
+   printf ("openIniFile: opening file \"%s\"\n", filename);
    inFile = fopen (filename, "r");
    if (inFile == 0)
    {

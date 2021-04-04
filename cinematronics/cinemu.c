@@ -12,6 +12,7 @@
 #include <pitrex/pitrexio-gpio.h>
 #include <vectrex/vectrexInterface.h>
 #include <vectrex/osWrapper.h>
+extern int optimizationON; // should be in header. preferably with a procedure to set it.
 
 #define   VERSION   "Version 1.3"
 
@@ -162,6 +163,11 @@ void main (int argc, char **argv)
    vectrexinit (1);
    v_init ();
    usePipeline = 1;
+
+   bufferType = 2; // 0 = none, 1 = double buffer, 2 = auto buffer (if pipeline is empty -> use previous
+   optimizationON = 0; // don't optimise, ie reset to 0 for every line... - game is more than fast enough to handle it
+   
+   
    v_setRefresh (60); // need to work on 38/76 to match hardware...
 
    switch (Game) {

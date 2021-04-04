@@ -70,7 +70,7 @@ $(BUILD_DIR)options.o: options.c inifile.h options.h cines.h
 $(BUILD_DIR)inifile.o: inifile.c inifile.h
 	$(CC) $(CFLAGS) -DO_BINARY=0 -c -o $(BUILD_DIR)inifile.o inifile.c
 
-$(BUILD_DIR)cineops.o: cineops.c
+$(BUILD_DIR)cineops.o: cineops.c cinedbg.i  cineops.i  startframe.i
 	$(CC) $(CFLAGS) -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-label -c -o $(BUILD_DIR)cineops.o cineops.c
 
 $(BUILD_DIR)cinemu.o: cinemu.c cines.h inifile.h options.h # $(VECTREX)vectrexInterface.h $(VECTREX)vectorFont.i

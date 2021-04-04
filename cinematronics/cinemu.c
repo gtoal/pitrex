@@ -165,7 +165,7 @@ void main (int argc, char **argv)
    usePipeline = 1;
 
    bufferType = 2; // 0 = none, 1 = double buffer, 2 = auto buffer (if pipeline is empty -> use previous
-   optimizationON = 0; // don't optimise, ie reset to 0 for every line... - game is more than fast enough to handle it
+   optimizationON = 1; // don't optimise, ie reset to 0 for every line... - game is more than fast enough to handle it
    
    
    v_setRefresh (60); // need to work on 38/76 to match hardware...

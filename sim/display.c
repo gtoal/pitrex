@@ -857,7 +857,11 @@ void vg_add_point_buf(int x, int y, int color, int intensity)
 #define SHIFT_T 10
 // printf("draw_line: %i,%i,%i,%i,%i,%i\n", (old_x>>SHIFT_T), -(old_y>>SHIFT_T), (x>>SHIFT_T), -(y>>SHIFT_T), color, intensity>>4);
 //  draw_line2 ((old_x>>SHIFT_T), -(old_y>>SHIFT_T), (x>>SHIFT_T), -(y>>SHIFT_T), color, intensity>>4);
-//  draw_line2 ((old_y>>SHIFT_T), -(old_x>>SHIFT_T), (y>>SHIFT_T), -(x>>SHIFT_T), color, intensity>>4);
+
+// I'm putting this back in after it was spotted as missing by Malban.  HOWEVER I remember
+// doing this already??? Have I updated the spare pitrex and failed to send up the corrections to github???
+  
+    draw_line2 ((old_y>>SHIFT_T), -(old_x>>SHIFT_T), (y>>SHIFT_T), -(x>>SHIFT_T), color, intensity>>4);
 	old_x = x;
 	old_y = y;
 }

@@ -220,6 +220,8 @@ int ty (int y) {				// and y
    return (int) (((((int64_t) y) + ScaleYOffsetPre) * ScaleYMul) / ScaleYDiv + ScaleYOffsetPost);
 }
 
+#include "clip.i"
+
 int frameCounter = 0; // as long as this framework only runs one game once.
 static int cineTwinkle = 255;	// off by default
 void line (int xl, int yb, int xr, int yt, int col)
@@ -230,7 +232,7 @@ void line (int xl, int yb, int xr, int yt, int col)
       tmp = xr; xr = yt; yt = tmp;
       xl = v_xr - (xl - v_xl);
       xr = v_xr - (xr - v_xl);
-  }
+   }
 
    if ((ccpu_game_id == GAME_TAILGUNNER) && (xl==xr) && (yb==yt)) {
      // stars...  tweak the intensity according to the distance from the center
@@ -242,18 +244,35 @@ void line (int xl, int yb, int xr, int yt, int col)
        col = (col - (((maxdist-dist) * 7) / maxdist) + 1)*2+1;
      }
      v_directDraw32Patterned (tx (xl), ty (yb), tx (xr), ty (yt), (col + 1) * 8 - 1, random());
+
    } else if (ccpu_game_id == GAME_BOXINGBUGS || ccpu_game_id == GAME_WAROFTHEWORLDS || ccpu_game_id == GAME_SOLARQUEST) {
+     // These games were sort of running but showing a black screen.  Forcing the intensity
+     // here restored the image to boxing bugs and war of the worlds. (solar quest must have
+     // some other problem).  Obviously we do want different intensity vectors in those games
+     // so we still need to look at what intensity values are being passed in, and handle
+     // them appropriately.
      v_directDraw32 (tx (xl), ty (yb), tx (xr), ty (yt), 127);
+
    } else if ((ccpu_game_id == GAME_TAILGUNNER) && (RCregister_PC == 0x03B2)) {
      v_directDraw32Patterned (tx (xl), ty (yb), tx (xr), ty (yt), 127, random ()); //one way to make sparky shields...
      //DEBUG_OUT("line(%d,%d, %d,%d, %02x) at PC=0x%04x;\n", xl,yb, xr,yt, col, RCregister_PC);
+
    } else {
+
+     if (ccpu_game_id == GAME_SPEEDFREAK) {
+       // could expand clipping to all games here if desired.  However, so far,
+       // out of window drawing has only really been noticeable on SpeedFreak.
+       if (!retain_after_clipping(&xl,&yb,&xr,&yt, v_xl,v_yb,v_xr,v_yt)) return;
+     }
+     
      /* Twinkle may be 0 (sundance), or 7-9 */
      if (col <= cineTwinkle) {
        v_directDraw32 (tx (xl), ty (yb), tx (xr), ty (yt), (col + 1) * 8 - 1);
+
      } else { // twinkle parameter denotes flash.
-       // check armor attack - cineTwinkle SHOULD be 255, but is it?
+       // check armor attack - cineTwinkle SHOULD be 255, but is it? ... things are flashing that shouldn't be...
        v_directDraw32 (tx (xl), ty (yb), tx (xr), ty (yt), (127 * (sine[(frameCounter<<3)&255]+16384+32768)) / 65536); // brightness 63..127
+
      }
    }
 }
@@ -289,8 +308,8 @@ void window (int xl, int yb, int xr, int yt)
       xr = xc + width / 2;
    }
 
-   printf("old window: (%d,%d) to (%d,%d)\n", v_xl,v_yb, v_xr,v_yt);
-   printf("new window: (%d,%d) to (%d,%d)\n", xl,yb, xr,yt);
+   //printf("old window: (%d,%d) to (%d,%d)\n", v_xl,v_yb, v_xr,v_yt);
+   //printf("new window: (%d,%d) to (%d,%d)\n", xl,yb, xr,yt);
    
    ScaleXMul = 36000LL;
    ScaleXDiv = width;
@@ -301,7 +320,6 @@ void window (int xl, int yb, int xr, int yt)
    // adjust center of window to center of screen
    ScaleXOffsetPost =  -(tx (v_xr)+tx (v_xl)) / 2LL;
 
-   
    //int tx (int x) {				// convert x from window to viewport
    //   if (v_flip_x) x = v_xr - (x - v_xl);
    //   return (int) (((((int64_t) x) + ScaleXOffsetPre) * ScaleXMul) / ScaleXDiv + ScaleXOffsetPost);
@@ -315,18 +333,21 @@ void window (int xl, int yb, int xr, int yt)
    // adjust center of window to center of screen
    ScaleYOffsetPost = -(ty (v_yt)+ty (v_yb)) / 2LL;
 
-   printf("X: scale %lld, pre %lld, post %lld\n", ScaleXMul/ScaleXDiv,  ScaleXOffsetPre,  ScaleXOffsetPost);
-   printf("Y: scale %lld, pre %lld, post %lld\n", ScaleYMul/ScaleYDiv,  ScaleYOffsetPre,  ScaleYOffsetPost);
-   printf("new transformed window: (%d,%d) to (%d,%d)\n", tx(xl),ty(yb), tx(xr),ty(yt));
+   //printf("X: scale %lld, pre %lld, post %lld\n", ScaleXMul/ScaleXDiv,  ScaleXOffsetPre,  ScaleXOffsetPost);
+   //printf("Y: scale %lld, pre %lld, post %lld\n", ScaleYMul/ScaleYDiv,  ScaleYOffsetPre,  ScaleYOffsetPost);
+   //printf("new transformed window: (%d,%d) to (%d,%d)\n", tx(xl),ty(yb), tx(xr),ty(yt));
+
    //int ty (int y) {				// and y
    //   if (v_flip_y) y = v_yt - (y - v_yb);
    //   return (int) (((((int64_t) y) + ScaleYOffsetPre) * ScaleYMul) / ScaleYDiv + ScaleYOffsetPost);
    //}
 
-   setCustomClipping(TRUE, tx(v_xl), ty(v_yb), tx(v_xr), ty(v_yt));
+   //setCustomClipping(TRUE, tx(v_xl), ty(v_yb), tx(v_xr), ty(v_yt));
        // transform world (window) coordinates to viewport (normalised device
        // coordinates) before clipping.  That way clipping code does not need to know about world
        // coordinates. NOT SURE IF THIS IS WORKING. Speedfreak seems to draw lines outside the window.
+       // I think setCustomClipping must only apply to one of the buffered drawing modes.
+   // I've added a local clipping procedure to ensure we have complete local control over clipping.
 }
 
 // end of window library
@@ -340,7 +361,10 @@ void startFrame (void)		// generic default
    v_readButtons ();
    v_readJoystick1Analog ();
    // v_playAllSFX();
+
    if (frameCounter < 500) {
+     // draw a frame around the game window for a few seconds to show what the original
+     // game format was.
      if (v_rotate) {
        line(v_yb,v_xl, v_yt,v_xl, 6);
        line(v_yt,v_xl, v_yt,v_xr, 6);

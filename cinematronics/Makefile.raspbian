@@ -59,7 +59,7 @@ clean:
 	$(RM) $(BUILD_DIR)*.*
 	$(RM) cinemu
 
-install:
+install: cinemu
 	install -o root -g games -m 6555 cinemu /opt/pitrex/bin
 	mkdir -p /opt/pitrex/share/cinemu/ini
 	cp ini/* /opt/pitrex/share/cinemu/ini

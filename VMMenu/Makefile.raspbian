@@ -59,12 +59,15 @@ vmmenu: dirCheck pitrexLib $(OBJS) $(PITREX_DIR)$(BUILD_DIR)bcm2835.o $(PITREX_D
 	      $(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o
 
 install:
-	install -o root -g games -m 6555 vmmenu /opt/pitrex/bin
+	@echo If these fail, reissue the make install as root.
+	install -o root -g games -m 6555 vmmenu /opt/pitrex/bin/vmmenu.bin
 	install -o root -g games vmm.sh /opt/pitrex/bin
+	install -o root -g games vmmenu.sh /opt/pitrex/bin/vmmenu
 	mkdir -p /opt/pitrex/share/vmmenu/VMMsnd
 	cp vmmenu.ini /opt/pitrex/share/vmmenu
 	cp vmmenu.cfg /opt/pitrex/share/vmmenu
 	cp VMMsnd/* /opt/pitrex/share/vmmenu/VMMsnd
+	@echo Vectrex roms should be in /opt/pitrex/roms/vectrex/
 
 $(OBJ_DIR)/vmmenu.o: VMMSrc/vmmenu.c
 	$(CC) $(CFLAGS) -c $(INC) -o $@ VMMSrc/vmmenu.c

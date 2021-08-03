@@ -51,7 +51,12 @@ case "$2" in
  "CinEmu" )
    echo "Command Line: cinemu \"$1\""
    # could pick out ../tailgunner/tailgunner.img instead of default
-   cinemu "$1"
+   if [ "$1" == "tailgunner" ] ; then
+     tailgunner
+   else
+     cinemu "$1"
+   fi
+   
   ;;
 
  "Atari" )
@@ -89,7 +94,7 @@ case "$2" in
           ;;
 
        "tempest" )
-	   temptest
+	   tempest
           ;;
 
        * )

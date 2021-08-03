@@ -415,11 +415,11 @@ int getkey(void)
 #define BUTTONS1234 4
 #define controller(code) (currentButtonState & bit[code])
 #define sgn(x) ((x) ? ((x) > 0 ? 1 : -1) : 0)
-#define JOYSTICK_CENTER_MARGIN 0x40
+#define JOYSTICK_CENTER_MARGIN 0x60
   
   MouseX = currentJoy1X;  // 0x80   0  0x7f
-  if ((currentJoy1X>0) && (currentJoy1X<JOYSTICK_CENTER_MARGIN)) MouseX = 0;
-  if ((currentJoy1X<0) && (currentJoy1X>-JOYSTICK_CENTER_MARGIN)) MouseX = 0;
+  if ((MouseX>0) && (MouseX<JOYSTICK_CENTER_MARGIN)) MouseX = 0;
+  if ((MouseX<0) && (MouseX>-JOYSTICK_CENTER_MARGIN)) MouseX = 0;
   MouseY = -currentJoy1Y;  // 0x80   0  0x7f  // first release of this had Y axis inverted
   if ((MouseY>0) && (MouseY<JOYSTICK_CENTER_MARGIN)) MouseY = 0;
   if ((MouseY<0) && (MouseY>-JOYSTICK_CENTER_MARGIN)) MouseY = 0;

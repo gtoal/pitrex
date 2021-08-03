@@ -585,7 +585,8 @@ uint32_t zvgFrameSend(void)
     v_WaitRecal();
     v_readButtons();
     v_readJoystick1Analog();
-    v_brightness(60);
+    v_brightness(110);
+    v_printStringRaster(-90,-127, "B1 - EXIT MENU    B1+B2+B3+B4 - EXIT GAME", 30, -7, '\0');
 #else
     serial_send();
 #endif

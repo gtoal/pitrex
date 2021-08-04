@@ -160,7 +160,9 @@ void handle_input (void) // call once per frame
   if (uses_analog_joystick(game))
   {
 	// build a "0" zone
-
+        // WHY? surely games like lunar lander should not have a dead zone, to allow fine control?!
+        // I'll remove the dead zone in the lander-specific code (at least on Y) and see how it goes...
+    
     joystick.x = currentJoy1X;  // 0x80   0  0x7f
     if ((currentJoy1X>0) && (currentJoy1X<JOYSTICK_CENTER_MARGIN)) joystick.x= 0;
     if ((currentJoy1X<0) && (currentJoy1X>-JOYSTICK_CENTER_MARGIN)) joystick.x=  0;
@@ -269,9 +271,22 @@ void handle_input (void) // call once per frame
   }
   else if (game == LUNAR_LANDER)
   {
-      switches [0].left = currentJoy1X<-JOYSTICK_CENTER_MARGIN;
-      switches [0].right = currentJoy1X>JOYSTICK_CENTER_MARGIN;
-      if (((signed char)joystick.y)<0) joystick.y = 0;
+      // Adding button controls:
+      static int slowdown = 0; // halve the joystick rotation rate - one unit per frame vs two frames
+      slowdown ^= 1;
+      if (currentButtonState & 0x01) switches [0].left = 1;  /* button 1 on port 1 */ else {
+        switches [0].left = currentJoy1X < -JOYSTICK_CENTER_MARGIN ? slowdown : 0;
+      }
+      if (currentButtonState & 0x02) switches [0].right = 1;  /* button 2 on port 1 */ else {
+        switches [0].right = currentJoy1X > JOYSTICK_CENTER_MARGIN ? slowdown : 0;
+      }
+      if (currentButtonState & 0x08) joystick.y = 127;  // button 3 on port 1
+      else if (currentButtonState & 0x04) joystick.y = 63;  // button 4 on port 1
+      else {
+        joystick.y = currentJoy1Y;  // 0x80   0  0x7f
+        if (((signed char)joystick.y)<0) joystick.y = -joystick.y; // note joystick code above had a dead zone. Not sure if that is wanted here.
+      }
+      
   }
   else  if (game == BLACK_WIDOW)
   {

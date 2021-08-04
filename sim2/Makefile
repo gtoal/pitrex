@@ -19,3 +19,13 @@ clean:
 	make -f Makefile-redbaron.raspbian clean
 	make -f Makefile-spaceduel.raspbian clean
 	make -f Makefile-tempest.raspbian clean
+
+install:
+	make -f Makefile-battlezone.raspbian install
+	make -f Makefile-blackwidow.raspbian install
+	make -f Makefile-deluxe.raspbian install
+	make -f Makefile-gravitar.raspbian install
+	make -f Makefile-lunar.raspbian install
+	make -f Makefile-redbaron.raspbian install
+	make -f Makefile-spaceduel.raspbian install
+	make -f Makefile-tempest.raspbian install

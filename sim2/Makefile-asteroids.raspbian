@@ -37,7 +37,7 @@ $(BUILD_DIR)malban.o: malban.c
 $(BUILD_DIR)asteroids-main.o: asteroids-main.c  $(EMU_NAME).c
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)asteroids-main.o -c asteroids-main.c -DSINGLE_GAME="\"$(EMU_NAME)\""
 
-$(EMU_NAME): $(BUILD_DIR)asteroids-main.o $(BUILD_DIR)sim.o $(BUILD_DIR)malban.o pitrexLib simLib
+$(EMU_NAME): $(BUILD_DIR)asteroids-main.o $(BUILD_DIR)sim.o $(BUILD_DIR)malban.o pitrexLib simLib $(VECTREX_DIR)$(BUILD_DIR)ini.o
 	make -f Makefile.raspbian
 	$(RM) $(EMU_NAME)
 	$(CC) $(CFLAGS) -o $(EMU_NAME) \
@@ -46,6 +46,7 @@ $(EMU_NAME): $(BUILD_DIR)asteroids-main.o $(BUILD_DIR)sim.o $(BUILD_DIR)malban.o
 	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
 	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
 	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(VECTREX_DIR)$(BUILD_DIR)ini.o \
 	$(SIM_DIR)$(BUILD_DIR)dis6502.o \
 	$(SIM_DIR)$(BUILD_DIR)display.o \
 	$(SIM_DIR)$(BUILD_DIR)game.o \

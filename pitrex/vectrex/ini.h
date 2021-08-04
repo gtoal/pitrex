@@ -10,6 +10,7 @@ https://github.com/benhoyt/inih
 #ifndef INI_H
 #define INI_H
 
+#include <stdio.h> // for ini_parse_file
 
 /* Nonzero if ini_handler callback should accept lineno parameter. */
 #ifndef INI_HANDLER_LINENO

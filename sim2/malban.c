@@ -36,9 +36,9 @@ int loadFromZip(char *zipFile, char *name, unsigned char* block) { // needs extr
   return 0;
 }
 
-int ini_parse(const char* filename, ini_handler handler, void* user) {
-  return -1;
-}
+//int ini_parse(const char* filename, ini_handler handler, void* user) {
+//  return -1;
+//}
 
 int iniHandler(char *user, const char *section, const char *name, const char *value) {
   return 1;

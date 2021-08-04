@@ -21,11 +21,11 @@ clean:
 	make -f Makefile-tempest.raspbian clean
 
 install:
-	make -f Makefile-battlezone.raspbian install
-	make -f Makefile-blackwidow.raspbian install
-	make -f Makefile-deluxe.raspbian install
-	make -f Makefile-gravitar.raspbian install
-	make -f Makefile-lunar.raspbian install
-	make -f Makefile-redbaron.raspbian install
-	make -f Makefile-spaceduel.raspbian install
-	make -f Makefile-tempest.raspbian install
+	sudo make -f Makefile-battlezone.raspbian install
+	sudo make -f Makefile-blackwidow.raspbian install
+	sudo make -f Makefile-deluxe.raspbian install
+	sudo make -f Makefile-gravitar.raspbian install
+	sudo make -f Makefile-lunar.raspbian install
+	sudo make -f Makefile-redbaron.raspbian install
+	sudo make -f Makefile-spaceduel.raspbian install
+	sudo make -f Makefile-tempest.raspbian install

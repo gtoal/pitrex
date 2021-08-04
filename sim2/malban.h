@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <vectrex/vectrexInterface.h>
-#include "ini.h"
+#include <vectrex/ini.h>
 
 typedef struct
 {

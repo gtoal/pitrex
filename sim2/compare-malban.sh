@@ -1,0 +1,32 @@
+#!/bin/sh
+echo asteroids/asteroids.c:; diff -w  asteroids.c ~malban/src/asteroids/asteroids.c
+echo asteroids/main.c:; diff -w  asteroids-main.c ~malban/src/asteroids/main.c
+echo battlezone/battlezone.c:; diff -w  battlezone.c ~malban/src/battlezone/battlezone.c
+echo battlezone/main.c:; diff -w  battlezone-main.c ~malban/src/battlezone/main.c
+echo blackwidow/blackwidow.c:; diff -w  blackwidow.c ~malban/src/blackwidow/blackwidow.c
+echo blackwidow/main.c:; diff -w  blackwidow-main.c ~malban/src/blackwidow/main.c
+echo deluxe/deluxe.c:; diff -w  deluxe.c ~malban/src/deluxe/deluxe.c
+echo deluxe/main.c:; diff -w  deluxe-main.c ~malban/src/deluxe/main.c
+echo gravitar/gravitar.c:; diff -w  gravitar.c ~malban/src/gravitar/gravitar.c
+echo gravitar/main.c:; diff -w  gravitar-main.c ~malban/src/gravitar/main.c
+echo lunar/lunar.c:; diff -w  lunar.c ~malban/src/lunar/lunar.c
+echo lunar/main.c:; diff -w  lunar-main.c ~malban/src/lunar/main.c
+echo redbaron/redbaron.c:; diff -w  redbaron.c ~malban/src/redbaron/redbaron.c
+echo redbaron/main.c:; diff -w  redbaron-main.c ~malban/src/redbaron/main.c
+echo spaceduel/spaceduel.c:; diff -w  spaceduel.c ~malban/src/spaceduel/spaceduel.c
+echo spaceduel/main.c:; diff -w  spaceduel-main.c ~malban/src/spaceduel/main.c
+echo tempest/tempest.c:; diff -w  tempest.c ~malban/src/tempest/tempest.c
+echo tempest/main.c:; diff -w  tempest-main.c ~malban/src/tempest/main.c
+
+echo sim/debugger.c:; diff -w  debugger.c ~malban/src/sim/debugger.c
+echo sim/dis6502.c:; diff -w  dis6502.c ~malban/src/sim/dis6502.c
+echo sim/display.c:; diff -w  display.c ~malban/src/sim/display.c
+echo sim/framework.c:; diff -w  framework.c ~malban/src/sim/framework.c
+echo sim/game.c:; diff -w  game.c ~malban/src/sim/game.c
+echo sim/malban.c:; diff -w  malban.c ~malban/src/sim/malban.c
+echo sim/mathbox.c:; diff -w  mathbox.c ~malban/src/sim/mathbox.c
+echo sim/memory.c:; diff -w  memory.c ~malban/src/sim/memory.c
+echo sim/no_interface.c:; diff -w  no_interface.c ~malban/src/sim/no_interface.c
+echo sim/pokey.c:; diff -w  pokey.c ~malban/src/sim/pokey.c
+echo sim/translator.c:; diff -w  translator.c ~malban/src/sim/translator.c
+echo sim/vx_interface.c:; diff -w  vx_interface.c ~malban/src/sim/vx_interface.c

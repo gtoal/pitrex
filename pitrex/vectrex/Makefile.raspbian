@@ -11,7 +11,7 @@ CC := gcc
 
 .PHONY: dirCheck
 
-all: dirCheck $(BUILD_DIR)vectrexInterface.o $(BUILD_DIR)baremetalUtil.o $(BUILD_DIR)osWrapper.o
+all: dirCheck $(BUILD_DIR)vectrexInterface.o $(BUILD_DIR)baremetalUtil.o $(BUILD_DIR)osWrapper.o $(BUILD_DIR)ini.o
 
 dirCheck:
 	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
@@ -24,6 +24,9 @@ $(BUILD_DIR)baremetalUtil.o: baremetalUtil.c baremetalUtil.h
 
 $(BUILD_DIR)osWrapper.o: osWrapper.c osWrapper.h
 	$(CC) $(CFLAGS) -c osWrapper.c -o $(BUILD_DIR)osWrapper.o
+
+$(BUILD_DIR)ini.o: ini.c ini.h
+	$(CC) $(CFLAGS) -c ini.c -o $(BUILD_DIR)ini.o
 
 clean:
 	$(RM) $(BUILD_DIR)*.*

@@ -1,0 +1,169 @@
+# I prefer "handmade" make files, it is a little bit of more worktime to start with
+# but I can read them, others can, and I know what they do!
+
+BUILD_DIR_PURE := build.raspbian
+BUILD_DIR := $(BUILD_DIR_PURE)/
+
+PITREX_DIR := ../pitrex/pitrex/
+VECTREX_DIR := ../pitrex/vectrex/
+CFLAGS := -g -I../pitrex/ -DPIZERO -DRPI0
+# CFLAGS := -Ofast -I../pitrex/ -DPIZERO -DRPI0
+CC := gcc
+
+.PHONY: pitrexLib
+.PHONY: dirCheck
+
+
+all:	popup-menu # cube gimms dirCheck pitrexLib hello fonttest calibrate window bootmsg maze perspective drawships 
+	echo All up to date
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
+
+clean:
+	$(RM) $(BUILD_DIR)*.* *~ hello fonttest bootmsg calibrate window maze perspective
+
+pitrexLib:
+	$(MAKE) -C $(PITREX_DIR) -f Makefile.raspbian all
+	$(MAKE) -C $(VECTREX_DIR) -f Makefile.raspbian all
+
+$(BUILD_DIR)hello.o: hello.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)hello.o -c hello.c
+
+hello: $(BUILD_DIR)hello.o pitrexLib
+	$(RM) hello
+	$(CC) $(CFLAGS) -o hello \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)hello.o
+
+$(BUILD_DIR)fonttest.o: fonttest.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)fonttest.o -c fonttest.c
+
+fonttest: $(BUILD_DIR)fonttest.o pitrexLib
+	$(RM) fonttest
+	$(CC) $(CFLAGS) -o fonttest \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)fonttest.o
+
+$(BUILD_DIR)popup-menu.o: popup-menu.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)popup-menu.o -c popup-menu.c
+
+popup-menu: $(BUILD_DIR)popup-menu.o pitrexLib
+	$(RM) popup-menu
+	$(CC) $(CFLAGS) -o popup-menu \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)popup-menu.o
+
+$(BUILD_DIR)bootmsg.o: bootmsg.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)bootmsg.o -c bootmsg.c
+
+bootmsg: $(BUILD_DIR)bootmsg.o pitrexLib
+	$(RM) bootmsg
+	$(CC) $(CFLAGS) -o bootmsg \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)bootmsg.o
+
+$(BUILD_DIR)window.o: window.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)window.o -c window.c
+
+$(BUILD_DIR)calibrate.o: calibrate.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)calibrate.o -c calibrate.c
+
+$(BUILD_DIR)windowmain.o: window.c
+	$(CC) $(CFLAGS) -DMAIN -o $(BUILD_DIR)windowmain.o -c window.c
+
+$(BUILD_DIR)maze.o: maze.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)maze.o -c maze.c
+
+maze: $(BUILD_DIR)maze.o pitrexLib
+	$(RM) maze
+	$(CC) $(CFLAGS) -o maze \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)maze.o
+
+$(BUILD_DIR)perspective.o: perspective.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)perspective.o -c perspective.c
+
+perspective: $(BUILD_DIR)perspective.o pitrexLib
+	$(RM) perspective
+	$(CC) $(CFLAGS) -o perspective \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)perspective.o
+
+cube: $(BUILD_DIR)cube.o pitrexLib
+	$(RM) cube
+	$(CC) $(CFLAGS) -o cube \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(BUILD_DIR)cube.o -lm
+
+$(BUILD_DIR)cube.o: cube.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)cube.o -c cube.c
+
+
+gimms: gimms.c $(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+       		   $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+        	   $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
+	$(RM) gimms
+	$(CC) $(CFLAGS) -o gimms $(PITREX_DIR)$(BUILD_DIR)bcm2835.o $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o gimms.c
+
+calibrate: $(BUILD_DIR)calibrate.o $(BUILD_DIR)window.o \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
+	$(CC) $(CFLAGS) -o calibrate $(BUILD_DIR)calibrate.o $(BUILD_DIR)window.o $(PITREX_DIR)$(BUILD_DIR)bcm2835.o $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
+
+window: $(BUILD_DIR)windowmain.o $(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+       		   $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	       	   $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
+	$(CC) $(CFLAGS) -o window $(BUILD_DIR)windowmain.o $(PITREX_DIR)$(BUILD_DIR)bcm2835.o $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
+
+$(BUILD_DIR)drawships.o: drawships.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)drawships.o -c drawships.c
+
+drawships: $(BUILD_DIR)drawships.o $(BUILD_DIR)window.o \
+	                   $(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+       			   $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	        	   $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
+	$(RM) drawships
+	$(CC) $(CFLAGS) -o drawships $(BUILD_DIR)drawships.o $(BUILD_DIR)window.o $(PITREX_DIR)$(BUILD_DIR)bcm2835.o $(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o $(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o
+
+install:
+	install -o root -g games -m 6555 hello /opt/pitrex/bin
+	install -o root -g games -m 6555 fonttest /opt/pitrex/bin
+	install -o root -g games -m 6555 popup-menu /opt/pitrex/bin
+	install -o root -g games -m 6555 bootmsg /opt/pitrex/bin
+	install -o root -g games -m 6555 maze /opt/pitrex/bin
+	install -o root -g games -m 6555 perspective /opt/pitrex/bin
+	install -o root -g games -m 6555 cube /opt/pitrex/bin
+	install -o root -g games -m 6555 gimms /opt/pitrex/bin
+	install -o root -g games -m 6555 calibrate /opt/pitrex/bin
+	install -o root -g games -m 6555 window /opt/pitrex/bin
+	install -o root -g games -m 6555 drawships /opt/pitrex/bin

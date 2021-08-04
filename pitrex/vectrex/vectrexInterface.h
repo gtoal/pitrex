@@ -486,6 +486,7 @@ do { \
 
 
 
+
 typedef struct {
   int y0;
   int x0;
@@ -499,6 +500,19 @@ typedef struct {
   char debug[240];
   void *next;
   void *previous;
+  // ----------------------------------------------------
+  // The following fields are not YET used, they are from
+  // Malban's newer version of this interface from the
+  // bare metal environment, some of which I'm hoping
+  // to backport to the combined Linux/Baremetal world.
+  int yStart;
+  int xStart;
+  int yEnd;
+  int xEnd;
+  #ifdef USE_PERSISTENT_VECTORS
+  int id; //
+  #endif
+  unsigned char **rlines;
 } VectorPipelineBase;
 
 typedef enum {
@@ -581,3 +595,12 @@ typedef struct {
 } GlobalMemSettings;
 
 extern GlobalMemSettings *settings;
+
+// More additions to start being compatible with Malban's bare metal fork.
+
+#define CV_SPECIAL_NONE 0
+#define CV_SPECIAL_SKIP 1
+#define CV_SPECIAL_DEFLOK 2
+#define CV_SPECIAL_AFTER 0x80
+
+#include <vectrex/ini.h>

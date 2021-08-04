@@ -1,0 +1,40 @@
+BUILD_DIR_PURE := build.raspbian
+BUILD_DIR := $(BUILD_DIR_PURE)/
+PITREX_DIR = /opt/pitrex/
+
+CFLAGS := -Wall -Wno-unused-function -Ofast -I../pitrex/ -DPIZERO -DRPI0 -DPITREX_DIR="\"$(PITREX_DIR)\""
+CC := gcc
+
+.PHONY: dirCheck
+
+all: dirCheck $(BUILD_DIR)dis6502.o $(BUILD_DIR)display.o $(BUILD_DIR)game.o $(BUILD_DIR)mathbox.o $(BUILD_DIR)memory.o $(BUILD_DIR)pokey.o $(BUILD_DIR)vx_interface.o $(BUILD_DIR)debugger.o
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
+
+$(BUILD_DIR)dis6502.o: dis6502.c dis6502.h memory.h malban.h
+	$(CC) $(CFLAGS) -c dis6502.c -o $(BUILD_DIR)dis6502.o
+
+$(BUILD_DIR)display.o: display.c display.h memory.h malban.h game.h
+	$(CC) $(CFLAGS) -c display.c -o $(BUILD_DIR)display.o
+
+$(BUILD_DIR)game.o: game.c game.h memory.h display.h sim6502.h macro6502.h malban.h
+	$(CC) $(CFLAGS) -c game.c -o $(BUILD_DIR)game.o
+
+$(BUILD_DIR)mathbox.o: mathbox.c mathbox.h
+	$(CC) $(CFLAGS) -c mathbox.c -o $(BUILD_DIR)mathbox.o
+
+$(BUILD_DIR)debugger.o: debugger.c debugger.h display.h game.h sim6502.h mathbox.h pokey.h memory.c memory.h dis6502.h malban.h
+	$(CC) $(CFLAGS) -c debugger.c -o $(BUILD_DIR)debugger.o
+
+$(BUILD_DIR)memory.o: memory.c memory.h display.h game.h sim6502.h mathbox.h pokey.h malban.h
+	$(CC) $(CFLAGS) -c memory.c -o $(BUILD_DIR)memory.o
+
+$(BUILD_DIR)pokey.o: pokey.c pokey.h memory.h malban.h game.h
+	$(CC) $(CFLAGS) -c pokey.c -o $(BUILD_DIR)pokey.o
+
+$(BUILD_DIR)vx_interface.o: vx_interface.c game.h memory.h display.h malban.h
+	$(CC) $(CFLAGS) -c vx_interface.c -o $(BUILD_DIR)vx_interface.o
+
+clean:
+	$(RM) $(BUILD_DIR)*.*

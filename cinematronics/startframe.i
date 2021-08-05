@@ -263,7 +263,7 @@ void startFrame_spacewars(void) {
 #define SW_SW_ABORT   SW_ABORT	/* for ioSwitches */
 #define SW_SW_COIN    0x080
 
-   static int prevButtonState;	// for debouncing
+  static int prevButtonState, Pending_action = 0, Pending_when = 0;	// for debouncing
 
    frameCounter += 1;
    DEBUG_OUT("// %d\n", frameCounter);
@@ -292,6 +292,11 @@ void startFrame_spacewars(void) {
 
    ioSwitches |= SW_SW_COIN  | SW_SW_P1FIRE | SW_SW_P1HYPER | SW_SW_P2FIRE | SW_SW_P2HYPER;
 
+   if (Pending_action && (Pending_when == frameCounter)) {
+     ioInputs &= ~Pending_action;
+     Pending_action = 0;
+   }
+   
    // digital joysticks
    if (currentJoy1X < -30) ioInputs &= ~SW_IO_P1LEFT;
    if (currentJoy1X > 30) ioInputs &= ~SW_IO_P1RIGHT;
@@ -317,6 +322,8 @@ void startFrame_spacewars(void) {
      ioInputs &= ~SW_IO_Zero; // easy game
      // At this point need to delay a few frames and then trigger
      // any modifications we want.
+     Pending_action = SW_IO_One;
+     Pending_when = frameCounter+50;
    }
 
    // the buttons are not the same order as the arcade cabinet - fire is now on the right with

@@ -169,12 +169,77 @@ void spacewar_input()
 
 void startFrame_spacewars(void) {
 
-#define SW_IO_P1LEFT    0x0100
-#define SW_IO_P1RIGHT   0x2000
-#define SW_IO_P1THRUST  0x8000
+  // SOLVED!  Coins display time left (goes up by 2 mins per coin)
+  // Once coins are inserted, user is supposed to press a keypad
+  // button (0 - 9) to select the game type.  We can replace that
+  // with a pop-up menu, once I know what the various options mean.
 
-#define SW_SW_P1FIRE    0x04
-#define SW_SW_P1HYPER   0x02  // not yet assigned to a key
+  // until I add that, I'll just pick option 1 to get something started.
+  // I need to see a copy of the CPO to find out what the numbers are for.
+  // Ah here's the info:
+  /*
+  GAMES
+    Beginner
+    0 slow
+    1 fast
+    2 very fast
+    Intermediate
+    3 fast
+    4 fast missiles
+    5 very fast
+    Expert
+    6 very slow
+    7 slow
+    8 fast
+    9 strong gravity
+
+  MODIFICATIONS
+    1 bounce back - objects rebound from edges
+    2 expanded universe - ships can manoeuver beyond edges
+    3 black hole - invisible sun
+    4 negative gravity
+    5 no gravity
+
+  The instructions say:
+
+       1) insert one or more quarters. Additional quarters will give additional time.
+       2) select game from keyboard [0-9 buttons]
+       3) Optional: select modifications by again pressing the proper keyboard buttons [1-5]
+       4) Ship missing, frustrated etc.  Press reset.
+       5) Hyperspace - used for emergency escapes. May cause self-destruction.
+       6) Time, fuel and missiles displayed on screen.
+
+    So from that I know we can enter the 0-9 game selection after entering coins (the
+    screen displays only the time you have bought) but once you enter that selection,
+    the game starts - so it's not obvious when you can enter the modifications.  Is it
+    *any* time in the game, or just within a timeout of the game starting?  Since I plan
+    to do it with a pop-up menu, handling this will need some care (unless I freeze the
+    game and get the modification selection immediately after getting the difficulty.
+
+   */
+
+  // To make the 4x3 original fit the 3x4 vectrex. we *could* rotate
+  // all the graphics except for the text (score, ships etc) by 90
+  // degrees, and scale it up to full screen size.  Just need to identify
+  // calls to the text-drawing procedure. Controls would not need to
+  // change, since the only directional control is rotate clockwise
+  // or anti-clockwise, which remains the same.
+  
+  // NOTE: the "Reset" button on the original arcade (in the middle between
+  // the players) is *NOT* the classic 'reset the arcade machine' - it's
+  // a 'player reset' within the game, and something the player is going
+  // to want to hit at times!  So we need to make it work...  except
+  // there doesn't seem to be an I/O or switch for 'reset' so maybe they
+  // really were using the hardware reset pin???! (SW_ABORT)
+  // We might be able to overload B1 with both "Coin" and "Reset"...
+
+
+#define SW_IO_P1LEFT    0x0100  //  if (key[config.kp1left])   {ioInputs -= 0x0100;}
+#define SW_IO_P1RIGHT   0x2000  //  if (key[config.kp1right])  {ioInputs -= 0x2000;}
+#define SW_IO_P1THRUST  0x8000  //  if (key[config.kp1but2])   {ioInputs -= 0x8000;}
+
+#define SW_SW_P1FIRE    0x04  //  if (key[config.kp1but1])   {ioSwitches -= 0x04;}
+#define SW_SW_P1HYPER   0x02  //  if (key[config.kp1but3])   {ioSwitches -= 0x02;}    // not yet assigned to a key
 
 #define SW_IO_P2LEFT    0x4000
 #define SW_IO_P2RIGHT   0x1000
@@ -183,7 +248,7 @@ void startFrame_spacewars(void) {
 #define SW_SW_P2FIRE    0x01
 #define SW_SW_P2HYPER   0x08  // not yet assigned to a key
 
-// not yet assigned to keys:
+// not yet assigned to keys. Probably going to implement these using a pop-up menu.
 #define SW_IO_Zero    0x0800
 #define SW_IO_One     0x0010
 #define SW_IO_Two     0x0040
@@ -198,11 +263,6 @@ void startFrame_spacewars(void) {
 #define SW_SW_ABORT   SW_ABORT	/* for ioSwitches */
 #define SW_SW_COIN    0x080
 
-   // Default of Switches=0000011 doesn't seem compatible with SW_SW_P2FIRE=0x01 and SW_SW_P1HYPER=0x02
-   // Code from AAE above suggests the duration bits are the high two bits rather than the low two,
-   // so either we have a big/little-endian situation, or it's something to do with the shuffling of
-   // switch bits also mentioned in the AAE code. (not shown)
-  
    static int prevButtonState;	// for debouncing
 
    frameCounter += 1;
@@ -212,7 +272,7 @@ void startFrame_spacewars(void) {
    // v_doSound();
    prevButtonState = currentButtonState;
    v_readButtons ();		// update currentButtonState
-   v_readJoystick1Analog ();
+   v_readJoystick1Analog (); // actually, this code reads both Joy1 and Joy2!
    //v_readJoystick2Analog ();  // NOT YET IMPLEMENTED.
    // v_playAllSFX();
 
@@ -221,34 +281,56 @@ void startFrame_spacewars(void) {
    // handle this...
    
    // default inactive:
-   ioInputs = 0xffff; ioSwitches = 0x00cf; // force for now...
+   //ioInputs = 0xffff;
+   ioInputs = 0x0000;
+   ioSwitches = 0xcf; // 2 min default time selected.  The two clear bits are the duration bits.
 
+   // Active low.  Set 'em up so we can knock 'em down!
    ioInputs |= SW_IO_P1LEFT | SW_IO_P1RIGHT | SW_IO_P1THRUST
              | SW_IO_P2LEFT | SW_IO_P2RIGHT | SW_IO_P2THRUST
              | SW_IO_Zero | SW_IO_One | SW_IO_Two | SW_IO_Three | SW_IO_Four | SW_IO_Five | SW_IO_Six | SW_IO_Seven | SW_IO_Eight | SW_IO_Nine;
 
    ioSwitches |= SW_SW_COIN  | SW_SW_P1FIRE | SW_SW_P1HYPER | SW_SW_P2FIRE | SW_SW_P2HYPER;
 
-   if ((currentButtonState & ~prevButtonState) & (VEC_BUTTON_1_1|VEC_BUTTON_1_1)) ioSwitches &= ~SW_SW_COIN;	// only on rising edge
-
    // digital joysticks
    if (currentJoy1X < -30) ioInputs &= ~SW_IO_P1LEFT;
    if (currentJoy1X > 30) ioInputs &= ~SW_IO_P1RIGHT;
-   if (currentJoy1Y < -30) ioSwitches &= ~SW_SW_P1HYPER;
-   if (currentJoy1Y > 30) ioInputs &= ~SW_IO_P1THRUST;
+   // Hyperspace on the joystick is way too easy to trigger, I've put it on a button.
+   //if (currentJoy1Y < -30) ioInputs &= ~SW_IO_P1THRUST;
+   //if (currentJoy1Y > 30) ioInputs &= ~SW_IO_P1THRUST;
 
    if (currentJoy2X < -30) ioInputs &= ~SW_IO_P2LEFT;
    if (currentJoy2X > 30) ioInputs &= ~SW_IO_P2RIGHT;
-   if (currentJoy2Y < -30) ioSwitches &= ~SW_SW_P2HYPER;
-   if (currentJoy2Y > 30) ioInputs &= ~SW_IO_P2THRUST;
+   //if (currentJoy2Y < -30) ioInputs &= ~SW_IO_P2THRUST;
+   //if (currentJoy2Y > 30) ioInputs &= ~SW_IO_P2THRUST;
 
-   if (currentButtonState & VEC_BUTTON_1_1) ioInputs &= ~SW_IO_P1LEFT;
-   if (currentButtonState & VEC_BUTTON_1_2) ioInputs &= ~SW_IO_P1RIGHT;
+   // [COIN HYPERSPACE THRUST FIRE]
+   
+   if ((currentButtonState & ~prevButtonState) & VEC_BUTTON_1_1) {
+     // This does not take into account adding coins during a game.  Would be
+     // helpful to find the 'coins left' variable or some indication that the
+     // game is running and not in attract mode.
+     ioSwitches &= ~SW_SW_COIN;	// only on rising edge
+     // Now that coins are entered, we can ask for a difficulty level using a pop-up menu.
+     // When an option is entered, remove the pop-up menu.
+     // FOR NOW, TESTING:
+     ioInputs &= ~SW_IO_Zero; // easy game
+     // At this point need to delay a few frames and then trigger
+     // any modifications we want.
+   }
+
+   // the buttons are not the same order as the arcade cabinet - fire is now on the right with
+   // thrust next to it.  Hyperspace is off to the left along witg coin/reset.
+   if (currentButtonState & VEC_BUTTON_1_2) ioSwitches &= ~SW_SW_P1HYPER;
    if (currentButtonState & VEC_BUTTON_1_3) ioInputs &= ~SW_IO_P1THRUST;
    if (currentButtonState & VEC_BUTTON_1_4) ioSwitches &= ~SW_SW_P1FIRE;
 
-   if (currentButtonState & VEC_BUTTON_2_1) ioInputs &= ~SW_IO_P2LEFT;
-   if (currentButtonState & VEC_BUTTON_2_2) ioInputs &= ~SW_IO_P2RIGHT;
+   // This is always a 2-player game.  Give equal status to either controller.
+   if ((currentButtonState & ~prevButtonState) & VEC_BUTTON_2_1) {
+     ioSwitches &= ~SW_SW_COIN;	// only on rising edge
+     ioInputs &= ~SW_IO_Zero; // easy game
+   }
+   if (currentButtonState & VEC_BUTTON_2_2) ioSwitches &= ~SW_SW_P2HYPER;
    if (currentButtonState & VEC_BUTTON_2_3) ioInputs &= ~SW_IO_P2THRUST;
    if (currentButtonState & VEC_BUTTON_2_4) ioSwitches &= ~SW_SW_P2FIRE;
 

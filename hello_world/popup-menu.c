@@ -243,7 +243,7 @@ typedef struct menu_context {
   menu_callback b4;
   char *title; // if NULL, no title bar
   char *options; // text to display menu options
-  char buff[12][24]; // max 12 lines of up to 22 characters
+  char buff[32][24]; // max 12 lines of up to 22 characters
 } menu_context;
 
 extern int bufferType; // 0 = none, 1 = double buffer, 2 = auto buffer (if pipeline is empty -> use previous
@@ -450,8 +450,8 @@ int DrawMenu(menu_context *m) {
   // these two branches should be parameterised and merged...
   if (m->width > 11) {
     // small text
-    txty = 54; // 12 lines 22 chars
-    m->displayable_lines = 12;
+    txty = 54+16; // 12 lines 22 chars
+    m->displayable_lines = 16;
     // menu border.
     no_menu_line (m->xl, m->yb, m->xl, m->yt, 120, NULL);
     no_menu_line (m->xl, m->yt, m->xr, m->yt, 120, NULL);
@@ -463,8 +463,8 @@ int DrawMenu(menu_context *m) {
 	title[i] = ' ';
       }
       strcpy(title+i, m->title); strcat(title, " ");
-      no_menu_line (m->xl, m->yb+16, m->xr, m->yb+16, 120, NULL);
-      v_printStringRaster(-59-4, txty-3, title, 35, -3, '\0'); // later: side-scroll using buff[i][offset] ...
+      no_menu_line (m->xl, m->yb+16+1, m->xr, m->yb+16+1, 120, NULL);
+      v_printStringRaster(-59-4, txty, title, 35, -3, '\0'); // later: side-scroll using buff[i][offset] ...
       txty -= 16; // skip 2 lines
     }
     no_menu_line (m->xr, m->yt, m->xr, m->yb, 120, NULL);
@@ -482,8 +482,8 @@ int DrawMenu(menu_context *m) {
     }  
   } else {
     // larger (default size) text
-    txty = 50; // 7 liness 11 chars
-    m->displayable_lines = 7;
+    txty = 50+16; // 7 lines 11 chars
+    m->displayable_lines = 8;
     no_menu_line (m->xl, m->yb, m->xl, m->yt, 120, NULL);
     no_menu_line (m->xl, m->yt, m->xr, m->yt, 120, NULL);
     if (m->title) {
@@ -494,7 +494,7 @@ int DrawMenu(menu_context *m) {
 	title[i] = ' ';
       }
       strcpy(title+i, m->title); strcat(title, " ");
-      no_menu_line (m->xl, m->yb+16, m->xr, m->yb+16, 120, NULL); // bleh. we have our b/t's and +/-'s confused.
+      no_menu_line (m->xl, m->yb+16+4, m->xr, m->yb+16+4, 120, NULL); // bleh. we have our b/t's and +/-'s confused.
       v_printStringRaster(-59, txty+3, title, 70, -7, '\0'); // later: side-scroll using buff[i][offset] ...
       txty -= 16;
     }
@@ -553,8 +553,8 @@ int DrawMenu(menu_context *m) {
   case KEY_DOWN:
     if (m->down) m->down(m);
 
-    if (m->display_line+1 == m->displayable_lines) {
-      if (m->selected == m->lines) return 0;
+    if (m->selected >= m->lines) return 0;
+    if (m->display_line+1 >= m->displayable_lines) {
       m->scroll_base += 1; // scroll the list upwards when you hit the bottom of the display (not of the options)
     } else {
       m->display_line += 1; // move cursor down a line, don't scroll options
@@ -860,7 +860,10 @@ int main(int argc, char **argv) {
 
   // Current bug: "Action" is displayed in first row of menu, not in header field.
   // (it was working before, I must have broken something.)
-  CreateMenu(&menu, "Action", "Setup Net\nCalibrate\nIntro\nMulticart\nArcade\nBasic\nBash\nQuit");
+  CreateMenu(&menu, "Action", "Setup Net\nCalibrate\nIntro\nMulticart\nArcade\nVectrex\nBasic\nBash\nQuit");
+  //CreateMenu(&menu, NULL, "Setup Net\nCalibrate\nIntro\nMulticart\nArcade\nVectrex\nBasic\nBash\nQuit");
+  //CreateMenu(&menu, "Action", "Setup Net\nCalibrate\nIntro\nMulticart\nArcade Games\nVectrex\nBasic\nBash\nQuit\n10\n11\n12\nhidden\nmore\ndone\nno\nnot\nreally");
+  //CreateMenu(&menu, NULL, "Setup Net\nCalibrate\nIntro\nMulticart\nArcade Games\nVectrex\nBasic\nBash\nQuit\n10\n11\n12\nhidden\nmore\ndone\nno\nnot\nreally");
   menu.b1 = &Up;     // bind user procedures to buttons.
   menu.b2 = &Down;
   menu.b3 = &Cancel;

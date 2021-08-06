@@ -55,9 +55,12 @@ void main (int argc, char **argv)
 
    if ((argc != 2) || (strcmp(argv[1], "-h") == 0)) 
    {
+      // NOTE: Cosmic Chasm removed because it is a 68000 game!
       fprintf (stderr, "syntax: cinemu [-h | -V | <game>]  where the supported games are:\n");
-      fprintf (stderr, "  armorattack  boxingbugs   demon  ripoff      spacewars   starcastle  sundance    waroftheworlds\n");
-      fprintf (stderr, "  barrier      cosmicchasm  qb3    solarquest  speedfreak  starhawk    tailgunner  warrior\n");
+      fprintf (stderr, "  armorattack  boxingbugs   qb3*   solarquest* speedfreak  starhawk  tailgunner     warrior\n");
+      fprintf (stderr, "  barrier      demon        ripoff spacewars   starcastle  sundance  waroftheworlds\n");
+      fprintf (stderr, "\n");
+      fprintf (stderr, "[*: qb3 and solarquest not yet working]\n");
       fprintf (stderr, "\n");
       exit (1);
    }
@@ -92,8 +95,6 @@ void main (int argc, char **argv)
      Game = GAME_DEMON;
    } else if (strcasecmp (argv[1], "solarquest") == 0) {
      Game = GAME_SOLARQUEST;
-   } else if (strcasecmp (argv[1], "cosmicchasm") == 0) {
-     Game = GAME_COSMICCHASM;
    } else if (strcasecmp (argv[1], "waroftheworlds") == 0) {
      Game = GAME_WAROFTHEWORLDS;
    } else if (strcasecmp (argv[1], "warrior") == 0) {
@@ -106,8 +107,10 @@ void main (int argc, char **argv)
      Game = GAME_QB3;
    } else {
       fprintf (stderr, "The supported games are:\n");
-      fprintf (stderr, "  armorattack  boxingbugs   demon  ripoff      spacewars   starcastle  sundance    waroftheworlds\n");
-      fprintf (stderr, "  barrier      cosmicchasm  qb3    solarquest  speedfreak  starhawk    tailgunner  warrior\n");
+      fprintf (stderr, "  armorattack  boxingbugs   qb3*    solarquest* speedfreak  starhawk  tailgunner     warrior\n");
+      fprintf (stderr, "  barrier      demon        ripoff  spacewars   starcastle  sundance  waroftheworlds\n");
+      fprintf (stderr, "\n");
+      fprintf (stderr, "[*: qb3 and solarquest not yet working]\n");
       fprintf (stderr, "\n");
       exit (1);
    }
@@ -265,20 +268,6 @@ void main (int argc, char **argv)
            bNewFrame = 0;
            parity ^= 1;
            if (parity) startFrame_solarquest();
-         }
-       }
-     }
-     return;
-
-   case GAME_COSMICCHASM:     
-     {
-       static int parity = 0;
-       for (;;) {
-         cineExec ();		/* either run one instruction or a lot ending in a vsync */
-         if (bNewFrame != 0) {
-           bNewFrame = 0;
-           parity ^= 1;
-           if (parity) startFrame_cosmicchasm();
          }
        }
      }

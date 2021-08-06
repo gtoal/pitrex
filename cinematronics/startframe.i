@@ -139,7 +139,7 @@ void spacewar_input()
   //Spacewar inputs
   ioInputs = 0xffff;
 
-  ioSwitches = 0x00cf; //00ff=45 00ef=2min  00df 1:30 00cf 1min
+  ioSwitches = 0x00cf; 
   // if (GkeyCheck(config.kcoin1)){ioSwitches &= ~SW_COIN;}
 
   if (key[config.kp1left])   {ioInputs -= 0x0100;}
@@ -192,7 +192,6 @@ void startFrame_spacewars(void) {
     7 slow
     8 fast
     9 strong gravity
-
   MODIFICATIONS
     1 bounce back - objects rebound from edges
     2 expanded universe - ships can manoeuver beyond edges
@@ -234,37 +233,101 @@ void startFrame_spacewars(void) {
   // We might be able to overload B1 with both "Coin" and "Reset"...
 
 
-#define SW_IO_P1LEFT    0x0100  //  if (key[config.kp1left])   {ioInputs -= 0x0100;}
-#define SW_IO_P1RIGHT   0x2000  //  if (key[config.kp1right])  {ioInputs -= 0x2000;}
-#define SW_IO_P1THRUST  0x8000  //  if (key[config.kp1but2])   {ioInputs -= 0x8000;}
-
-#define SW_SW_P1FIRE    0x04  //  if (key[config.kp1but1])   {ioSwitches -= 0x04;}
-#define SW_SW_P1HYPER   0x02  //  if (key[config.kp1but3])   {ioSwitches -= 0x02;}    // not yet assigned to a key
+#define SW_IO_P1LEFT    0x0100
+#define SW_IO_P1RIGHT   0x2000
+#define SW_SW_P1HYPER   0x02  
+#define SW_IO_P1THRUST  0x8000
+#define SW_SW_P1FIRE    0x04  
 
 #define SW_IO_P2LEFT    0x4000
 #define SW_IO_P2RIGHT   0x1000
+#define SW_SW_P2HYPER   0x08
 #define SW_IO_P2THRUST  0x0200
-
 #define SW_SW_P2FIRE    0x01
-#define SW_SW_P2HYPER   0x08  // not yet assigned to a key
 
-// not yet assigned to keys. Probably going to implement these using a pop-up menu.
 #define SW_IO_Zero    0x0800
 #define SW_IO_One     0x0010
 #define SW_IO_Two     0x0040
 #define SW_IO_Three   0x0001
 #define SW_IO_Four    0x0004
+
 #define SW_IO_Five    0x0400
 #define SW_IO_Six     0x0020
 #define SW_IO_Seven   0x0080
 #define SW_IO_Eight   0x0002
 #define SW_IO_Nine    0x0008
 
+  int SW_IO_Keypad[10] = {SW_IO_Zero, SW_IO_One, SW_IO_Two, SW_IO_Three, SW_IO_Four,
+                          SW_IO_Five, SW_IO_Six, SW_IO_Seven, SW_IO_Eight, SW_IO_Nine};
+  
 #define SW_SW_ABORT   SW_ABORT	/* for ioSwitches */
 #define SW_SW_COIN    0x080
 
-  static int prevButtonState, Pending_action = 0, Pending_when = 0;	// for debouncing
+  static int prevButtonState, Pending_action = 0, Pending_when = 0, Menu_created = 0, debug_ram = 0;	// for debouncing
+   menu_context GameMenu, ModMenu;
+   int kbh = kbhit();
+   
+   if (kbh == ' ') debug_ram ^= 1;
+   if (debug_ram) {
+     // B3 is minutes left (0:255)  B4 is seconds (0:59). B5 is frames
+     // it *does* support > 255 minutes but it doesn't look like the high byte is in B2...
+     static int last[256];
+     char line[64], *p;
+     int i,x,c,lo,hi;
+     static int y = 0, timeout=0;
+     if (!Menu_created) {int i; for (i = 0; i < 256; i++) last[i]=RCram[i];}
+     if (kbh == KEY_DOWN) y += 1;
+     if (kbh == KEY_UP) y -= 1;
+     y &= 15;
+     v_setBrightness(80);
+     v_printStringRaster(-127,-110, "    0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F ", 4*8, -6, '\0');
+     //for (y = 0; y < 16; y++) {
+       p = line; *p = y+'0'; if (y >= 10) *p += 7; p += 1; *p++ = ':'; *p++ = ' ';
+       for (x = 0; x < 16; x++) {
+	 c = x | (y<<4);
+         if (1 /* RCram[c] != last[c] */) { // watch for changes
+	   lo = RCram[c]&15; hi = (RCram[c]>>4)&15;
+	   *p = hi+'0'; if (hi>9) *p += 7;
+	   p += 1;
+	   *p = lo+'0'; if (lo>9) *p += 7;
+	   p += 1;
+	 } else {
+	   *p++ = ' ';
+	   *p++ = ' ';
+	 }
+	 *p++ = ' ';
+       }
+       *p = '\0';
+       v_setBrightness(80);
+       v_printStringRaster(-127,-120, line, 4*8, -6, '\0');
+     //}
+     if (timeout == 150) {
+       {int i; for (i = 0; i < 256; i++) last[i]=RCram[i];}
+       timeout = 0;
+     }
+     timeout += 1;
+   }
 
+   if (!Menu_created) {
+     Menu_created = 1;
+
+     // I haven't yet worked out where/how to call the modification menu.
+     CreateMenu(&ModMenu, "Modifications", "Bounce back\nExpanded universe\nBlack hole\nNegative gravity\nNo gravity");
+
+     CreateMenu(&GameMenu, "Select a game", "Beginner slow\n"
+		                            "  fast\n"
+		                            "  very fast\n"
+
+		                            "Intermediate fast\n"
+		                            "  fast missiles\n"
+		                            "  very fast\n"
+
+		                            "Expert very slow\n"
+		                            "  slow\n"
+		                            "  very fast\n"
+		                            "  strong gravity");
+   }
+  
    frameCounter += 1;
    DEBUG_OUT("// %d\n", frameCounter);
 
@@ -272,20 +335,16 @@ void startFrame_spacewars(void) {
    // v_doSound();
    prevButtonState = currentButtonState;
    v_readButtons ();		// update currentButtonState
-   v_readJoystick1Analog (); // actually, this code reads both Joy1 and Joy2!
-   //v_readJoystick2Analog ();  // NOT YET IMPLEMENTED.
+   v_readJoystick1Analog ();    // actually, this code reads both Joy1 and Joy2!
+   // v_readJoystick2Analog ();  // NOT YET IMPLEMENTED.
    // v_playAllSFX();
 
-   // Unfortunately, it's quite common to press LEFT and RIGHT simultaneously by accident with this
-   // layout, and accidentally invoke the configuration screen.  Need to think about how we will
-   // handle this...
-   
-   // default inactive:
-   //ioInputs = 0xffff;
-   ioInputs = 0x0000;
+   // Supposed to be: 00ff=45 00ef=2min  00df=1:30 00cf=1min - I think this is wrong.
    ioSwitches = 0xcf; // 2 min default time selected.  The two clear bits are the duration bits.
 
    // Active low.  Set 'em up so we can knock 'em down!
+   //ioInputs = 0xffff;
+   ioInputs = 0x0000;
    ioInputs |= SW_IO_P1LEFT | SW_IO_P1RIGHT | SW_IO_P1THRUST
              | SW_IO_P2LEFT | SW_IO_P2RIGHT | SW_IO_P2THRUST
              | SW_IO_Zero | SW_IO_One | SW_IO_Two | SW_IO_Three | SW_IO_Four | SW_IO_Five | SW_IO_Six | SW_IO_Seven | SW_IO_Eight | SW_IO_Nine;
@@ -293,82 +352,82 @@ void startFrame_spacewars(void) {
    ioSwitches |= SW_SW_COIN  | SW_SW_P1FIRE | SW_SW_P1HYPER | SW_SW_P2FIRE | SW_SW_P2HYPER;
 
    if (Pending_action && (Pending_when == frameCounter)) {
+     // probably will remove this. Was trying to handle modifications menu,
+     // but still not quite sure when pressing keypad 1-5 is valid.
      ioInputs &= ~Pending_action;
      Pending_action = 0;
    }
    
-   // digital joysticks
-   if (currentJoy1X < -30) ioInputs &= ~SW_IO_P1LEFT;
-   if (currentJoy1X > 30) ioInputs &= ~SW_IO_P1RIGHT;
-   // Hyperspace on the joystick is way too easy to trigger, I've put it on a button.
-   //if (currentJoy1Y < -30) ioInputs &= ~SW_IO_P1THRUST;
-   //if (currentJoy1Y > 30) ioInputs &= ~SW_IO_P1THRUST;
+   if (GameMenu.active) { // controls are intercepted by the menu system when it is being displayed
+     int selected = 0;
+     static int lastY = 2;
+     int Y = 0;
+     if ((currentButtonState & ~prevButtonState) & (VEC_BUTTON_1_4 | VEC_BUTTON_2_4)) {
+       selected = popup_menu_Select(&GameMenu); // also stops menu from being drawn
+       if (selected > 0 && selected <= 10) {
+         ioInputs &= ~(SW_IO_Keypad[selected-1]); // enter game mode as if button was pressed
+         // At this point need to delay a few frames and then trigger
+         // the modification menu.
+         //Pending_action = SW_IO_One;
+         //Pending_when = frameCounter+50;
+       }
+     } else {
+       if (currentJoy1Y < -30) Y = -1;
+       else if (currentJoy1Y > 30) Y = 1;
 
-   if (currentJoy2X < -30) ioInputs &= ~SW_IO_P2LEFT;
-   if (currentJoy2X > 30) ioInputs &= ~SW_IO_P2RIGHT;
-   //if (currentJoy2Y < -30) ioInputs &= ~SW_IO_P2THRUST;
-   //if (currentJoy2Y > 30) ioInputs &= ~SW_IO_P2THRUST;
+       if (Y != lastY) {       // Avoid triggering Y every frame.
+         if (Y > 0) popup_menu_Up(&GameMenu);
+         else if (Y < 0) popup_menu_Down(&GameMenu);
+         lastY = Y;
+       }
+       
+       DrawMenu(&GameMenu);
+     }
+   } else { // controls are for game
+     // [COIN HYPERSPACE THRUST SELECT/FIRE]
 
-   // [COIN HYPERSPACE THRUST FIRE]
+     // Make the joysticks behave like they're digital
+     if (currentJoy1X < -30) ioInputs &= ~SW_IO_P1LEFT;
+     if (currentJoy1X > 30) ioInputs &= ~SW_IO_P1RIGHT;
+     // Hyperspace on the joystick is way too easy to trigger, I've put it on a button.
+     //if (currentJoy1Y < -30) ioInputs &= ~SW_IO_P1THRUST;
+     //if (currentJoy1Y > 30) ioInputs &= ~SW_IO_P1THRUST;
+
+     if (currentJoy2X < -30) ioInputs &= ~SW_IO_P2LEFT;
+     if (currentJoy2X > 30) ioInputs &= ~SW_IO_P2RIGHT;
+     //if (currentJoy2Y < -30) ioInputs &= ~SW_IO_P2THRUST;
+     //if (currentJoy2Y > 30) ioInputs &= ~SW_IO_P2THRUST;
+
+     if ((currentButtonState & ~prevButtonState) & VEC_BUTTON_1_1) {
+       ioSwitches &= ~SW_SW_COIN;	// only on rising edge
+
+       // Now that coins are entered, we can ask for a difficulty level using a pop-up menu.
+       // When an option is entered, remove the pop-up menu.
+
+       // only pop the menu up when coins inserted if the game has not already started (B3:B4 is game time left)
+       if ((RCram[0xB3] == 0) && (RCram[0xB4] == 0)) GameMenu.active = TRUE;
+     }
+
+     // the buttons are not the same order as the arcade cabinet - fire is now on the right with
+     // thrust next to it.  Hyperspace is off to the left along with coin/reset. Have not yet handled reset.
+     if (currentButtonState & VEC_BUTTON_1_2) ioSwitches &= ~SW_SW_P1HYPER;
+     if (currentButtonState & VEC_BUTTON_1_3) ioInputs &= ~SW_IO_P1THRUST;
+     if (currentButtonState & VEC_BUTTON_1_4) ioSwitches &= ~SW_SW_P1FIRE;
+
+     // This is always a 2-player game.  Give equal status to either controller.
+     if ((currentButtonState & ~prevButtonState) & VEC_BUTTON_2_1) {
+       ioSwitches &= ~SW_SW_COIN;	// only on rising edge
+       ioInputs &= ~SW_IO_Zero; // easy game
+     }
+     if (currentButtonState & VEC_BUTTON_2_2) ioSwitches &= ~SW_SW_P2HYPER;
+     if (currentButtonState & VEC_BUTTON_2_3) ioInputs &= ~SW_IO_P2THRUST;
+     if (currentButtonState & VEC_BUTTON_2_4) ioSwitches &= ~SW_SW_P2FIRE;
+   }
    
-   if ((currentButtonState & ~prevButtonState) & VEC_BUTTON_1_1) {
-     // This does not take into account adding coins during a game.  Would be
-     // helpful to find the 'coins left' variable or some indication that the
-     // game is running and not in attract mode.
-     ioSwitches &= ~SW_SW_COIN;	// only on rising edge
-     // Now that coins are entered, we can ask for a difficulty level using a pop-up menu.
-     // When an option is entered, remove the pop-up menu.
-     // FOR NOW, TESTING:
-     ioInputs &= ~SW_IO_Zero; // easy game
-     // At this point need to delay a few frames and then trigger
-     // any modifications we want.
-     Pending_action = SW_IO_One;
-     Pending_when = frameCounter+50;
-   }
-
-   // the buttons are not the same order as the arcade cabinet - fire is now on the right with
-   // thrust next to it.  Hyperspace is off to the left along witg coin/reset.
-   if (currentButtonState & VEC_BUTTON_1_2) ioSwitches &= ~SW_SW_P1HYPER;
-   if (currentButtonState & VEC_BUTTON_1_3) ioInputs &= ~SW_IO_P1THRUST;
-   if (currentButtonState & VEC_BUTTON_1_4) ioSwitches &= ~SW_SW_P1FIRE;
-
-   // This is always a 2-player game.  Give equal status to either controller.
-   if ((currentButtonState & ~prevButtonState) & VEC_BUTTON_2_1) {
-     ioSwitches &= ~SW_SW_COIN;	// only on rising edge
-     ioInputs &= ~SW_IO_Zero; // easy game
-   }
-   if (currentButtonState & VEC_BUTTON_2_2) ioSwitches &= ~SW_SW_P2HYPER;
-   if (currentButtonState & VEC_BUTTON_2_3) ioInputs &= ~SW_IO_P2THRUST;
-   if (currentButtonState & VEC_BUTTON_2_4) ioSwitches &= ~SW_SW_P2FIRE;
-
 #ifdef NEVER
   /*
 # Initialization file for Space Wars
->
->*** Space Wars ***
->
->Keyboard Mapping:
->
->   Coin       = F3
->   Reset Game = F4
->   Exit       = <Esc>
->
->   Left Player       Right Player
->   ------------      ----------------------------------
->   Left   = 'Q'       Left   = Keypad '7'
->   Right  = 'A'       Right  = Keypad '5'
->   Walk   = 'X'       Walk   = Keypad '9'
->   Fire   = 'C'       Fire   = Keypad '-' or <Sysreq>
->   HyperS = <Alt>     HyperS = Keypad '+' or <Enter>
->   HyperS = <Ctrl>
->
->   Option keys     = '0'-'9'
->   Space War RESET = <Backspace>
 
- ; Switch definitions:
- ;
- ;   XXXXX--  Unused (Must be 0)
- ;
  ;   -----TT  00 = 0:45 minutes per coin
  ;            11 = 1:00 minutes per coin
  ;            10 = 1:30 minutes per coin
@@ -887,7 +946,37 @@ void startFrame_starhawk(void) {
 }
 
 void startFrame_solarquest(void) {
-  startFrame();
+  // startFrame();
+
+#define SQ_IO_P1START 0x04
+#define SQ_IO_P2START 0x08
+
+#define SQ_SW_COIN    0x080
+  static int prevButtonState;	// for debouncing
+  int Square, X, Y;
+
+   frameCounter += 1;
+   DEBUG_OUT("// Frame %d\n", frameCounter);
+
+   v_WaitRecal ();
+   // v_doSound();
+   prevButtonState = currentButtonState;
+   v_readButtons ();		// update currentButtonState
+   v_readJoystick1Analog ();
+   //v_readJoystick2Analog ();  // Apparently we are getting joystick 2 data anyway?????
+   // v_playAllSFX();
+
+  ioSwitches = 0xffff;
+  ioSwitches = 0x0000;
+  ioSwitches |= SQ_SW_COIN;
+  ioInputs = 0x0000;
+  ioInputs |= 0xffff;
+  
+  if ((currentButtonState & ~prevButtonState) & VEC_BUTTON_1_1) ioSwitches &= ~SQ_SW_COIN;	// only on rising edge
+
+  if (currentButtonState & VEC_BUTTON_1_2) ioInputs &= ~SQ_IO_P1START;
+  if (currentButtonState & VEC_BUTTON_2_2) ioInputs &= ~SQ_IO_P2START;
+
 #ifdef NEVER
   /*
 # Initialization file for Solar Quest
@@ -959,45 +1048,6 @@ void startFrame_solarquest(void) {
 #endif
 }
 
-void startFrame_cosmicchasm(void) {
-  startFrame();
-#ifdef NEVER
-  /*
-# Initialization file for Cosmic Chasm - best guess, under development
->
->***Cosmic Chasm ***
->
->Keyboard Mapping:
->
->   One Player  = F1
->   Two Players = F2
->   Coin        = F3
->   Reset Game  = F4
->   Exit        = <Esc>
->
-
-; Switch definitions:
- ;
- ;   D------  0=Normal, 1=Diagnositic Mode
- ;   -F-----  0=Normal, 1=Free Play
- ;   --S----  0=No sound during attract, 1=Sound during attract (sound not supported)
- ;   ---B---  0=Bonus at 50k, 1=Bonus at 30k
- ;   ----P--  0=3 cannons per game, 1=5 cannons per game
- ;
- ;   -----CC  00 = 1 credit per 1 quarter
- ;            10 = 1 credit per 2 quarters
- ;            01 = 3 credits per 2 quarters
- ;            11 = 3 credits per 4 quarters
-
- Switches=0001100
-
-[Inputs]
- RstCPU  = 02000000,FFFFFFFF,00000000,FFFFFFFF	; Set bit indicating RESET
- Exit    = 01000000,FFFFFFFF,00000000,FFFFFFFF	; Set bit indicating Exit 
- Coin    = 00000000,FFFFFFFF,00000000,FF7FFFFF
-   */
-#endif
-}
 
 void startFrame_waroftheworlds(void) {
   startFrame();
@@ -1539,7 +1589,36 @@ void startFrame_sundance(void) {
 }
 
 void startFrame_qb3(void) {
-  startFrame();
+  // startFrame();
+
+#define QB_IO_P1START 0x04
+#define QB_IO_P2START 0x08
+
+#define QB_SW_COIN    0x080
+  static int prevButtonState;	// for debouncing
+  int Square, X, Y;
+
+   frameCounter += 1;
+   DEBUG_OUT("// Frame %d\n", frameCounter);
+
+   v_WaitRecal ();
+   // v_doSound();
+   prevButtonState = currentButtonState;
+   v_readButtons ();		// update currentButtonState
+   v_readJoystick1Analog ();
+   //v_readJoystick2Analog ();  // Apparently we are getting joystick 2 data anyway?????
+   // v_playAllSFX();
+
+   ioSwitches = 0;//xffff;
+  ioSwitches |= QB_SW_COIN;
+  ioInputs |= 0xffff;
+  
+  if ((currentButtonState & ~prevButtonState) & VEC_BUTTON_1_1) ioSwitches &= ~QB_SW_COIN;	// only on rising edge
+
+  if (currentButtonState & VEC_BUTTON_1_2) ioInputs &= ~QB_IO_P1START;
+  if (currentButtonState & VEC_BUTTON_2_2) ioInputs &= ~QB_IO_P2START;
+
+
 #ifdef NEVER
   /*
 # Initialization file for QB3 - under development
@@ -1843,3 +1922,4 @@ void startFrame_speedfreak (void)
      }
    }
 }
+

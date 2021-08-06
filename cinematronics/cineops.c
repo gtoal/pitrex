@@ -10,6 +10,7 @@
 
 #include "cines.h"
 #include "options.h"
+#include "popup-menu.h" // for m_ drawing substitutes.
 
 // these should be in the vectrex library
 #define VEC_BUTTON_1_1 0x01
@@ -174,7 +175,7 @@ static UINT8 rom[0x8000];	// = tailgunner was 0x2000 - others may be
 
 static char ccpu_game_name[32];	/* canonical name we now use as cinemu
 				   parameter */
-static int ccpu_game_id = 0;    /* as set by cineSetGame */
+int ccpu_game_id = 0;    /* as set by cineSetGame */   // external because used in options.c for QB3 rom ident
 static UINT8 ccpu_jmi_dip = 1;	/* as set by cineSetJMI */
 static UINT8 ccpu_msize = 0;	/* as set by cineSetMSize */
 static UINT8 ccpu_monitor = 0;	/* as set by cineSetMonitor */
@@ -226,6 +227,139 @@ int frameCounter = 0; // as long as this framework only runs one game once.
 static int cineTwinkle = 255;	// off by default
 void line (int xl, int yb, int xr, int yt, int col)
 {
+   // Look at the PC and maybe the call stack when graphics calls are issued, to
+   // identify specific calls for special treatment!
+
+   /* testing
+
+    */
+  if ((ccpu_game_id == GAME_QB3) || (ccpu_game_id == GAME_SOLARQUEST)) {
+    // can also set ccpudebug to save trace to /tmp ...
+    fprintf(stderr, "PC %04x\n", RCregister_PC);
+  }
+  
+  if (ccpu_game_id == GAME_TAILGUNNER) {
+    // if (RCregister_PC != 0x0201)
+    // if (RCregister_PC != 0x1bbd)
+    // if (RCregister_PC != 0x006f)
+    // if (RCregister_PC != 0x1453)
+    // if (RCregister_PC != 0x0779)
+    // if (RCregister_PC != 0x05f5)
+    // if (RCregister_PC != 0x03b2) // shields
+   }
+
+   if (ccpu_game_id == GAME_WARRIOR) { // 2-player game
+     // if (RCregister_PC != 0x1219)
+     // if (RCregister_PC != 0x0da2)
+     // if (RCregister_PC != 0x089d)
+     // if (RCregister_PC != 0x1386) // sword sparkle?
+   }
+
+   if (ccpu_game_id == GAME_WAROFTHEWORLDS) {
+     // no start button yet so more to come
+     // if (RCregister_PC != 0x2d65)
+     // if (RCregister_PC != 0x2c61)
+     // if (RCregister_PC != 0x2bee)
+     // if (RCregister_PC != 0x0974)
+     // if (RCregister_PC != 0x3f9d)
+   }
+
+   if (ccpu_game_id == GAME_SUNDANCE) {
+     // if (RCregister_PC != 0x1797)
+     // if (RCregister_PC != 0x15b7)
+     // if (RCregister_PC != 0x1614)
+   }
+
+   if (ccpu_game_id == GAME_STARHAWK) {
+     // if (RCregister_PC != 0x0268)
+     // if (RCregister_PC != 0x0979)
+     // if (RCregister_PC != 0x0f98)
+     // if (RCregister_PC != 0x0f10)
+     // if (RCregister_PC != 0x0ced) // crosshair?
+     // if (RCregister_PC != 0x0979) // missiles?
+     // if (RCregister_PC != 0x0d68) // missiles?
+   }
+
+   if (ccpu_game_id == GAME_STARCASTLE) {
+     // no coining yet, more to find...
+     // if (RCregister_PC != 0x1524)
+     // if (RCregister_PC != 0x1e46)
+     // if (RCregister_PC != 0x0f87)
+     // if (RCregister_PC != 0x0eeb)
+     // if (RCregister_PC != 0x1bb5)
+     // if (RCregister_PC != 0x1d99)
+   }
+
+   if (ccpu_game_id == GAME_SPEEDFREAK) {
+     // if (RCregister_PC != 0x066e)
+     // if (RCregister_PC != 0x186a)
+     // if (RCregister_PC != 0x0c14)
+     // if (RCregister_PC != 0x0619)
+     // if (RCregister_PC != 0x063a)
+     // if (RCregister_PC != 0x05dc)
+     // if (RCregister_PC != 0x0373)
+     // if (RCregister_PC != 0x182e) // push start text?
+     // if (RCregister_PC != 0x1106) // smash window screen?
+     // if (RCregister_PC != 0x1010) // also smash window screen?
+     // if (RCregister_PC != 0x120c) // exploding car
+     // if (RCregister_PC != 0x187e) // some single event
+     // if (RCregister_PC != 0x1899) // some single event
+   }
+
+   if (ccpu_game_id == GAME_RIPOFF) {
+     // if (RCregister_PC != 0x15cf)
+     // if (RCregister_PC != 0x062f)
+     // if (RCregister_PC != 0x1314)
+     // if (RCregister_PC != 0x0db4)
+     // if (RCregister_PC != 0x0f3d) // shots?
+   }
+
+   if (ccpu_game_id == GAME_DEMON) {
+     // if (RCregister_PC == 0x3a00)
+     // if (RCregister_PC == 0x1f25)
+     // if (RCregister_PC == 0x2620)
+     // if (RCregister_PC == 0x096e)
+     // if (RCregister_PC == 0x297a)
+     // if (RCregister_PC == 0x3141)
+   }
+
+   if (ccpu_game_id == GAME_BARRIER) {
+     // if (RCregister_PC == 0x0898)
+     // if (RCregister_PC == 0x0f83)
+   }
+   
+   if (ccpu_game_id == GAME_ARMORATTACK) {
+     // if (RCregister_PC == 0x1221)
+     // if (RCregister_PC == 0x3161)
+     // if (RCregister_PC == 0x26f1)
+     // if (RCregister_PC == 0x1dbd)
+   }
+   
+   if (ccpu_game_id == GAME_SOLARQUEST) {
+   }
+   
+   if (ccpu_game_id == GAME_BOXINGBUGS) {
+     // if (RCregister_PC == 0x3d1e)
+     // if (RCregister_PC == 0x1089)
+     // if (RCregister_PC == 0x0edc)
+     // if (RCregister_PC == 0x0c3d)
+     // if (RCregister_PC == 0x12f0)
+     // if (RCregister_PC == 0x0e01)
+     // if (RCregister_PC == 0x472a)
+     // if (RCregister_PC == 0x4638)
+     // if (RCregister_PC == 0x0b36)
+     // if (RCregister_PC == 0x0fc9)
+   }
+  
+   if (ccpu_game_id == GAME_SPACEWARS) {
+     // if (RCregister_PC == 0x028a) STARS 
+     // if (RCregister_PC == 0x06bd) FRAME (vsync) 
+     // if (RCregister_PC == 0x0f37) SUN 
+     // if (RCregister_PC == 0x0eea) SHIPS 
+     // if (RCregister_PC == 0x0634) ALL SCORE INFO
+     // if (RCregister_PC == 0x0070) MISSILES 
+   }
+   
    if (v_rotate) {
       int tmp;
       tmp = xl; xl = yb; yb = tmp;
@@ -243,7 +377,7 @@ void line (int xl, int yb, int xr, int yt, int col)
      if (col == 7) {
        col = (col - (((maxdist-dist) * 7) / maxdist) + 1)*2+1;
      }
-     v_directDraw32Patterned (tx (xl), ty (yb), tx (xr), ty (yt), (col + 1) * 8 - 1, random());
+     m_directDraw32Patterned (tx (xl), ty (yb), tx (xr), ty (yt), (col + 1) * 8 - 1, random());
 
    } else if (ccpu_game_id == GAME_BOXINGBUGS || ccpu_game_id == GAME_WAROFTHEWORLDS || ccpu_game_id == GAME_SOLARQUEST) {
      // These games were sort of running but showing a black screen.  Forcing the intensity
@@ -251,10 +385,10 @@ void line (int xl, int yb, int xr, int yt, int col)
      // some other problem).  Obviously we do want different intensity vectors in those games
      // so we still need to look at what intensity values are being passed in, and handle
      // them appropriately.
-     v_directDraw32 (tx (xl), ty (yb), tx (xr), ty (yt), 127);
+     m_directDraw32 (tx (xl), ty (yb), tx (xr), ty (yt), 127);
 
    } else if ((ccpu_game_id == GAME_TAILGUNNER) && (RCregister_PC == 0x03B2)) {
-     v_directDraw32Patterned (tx (xl), ty (yb), tx (xr), ty (yt), 127, random ()); //one way to make sparky shields...
+     m_directDraw32Patterned (tx (xl), ty (yb), tx (xr), ty (yt), 127, random ()); //one way to make sparky shields...
      //DEBUG_OUT("line(%d,%d, %d,%d, %02x) at PC=0x%04x;\n", xl,yb, xr,yt, col, RCregister_PC);
 
    } else {
@@ -267,12 +401,11 @@ void line (int xl, int yb, int xr, int yt, int col)
      
      /* Twinkle may be 0 (sundance), or 7-9 */
      if (col <= cineTwinkle) {
-       v_directDraw32 (tx (xl), ty (yb), tx (xr), ty (yt), (col + 1) * 8 - 1);
+       m_directDraw32 (tx (xl), ty (yb), tx (xr), ty (yt), (col + 1) * 8 - 1);
 
      } else { // twinkle parameter denotes flash.
        // check armor attack - cineTwinkle SHOULD be 255, but is it? ... things are flashing that shouldn't be...
-       v_directDraw32 (tx (xl), ty (yb), tx (xr), ty (yt), (127 * (sine[(frameCounter<<3)&255]+16384+32768)) / 65536); // brightness 63..127
-
+       m_directDraw32 (tx (xl), ty (yb), tx (xr), ty (yt), (127 * (sine[(frameCounter<<3)&255]+16384+32768)) / 65536); // brightness 63..127
      }
    }
 }
@@ -483,7 +616,7 @@ UINT32 cineExec (void)
    RCCINESWORD temp_sword = 0;	/* in case its handy... */
    RCCINESBYTE temp_sbyte = 0;	/* in case its handy... */
 
-   RCCINEWORD original_PC = RCregister_PC;
+   RCCINEWORD original_PC;
 
    /* before opcode handlers ... */
    ioSwitches &= (~SW_ABORT);	/* ( ! SW_ABORT ) ? */
@@ -492,6 +625,7 @@ UINT32 cineExec (void)
       point, where the RCstate is examined and the proper jump table used. */
  cineExecTop:
 
+   original_PC = RCregister_PC;
    bBailOut = FALSE;
 
    /* examine the current RCstate, and jump down to the correct opcode jump table. */
@@ -523,7 +657,7 @@ UINT32 cineExec (void)
       disassemble (disassembly, sizeof (disassembly), original_PC);
       if (debugfile) fprintf (debugfile, "%s\n", disassembly);
    }
-
+   
    /* the opcode code has set a RCstate and done mischief with flags and the
       programcounter; now jump back to the top and run through another
       opcode. */
@@ -564,6 +698,7 @@ void cineInit (unsigned char *progdata, unsigned char *optkeymap)
    v_setName(ccpu_game_name);
    //fprintf(stderr, "Returned from v_loadSettings\n");
    DEBUG_OUT("v_loadSettings(\n\"%s\"\n);\n", settingsBlob);
+   v_set_font(lcrasterlines); // Used in menu and other overlays. Might as well init here as anywhere.
 }
 
 void vgInit (void)

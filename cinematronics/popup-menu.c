@@ -2,6 +2,12 @@
 #include <vectrex/vectrexInterface.h>
 #include <string.h>
 #include <stdlib.h> // for exit()
+
+// first hack at a menu interface, may update later
+// (eg if we add icons as well as text)
+
+#include "popup-menu.h"
+
 extern int optimizationON;
 // prototype pop-up menu
 
@@ -9,6 +15,8 @@ extern int optimizationON;
 #define TRUE (0==0)
 #define FALSE (0!=0)
 #endif
+
+menu_context *GLOBAL_MENU = NULL;
 
 enum { TOP = 0x1, BOTTOM = 0x2, RIGHT = 0x4, LEFT = 0x8 };
 //static enum { FALSE, TRUE };
@@ -131,9 +139,9 @@ static int retain_after_clipping (int *x1p, int *y1p, int *x2p, int *y2p,   /* l
 
 
 
-// draw a line but ignore the menu hole-clipping.  This is used to draw within the
-// menu area, if drawing is needed (currently only used for the frame) or by the
-// hole-clipping draw code itself to draw allowed or partial vectors.
+// LOCAL procedures to draw a line but ignore the menu hole-clipping.  These are used to
+// draw within the menu area, if drawing is needed (currently only used for the frame) or
+// by the hole-clipping draw code itself to draw allowed or partial vectors.
 
 static void no_menu_line(int xl, int yb, int xr, int yt, int intensity, VectorPipelineBase *baseVector) {
   const int outer_window_xl = 0, outer_window_yb = 0, outer_window_xr = 255, outer_window_yt = 255; // hard-wired for this app for now.
@@ -141,10 +149,14 @@ static void no_menu_line(int xl, int yb, int xr, int yt, int intensity, VectorPi
 // these are just a tweak for the pacman code.  Not relevant in the greater scheme of things...
 #define MOVE_RIGHT 12
 #define MOVE_DOWN 4
-
+#ifdef BROKEN
   if (retain_after_clipping (&xl, &yb, &xr, &yt, outer_window_xl, outer_window_yb, outer_window_xr, outer_window_yt)) {
     v_directDraw32((xl-128+MOVE_RIGHT)*128, -(yb-128+MOVE_DOWN)*128, (xr-128+MOVE_RIGHT)*128, -(yt-128+MOVE_DOWN)*128, intensity);
   }
+#else
+  // Clipping should have been done well before we get here...
+  v_directDraw32(xl, yb, xr, yt, intensity);
+#endif
 }
 
 static void menu_windowed_line (VectorPipelineBase *baseVector,
@@ -207,34 +219,6 @@ static void menu_windowed_line (VectorPipelineBase *baseVector,
 }
 
 //-----------------------------------------------------------------------------
-
-// first hack at a menu interface, may update later
-// (eg if we add icons as well as text)
-typedef struct menu_context menu_context;
-typedef void (*menu_callback) (menu_context *ctx);
-typedef struct menu_context {
-  int active;
-  int selected; // initial cursor location, then selected item.
-  char selected_str[24]; // initial cursor location, then selected item.
-  int xl, yb, xr, yt; // in virtual coordinates
-  int txt_xl, txt_yb, txt_xr, txt_yt; // in raw coordinates for raster text display. Up to user to position them properly
-  int scroll_base; // If the menu has scrolled 2 lines off the top then scroll_base would equal 2.
-  int width, lines; // calculated from menu string
-  int displayable_lines; // calculated when menu is created
-  int display_line; // calculated when menu is created
-  //void (*up) (struct menu_context *ctx);
-  menu_callback up; // called on joystick movement before menu code updates screen
-  menu_callback down;
-  menu_callback left;
-  menu_callback right;
-  menu_callback b1; // called when button pressed (also before menu code updates screen)
-  menu_callback b2;
-  menu_callback b3;
-  menu_callback b4;
-  char *title; // if NULL, no title bar
-  char *options; // text to display menu options
-  char buff[32][24]; // max 12 lines of up to 22 characters
-} menu_context;
 
 extern int bufferType; // 0 = none, 1 = double buffer, 2 = auto buffer (if pipeline is empty -> use previous
 
@@ -313,12 +297,6 @@ unsigned char *lcrasterlines[7] = {
 #include <fcntl.h>
 #include <termio.h>
 
-#define KEY_ESCAPE 27
-#define KEY_UP     257
-#define KEY_DOWN   258
-#define KEY_LEFT   259
-#define KEY_RIGHT  260
-
 int kbhit(void)
 {
   char buff[2];
@@ -371,29 +349,32 @@ void echoOn(void)
 
 void CreateMenu(menu_context *m, char *title, char *options) {
   char *s1, *s2;
-  char s[128];
+  char s[1024];
   int i, w;
-      m->active = FALSE;
-      m->selected = 1;   // was originally 0 for unselected but this is simpler
-      strcpy(m->selected_str, "");
-      m->xl = 48;        // early draft hardwires menu size
-      m->yb = 64;
-      m->xr = 176;
-      m->yt = 192;       // Drawing within the menu is done using virtual coordinates same as the application
-      m->lines = 0; m->displayable_lines = 0; m->scroll_base = 0;
-      m->display_line = 0;
-      // up/down/left/right actions are implemented by the DrawMenu code, but the user can supply a procedure to augment the action
-      m->up = NULL;
-      m->down = NULL;
-      m->left = NULL;
-      m->right = NULL;
-      // The user has to supply actions for each button. We only handle menu navigation.
-      m->b1 = NULL;
-      m->b2 = NULL;
-      m->b3 = NULL;
-      m->b4 = NULL;
-      m->title = title; // Centred. Later, may embellish strings with left/right/center justification codes?
-      m->options = options; // 1..n (0 is reserved for now. May use it for exiting menu with no choice.)
+
+  GLOBAL_MENU = m; // for the m_* calls.
+
+  m->active = FALSE;
+  m->selected = 1;   // was originally 0 for unselected but this is simpler
+  strcpy(m->selected_str, "");
+  m->xl = 48;        // early draft hardwires menu size
+  m->yb = 64;
+  m->xr = 176;
+  m->yt = 192;       // Drawing within the menu is done using virtual coordinates same as the application
+  m->lines = 0; m->displayable_lines = 0; m->scroll_base = 0;
+  m->display_line = 0;
+  // up/down/left/right actions are implemented by the DrawMenu code, but the user can supply a procedure to augment the action
+  m->up = NULL;
+  m->down = NULL;
+  m->left = NULL;
+  m->right = NULL;
+  // The user has to supply actions for each button. We only handle menu navigation.
+  m->b1 = NULL;
+  m->b2 = NULL;
+  m->b3 = NULL;
+  m->b4 = NULL;
+  m->title = title; // Centred. Later, may embellish strings with left/right/center justification codes?
+  m->options = options; // 1..n (0 is reserved for now. May use it for exiting menu with no choice.)
 
   // move this chunk to CreateMenu and save in variables instead?
   // Doing it here simplifies having the user change the menu options on the fly...
@@ -419,10 +400,12 @@ void CreateMenu(menu_context *m, char *title, char *options) {
 
 }
 
-int DrawMenu(menu_context *m) {
-  char s[128], title[128];
+void DrawMenu(menu_context *m) {
+  char s[1024], title[1024];
   int c, i, x, y, txty, tab;
-  
+
+  GLOBAL_MENU = m; // for the m_* calls.
+
   m->active = TRUE;
   v_setBrightness(120);
 
@@ -502,6 +485,8 @@ int DrawMenu(menu_context *m) {
       if (i-m->scroll_base+1 == m->displayable_lines) break;
     }  
   }
+
+#ifdef NEVER
   // We do our action selection after drawing the menu.  If the action affects the menu display,
   // it will be updated on the next iteration.
   // During development we'll cheat and use Unix terminal I/O.
@@ -563,42 +548,61 @@ int DrawMenu(menu_context *m) {
     
   default: return 0;
   }
+#endif
 }
 
 // This is a test program to draw something (doesn't matter what), and then add
 // a pop-up text menu on top of it.
 
-void m_line(int xl, int yb, int xr, int yt, menu_context *menu) {
+void m_line(int xl, int yb, int xr, int yt, int col, menu_context *menu) {
   if (menu && menu->active) {
     menu_windowed_line (NULL, xl, yb, xr, yt,
   			      menu->xl, menu->yb, menu->xr, menu->yt,
-			48); // dim the background when we draw a menu...
+			col/2); // dim the background when we draw a menu...
   } else {
-    no_menu_line (xl, yb, xr, yt, 120, NULL);
+    no_menu_line (xl, yb, xr, yt, col, NULL);
   }
 }
 
-void m_directDraw32(int xl, int yb, int xr, int yt, int bri, menu_context *menu) {
+void m_directDraw32(int xl, int yb, int xr, int yt, int bri) {
+  menu_context *menu = GLOBAL_MENU;
   if (menu && menu->active) {
 #ifdef NEVER
     w_directDraw32(NULL, xl, yb, xr, yt,
 		   menu->xl, menu->yb, menu->xr, menu->yt, /* the hole */
 			 bri/2); // dim the background when we draw a menu...
+#else
+    menu_windowed_line (NULL, xl, yb, xr, yt,
+  			      menu->xl, menu->yb, menu->xr, menu->yt,
+			bri/2); // dim the background when we draw a menu...
 #endif
   } else {
-    v_directDraw32(xl, yb, xr, yt, 120/*, NULL*/);
+#ifdef NEVER
+    v_directDraw32(xl, yb, xr, yt, bri);
+#else
+    no_menu_line (xl, yb, xr, yt, bri, NULL);
+#endif
   }
 }
 
-void m_directDraw32Patterned(int xl, int yb, int xr, int yt, int pattern, int bri, menu_context *menu) {
+void m_directDraw32Patterned(int xl, int yb, int xr, int yt, int pattern, int bri) {
+  menu_context *menu = GLOBAL_MENU;
   if (menu && menu->active) {
 #ifdef NEVER
     w_directDraw32Patterned(NULL, xl, yb, xr, yt,
   			    menu->xl, menu->yb, menu->xr, menu->yt, /* the hole */
 			    pattern, bri/2); // dim the background when we draw a menu...
+#else
+    menu_windowed_line (NULL, xl, yb, xr, yt,
+  			      menu->xl, menu->yb, menu->xr, menu->yt,
+			bri/2); // not yet patterned
 #endif
   } else {
-    v_directDraw32(xl, yb, xr, yt, 120/*, NULL*/);
+#ifdef NEVER
+    v_directDraw32Patterned(xl, yb, xr, yt, pattern, bri);
+#else
+    no_menu_line (xl, yb, xr, yt, bri, NULL);
+#endif
   }
 }
 
@@ -608,20 +612,26 @@ void CursorUp(menu_context *m) {
 void CursorDown(menu_context *m) {
 }
 
-void Select(menu_context *m) { // B4 - perform action if 'selected' is an action. If it's a submenu enter it. (TO DO)
+int popup_menu_Select(menu_context *m) { // B4 - perform action if 'selected' is an action. If it's a submenu enter it. (TO DO)
   m->active = FALSE; // must do this on any return from menu
+  return m->selected;
+
+#ifdef NEVER
   if (strcmp(m->selected_str, "Quit") == 0) {
     echoOn();
     exit(0); // haven't yet built the user side cleanly.
   }
+#endif
 }
 
-void Cancel(menu_context *m) { // B3 - pop up if submenu, exit menu if top-level (TO DO)
+void popup_menu_Cancel(menu_context *m) { // B3 - pop up if submenu, exit menu if top-level (TO DO)
   m->active = FALSE; // must do this on any return from menu
 }
 
-void Down(menu_context *m) { // B2 = make B2 behave like joystick down
-  if (m->display_line+1 == m->displayable_lines) {
+void popup_menu_Down(menu_context *m) { // B2 = make B2 behave like joystick down
+
+  if (m->selected >= m->lines) return;
+  if (m->display_line+1 >= m->displayable_lines) {
     if (m->selected == m->lines) return;
     m->scroll_base += 1; // scroll the list upwards when you hit the bottom of the display (not of the options)
   } else {
@@ -632,7 +642,7 @@ void Down(menu_context *m) { // B2 = make B2 behave like joystick down
   return;
 }
 
-void Up(menu_context *m) { // B1 = make B1 behave like joystick up
+void popup_menu_Up(menu_context *m) { // B1 = make B1 behave like joystick up
   if (m->display_line == 0) {
     if (m->selected == 1) return;
     m->scroll_base -= 1; // scroll the list downwards when you hit the top of the display (not of the options)

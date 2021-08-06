@@ -495,7 +495,7 @@ void disassemble (char *buffer, unsigned int maxlen, unsigned int address)
    /* append complete opcode ROM dump */
    memset (opbuffer, 0, sizeof (opbuffer));
    for (iter = 0; iter < opsize; iter++) {
-      sprintf (opbuffer + (iter * 3), " %02X", rom[address + iter]);
+     sprintf (opbuffer + (iter * 3), " %02X", rom[address + iter]);
    }
 
    /* create final output */

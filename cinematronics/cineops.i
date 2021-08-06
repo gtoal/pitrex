@@ -3694,7 +3694,7 @@
  opASRDf_AA_AA:
  opASRDf_BB_AA:
    //UNFINISHED ("opASRDf 1\n");
-   // code added for cosmicchasm
+   // code added for cosmicchasm - in error because it is a 68000 game!
    temp_word = 0xFFF;
 
    RCregister_PC++;
@@ -3720,7 +3720,7 @@
 
  opASRDf_B_AA:
    //UNFINISHED ("opASRDf 2\n");
-   // code added for cosmicchasm
+   // code added for cosmicchasm - in error because it is a 68000 game!
    RCregister_PC++;
 
    temp_word = 0xFFF;

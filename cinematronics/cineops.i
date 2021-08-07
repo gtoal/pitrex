@@ -18,6 +18,7 @@
  */
  opCodeTblA:
 
+   // if (ccpu_game_id == GAME_BOXINGBUGS) RCram[2] = boxingbugs_angle;
    switch (rom[RCregister_PC]) {
    case 0:
       goto opLDAimm_A_AA;

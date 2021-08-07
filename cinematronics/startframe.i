@@ -1,3 +1,56 @@
+int boxingbugs_angle = 0x200; // hacked into interpreter at very low level!
+static void debug_this_game(void) {
+  static int last[256];
+  static int initialised = 0, debug_ram = 0;    // for debouncing
+  int kbh = kbhit();
+
+  if (!initialised) {
+    {int i; for (i = 0; i < 256; i++) last[i]=RCram[i];}
+    initialised = 1;
+  }
+  
+   if (kbh == ' ') debug_ram ^= 1;
+   if (debug_ram) {
+     char line[128], *p;
+     int i,x,y,yy,c,lo,hi,hx;
+     static int firsty = 0, timeout=0;
+     if (kbh == KEY_DOWN) firsty += 1;
+     if (kbh == KEY_UP) firsty -= 1;
+     firsty &= 15;
+     v_setBrightness(80);
+     v_printStringRaster(-127,-127+30, "     0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F ", 3*8, -6, '\0');
+     for (yy = 0; yy < 3; yy++) {
+       y = (firsty+yy)&15;
+       p = line; *p = y+'0'; if (y >= 10) *p += 7; p += 1; *p++ = ':'; *p++ = ' ';
+       for (x = 0; x < 16; x++) {
+	 c = x | (y<<4);
+         if (1 /* RCram[c] != last[c] */) { // watch for changes
+	   lo = RCram[c]&15; hi = (RCram[c]>>4)&15; hx = (RCram[c]>>8)&15;
+	   *p = hx+'0'; if (hx>9) *p += 7;
+	   p += 1;
+	   *p = hi+'0'; if (hi>9) *p += 7;
+	   p += 1;
+	   *p = lo+'0'; if (lo>9) *p += 7;
+	   p += 1;
+	 } else {
+	   *p++ = ' ';
+	   *p++ = ' ';
+	   *p++ = ' ';
+	 }
+	 *p++ = ' ';
+       }
+       *p = '\0';
+       v_setBrightness(80);
+       v_printStringRaster(-127,-127+20-yy*10, line, 3*8, -6, '\0');
+     }
+     if (timeout == 150) {
+       {int i; for (i = 0; i < 256; i++) last[i]=RCram[i];}
+       timeout = 0;
+     }
+     timeout += 1;
+   }
+}
+
 void startFrame_ripoff(void) {
 
 #define RO_IO_P1START   0x02  // 1-player start
@@ -235,14 +288,14 @@ void startFrame_spacewars(void) {
 
 #define SW_IO_P1LEFT    0x0100
 #define SW_IO_P1RIGHT   0x2000
-#define SW_SW_P1HYPER   0x02  
 #define SW_IO_P1THRUST  0x8000
+#define SW_SW_P1HYPER   0x02  
 #define SW_SW_P1FIRE    0x04  
 
 #define SW_IO_P2LEFT    0x4000
 #define SW_IO_P2RIGHT   0x1000
-#define SW_SW_P2HYPER   0x08
 #define SW_IO_P2THRUST  0x0200
+#define SW_SW_P2HYPER   0x08
 #define SW_SW_P2FIRE    0x01
 
 #define SW_IO_Zero    0x0800
@@ -488,7 +541,114 @@ void startFrame_spacewars(void) {
 }
 
 void startFrame_boxingbugs(void) {
-  startFrame();
+  debug_this_game();
+#define BB_IO_LCANNON 0x0001 // b1.4
+#define BB_IO_LGLOVE 0x0002  // b1.3
+#define BB_IO_LPANIC 0x0004  // b1.2 two player
+#define BB_IO_RPANIC 0x0008  // b2.2 one player
+#define BB_IO_RGLOVE 0x0010  // b2.3
+#define BB_IO_RCANNON 0x0020 // b2.4
+#define BB_IO_ACCOUNTING 0x0040 // b2.1 ?
+#define BB_IO_X80 0x0080 // attaching these 5 to the 2nd controller buttons seems to do nothing when pressed
+#define BB_IO_X100 0x0100
+#define BB_IO_X200 0x0200
+#define BB_IO_X400 0x0400
+#define BB_IO_X800 0x0800
+
+#define BB_SW_1024 1024 // attaching these 3 to the 2nd controller buttons seems to do nothing when pressed either
+#define BB_SW_512 512
+#define BB_SW_256 256
+#define BB_SW_ABORT   SW_ABORT	/* 0x100 */
+#define BB_SW_COIN    0x080
+#define BB_SW_DIAG 0x40
+#define BB_SW_FREEPLAY 0x20
+#define BB_SW_QUIET 0x10
+#define BB_SW_EARLYBONUS 0x08
+#define BB_SW_EXTRACANNONS 0x04
+#define BB_SW_1Q1C 0
+#define BB_SW_2Q1C 2
+#define BB_SW_2Q3C 1
+#define BB_SW_4Q3C 3
+
+  /*
+ ;   -F-----  0=Normal, 1=Free Play
+ ;   --S----  0=No sound during attract, 1=Sound during attract (sound not supported)
+ ;   ---B---  0=Bonus at 50k, 1=Bonus at 30k
+ ;   ----P--  0=3 cannons per game, 1=5 cannons per game
+ ;
+ ;   -----CC  00 = 1 credit per 1 quarter
+ ;            10 = 1 credit per 2 quarters
+ ;            01 = 3 credits per 2 quarters
+ ;            11 = 3 credits per 4 quarters
+  */
+   static int prevButtonState, prevJoy1X=0, accountingtoggle = 1;	// for debouncing
+
+   frameCounter += 1;
+   DEBUG_OUT("// Frame %d\n", frameCounter);
+
+   v_WaitRecal ();
+   // v_doSound();
+   prevButtonState = currentButtonState;
+   v_readButtons ();		// update currentButtonState
+   v_readJoystick1Analog ();
+   // v_readJoystick2Analog ();  // Apparently we are getting joystick 2 data anyway?????
+   // v_playAllSFX();
+
+   // Unfortunately, it's quite common to press LEFT and RIGHT simultaneously by accident with this
+   // layout, and accidentally invoke the configuration screen.  Need to think about how we will
+   // handle this...
+   
+   // active low:
+   ioInputs = BB_IO_X80 | BB_IO_X100 | BB_IO_X200 | BB_IO_X400 | BB_IO_X800;
+   // all turned off until wanted
+   ioInputs |= BB_IO_LCANNON | BB_IO_LGLOVE | BB_IO_LPANIC |
+               BB_IO_RPANIC | BB_IO_RGLOVE | BB_IO_RCANNON |
+               BB_IO_ACCOUNTING;
+
+   // active high, except for coin?:
+   ioSwitches = 0x0000; // switches appear to be 12 bits. Looking for the rotation bits!
+   ioSwitches |=   BB_SW_1024 | BB_SW_512 | BB_SW_256 | BB_SW_ABORT | BB_SW_COIN | BB_SW_DIAG | BB_SW_FREEPLAY | BB_SW_QUIET | BB_SW_EARLYBONUS | BB_SW_EXTRACANNONS | BB_SW_1Q1C;
+   ioSwitches &= ~(                                     BB_SW_ABORT |                           BB_SW_FREEPLAY | BB_SW_QUIET | BB_SW_EARLYBONUS | BB_SW_EXTRACANNONS | BB_SW_1Q1C);
+
+      //ioSwitches &= ~(BB_SW_1024 | BB_SW_512 | BB_SW_256 | BB_SW_ABORT | BB_SW_COIN | BB_SW_DIAG | BB_SW_FREEPLAY | BB_SW_QUIET | BB_SW_EARLYBONUS | BB_SW_EXTRACANNONS | BB_SW_1Q1C);
+
+   // no joysticks..?
+   if ( (currentJoy1X < -30) && !(prevJoy1X < -30)) {
+     fprintf(stderr, "Down %03x\n", RCram[2]);
+     boxingbugs_angle -= 1; if (boxingbugs_angle < 0x1F0) boxingbugs_angle = 0x1F0;
+   }
+   if ( (currentJoy1X > 30) && !(prevJoy1X > 30)) {
+     fprintf(stderr, "Up %03x\n", RCram[2]);
+     boxingbugs_angle += 1; if (boxingbugs_angle > 0x20F) boxingbugs_angle = 0x20F; 
+   }
+   RCram[2] = boxingbugs_angle;
+   prevJoy1X = currentJoy1X < -30;
+   //if ((currentButtonState & ~prevButtonState) & (VEC_BUTTON_1_1 | VEC_BUTTON_2_1)) ioSwitches &= ~BB_SW_COIN;	// only on rising edge
+   if ((currentButtonState & ~prevButtonState) & VEC_BUTTON_1_1 ) ioSwitches &= ~BB_SW_COIN;	// only on rising edge NOTE B2 starts the game after coining.
+
+   //if (currentButtonState & VEC_BUTTON_1_1) ioInputs &= ~BB_IO_ACCTOFF;
+   if (currentButtonState & VEC_BUTTON_1_2) ioInputs &= ~BB_IO_LPANIC;
+   if (currentButtonState & VEC_BUTTON_1_3) ioInputs &= ~BB_IO_LGLOVE;
+   if (currentButtonState & VEC_BUTTON_1_4) ioInputs &= ~BB_IO_LCANNON;
+
+   // use second controller to debug
+   //if (currentButtonState & VEC_BUTTON_2_1) ioInputs &= ~BB_IO_X800;
+   //if (currentButtonState & VEC_BUTTON_2_2) ioInputs &= ~BB_IO_X100;
+   //if (currentButtonState & VEC_BUTTON_2_3) ioInputs &= ~BB_IO_X200;
+   //if (currentButtonState & VEC_BUTTON_2_4) ioInputs &= ~BB_IO_X400;
+   //if (currentButtonState & VEC_BUTTON_2_1) ioSwitches |= BB_SW_1024;
+   //if (currentButtonState & VEC_BUTTON_2_2) ioSwitches |= BB_SW_512;
+   //if (currentButtonState & VEC_BUTTON_2_3) ioSwitches |= BB_SW_256;
+   //if (currentButtonState & VEC_BUTTON_2_4) ioSwitches |= BB_SW_ABORT;
+   
+   if (currentButtonState & VEC_BUTTON_2_1) {
+     if (accountingtoggle) ioInputs &= ~BB_IO_ACCOUNTING;
+     accountingtoggle ^= 1;
+   }
+   if (currentButtonState & VEC_BUTTON_2_2) ioInputs &= ~BB_IO_RPANIC;
+   if (currentButtonState & VEC_BUTTON_2_3) ioInputs &= ~BB_IO_RGLOVE;
+   if (currentButtonState & VEC_BUTTON_2_4) ioInputs &= ~BB_IO_RCANNON;
+   
 #ifdef NEVER
   /*
 # Initialization file for Boxing Bugs
@@ -750,7 +910,100 @@ void startFrame_armorattack(void) {
 }
 
 void startFrame_starcastle(void) {
-  startFrame();
+  // startFrame();
+
+#define SC_IO_P1START   0x01  // 1-player start
+#define SC_IO_P2START   0x04  // 2-player start
+
+#define SC_IO_LEFT    0x0040
+#define SC_IO_RIGHT   0x0100
+#define SC_IO_THRUST  0x0400
+#define SC_IO_FIRE    0x1000
+
+  /*
+ ; Switch definitions:
+ ;
+ ;   D------  0=Test Pattern, 1=Normal
+ ;   -XX----  Unused
+ ;
+ ;   ---CC--  00 = 1 credit per 1 quarter
+ ;            10 = 1 credit per 2 quarters
+ ;            01 = 3 credit per 2 quarters
+ ;            11 = 3 credit per 4 quarters
+ ;
+ ;   -----SS  00 = 3 ships per game
+ ;            10 = 4 ships per game
+ ;            01 = 5 ships per game
+ ;            11 = 6 ships per game
+
+ Switches=1000011
+*/
+#define SC_SW_3SHIPS  0
+#define SC_SW_4SHIPS  2
+#define SC_SW_5SHIPS  1
+#define SC_SW_6SHIPS  3
+
+#define SC_SW_1C1Q  0
+#define SC_SW_1C2Q  8
+#define SC_SW_3C2Q  4
+#define SC_SW_3C4Q 12
+
+#define SC_SW_TEST    0x40
+#define SC_SW_COIN    0x080
+#define SC_SW_ABORT   SW_ABORT	/* for ioSwitches */
+  
+   static int prevButtonState;	// for debouncing
+
+   frameCounter += 1;
+   DEBUG_OUT("// Frame %d\n", frameCounter);
+
+   v_WaitRecal ();
+   // v_doSound();
+   prevButtonState = currentButtonState;
+   v_readButtons ();		// update currentButtonState
+   v_readJoystick1Analog ();
+   //v_readJoystick2Analog ();  // Apparently we are getting joystick 2 data anyway?????
+   // v_playAllSFX();
+
+   // Unfortunately, it's quite common to press LEFT and RIGHT simultaneously by accident with this
+   // layout, and accidentally invoke the configuration screen.  Need to think about how we will
+   // handle this...
+   
+   // default inactive:
+   ioInputs = 0;
+   ioInputs |= SC_IO_LEFT | SC_IO_RIGHT | SC_IO_THRUST | SC_IO_FIRE |
+               SC_IO_P1START | SC_IO_P2START;
+
+   ioSwitches = 0;
+   ioSwitches |= SC_SW_6SHIPS | SC_SW_COIN;
+
+   // digital joysticks...
+   if (currentJoy1X < -30) ioInputs &= ~SC_IO_LEFT;
+   if (currentJoy1X > 30) ioInputs &= ~SC_IO_RIGHT;
+   if (currentJoy1Y > 30) ioInputs &= ~SC_IO_THRUST;
+
+   if (currentJoy2X < -30) ioInputs &= ~SC_IO_LEFT;
+   if (currentJoy2X > 30) ioInputs &= ~SC_IO_RIGHT;
+   if (currentJoy2Y > 30) ioInputs &= ~SC_IO_THRUST;
+
+
+   // Player 1 and player 2 buttons double up with coin input.
+   if ((currentButtonState & ~prevButtonState) & (VEC_BUTTON_1_1 | VEC_BUTTON_2_1)) ioSwitches &= ~SC_SW_COIN;	// only on rising edge
+
+   if (currentButtonState & VEC_BUTTON_1_4) ioInputs &= ~SC_IO_P1START; // needs 1 coin
+
+   if (currentButtonState & VEC_BUTTON_1_1) ioInputs &= ~SC_IO_LEFT;
+   if (currentButtonState & VEC_BUTTON_1_2) ioInputs &= ~SC_IO_RIGHT;
+   if (currentButtonState & VEC_BUTTON_1_3) ioInputs &= ~SC_IO_THRUST;
+   if (currentButtonState & VEC_BUTTON_1_4) ioInputs &= ~SC_IO_FIRE;
+
+   if (currentButtonState & VEC_BUTTON_2_4) ioInputs &= ~SC_IO_P2START; // needs 2 coins and second controller
+
+   if (currentButtonState & VEC_BUTTON_2_1) ioInputs &= ~SC_IO_LEFT;
+   if (currentButtonState & VEC_BUTTON_2_2) ioInputs &= ~SC_IO_RIGHT;
+   if (currentButtonState & VEC_BUTTON_2_3) ioInputs &= ~SC_IO_THRUST;
+   if (currentButtonState & VEC_BUTTON_2_4) ioInputs &= ~SC_IO_FIRE;
+
 #ifdef NEVER
   /*
 # Initialization file for Star Castle
@@ -1050,7 +1303,101 @@ void startFrame_solarquest(void) {
 
 
 void startFrame_waroftheworlds(void) {
-  startFrame();
+  // startFrame();
+
+#define WW_IO_P1START   0x01  // 1-player start
+#define WW_IO_P2START   0x04  // 2-player start
+
+#define WW_IO_LEFT    0x0040
+#define WW_IO_RIGHT   0x0100
+#define WW_IO_SHIELDS  0x0400
+#define WW_IO_FIRE    0x1000
+
+  /*
+ ; Switch definitions:
+ ;
+ ;   D------  0=Normal, 1=Diagnostics
+ ;   -F-----  0=Normal, 1=Free Play
+ ;   ---C---  0=1 credit per 1 quarter, 1=3 credits per 2 quarters
+ ;   -----S-  0=5 ships per game, 1=3 ships per game
+ ;
+ ;   --?-?-?  *unknown* (no manual exists)
+
+                  Compare to starcastle!
+
+ Switches=0000000
+   */
+#define WW_SW_3SHIPS  0
+#define WW_SW_4SHIPS  2
+#define WW_SW_5SHIPS  1
+#define WW_SW_6SHIPS  3
+
+#define WW_SW_1C1Q  0
+#define WW_SW_1C2Q  8
+#define WW_SW_3C2Q  4
+#define WW_SW_3C4Q 12
+
+#define WW_SW_TEST    0x40
+#define WW_SW_FREEPLAY    0x20
+#define WW_SW_COIN    0x080
+#define WW_SW_ABORT   SW_ABORT	/* for ioSwitches */
+  
+   static int prevButtonState;	// for debouncing
+
+   frameCounter += 1;
+   DEBUG_OUT("// Frame %d\n", frameCounter);
+
+   v_WaitRecal ();
+   // v_doSound();
+   prevButtonState = currentButtonState;
+   v_readButtons ();		// update currentButtonState
+   v_readJoystick1Analog ();
+   //v_readJoystick2Analog ();  // Apparently we are getting joystick 2 data anyway?????
+   // v_playAllSFX();
+
+   // Unfortunately, it's quite common to press LEFT and RIGHT simultaneously by accident with this
+   // layout, and accidentally invoke the configuration screen.  Need to think about how we will
+   // handle this...
+   
+   // default inactive:
+   ioInputs = 0;
+   ioInputs |= WW_IO_LEFT | WW_IO_RIGHT | WW_IO_SHIELDS | WW_IO_FIRE |
+               WW_IO_P1START | WW_IO_P2START;
+
+   ioSwitches = 0;
+   ioSwitches |= WW_SW_TEST | WW_SW_3SHIPS | WW_SW_COIN;
+
+   // digital joysticks...
+   if (currentJoy1X < -30) ioInputs &= ~WW_IO_LEFT;
+   if (currentJoy1X > 30) ioInputs &= ~WW_IO_RIGHT;
+   
+   if (currentJoy1Y > 100) ioInputs &= ~WW_IO_FIRE;
+   if (currentJoy1Y < -100) ioInputs &= ~WW_IO_SHIELDS;
+
+   if (currentJoy2X < -30) ioInputs &= ~WW_IO_LEFT;
+   if (currentJoy2X > 30) ioInputs &= ~WW_IO_RIGHT;
+   
+   if (currentJoy2Y > 100) ioInputs &= ~WW_IO_FIRE;
+   if (currentJoy2Y < -100) ioInputs &= ~WW_IO_SHIELDS;
+
+
+   // Player 1 and player 2 buttons double up with coin input.
+   // FREE PLAY if ((currentButtonState & ~prevButtonState) & (VEC_BUTTON_1_1 | VEC_BUTTON_2_1)) ioSwitches &= ~WW_SW_COIN;	// only on rising edge
+
+   if (currentButtonState & VEC_BUTTON_1_4) ioInputs &= ~WW_IO_P1START; // needs 1 coin
+
+   if (currentButtonState & VEC_BUTTON_1_1) ioInputs &= ~WW_IO_LEFT;
+   if (currentButtonState & VEC_BUTTON_1_2) ioInputs &= ~WW_IO_RIGHT;
+   if (currentButtonState & VEC_BUTTON_1_3) ioInputs &= ~WW_IO_SHIELDS;
+   if (currentButtonState & VEC_BUTTON_1_4) ioInputs &= ~WW_IO_FIRE;
+
+   if (currentButtonState & VEC_BUTTON_2_4) ioInputs &= ~WW_IO_P2START; // needs 2 coins and second controller
+
+   if (currentButtonState & VEC_BUTTON_2_1) ioInputs &= ~WW_IO_LEFT;
+   if (currentButtonState & VEC_BUTTON_2_2) ioInputs &= ~WW_IO_RIGHT;
+   if (currentButtonState & VEC_BUTTON_2_3) ioInputs &= ~WW_IO_SHIELDS;
+   if (currentButtonState & VEC_BUTTON_2_4) ioInputs &= ~WW_IO_FIRE;
+
 #ifdef NEVER
   /*
 # Initialization file for War of the Worlds
@@ -1922,4 +2269,3 @@ void startFrame_speedfreak (void)
      }
    }
 }
-

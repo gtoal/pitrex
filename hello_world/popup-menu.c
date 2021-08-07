@@ -3,8 +3,7 @@
 #include <string.h>
 #include <stdlib.h> // for exit()
 
-// first hack at a menu interface, may update later
-// (eg if we add icons as well as text)
+// first hack at a menu interface, may update later (eg if we add icons as well as text)
 
 #include "popup-menu.h"
 
@@ -376,8 +375,6 @@ void CreateMenu(menu_context *m, char *title, char *options) {
   m->title = title; // Centred. Later, may embellish strings with left/right/center justification codes?
   m->options = options; // 1..n (0 is reserved for now. May use it for exiting menu with no choice.)
 
-  // move this chunk to CreateMenu and save in variables instead?
-  // Doing it here simplifies having the user change the menu options on the fly...
   strcpy(s, m->options); // make writable
   s1 = s;
   m->lines = 0;
@@ -397,7 +394,6 @@ void CreateMenu(menu_context *m, char *title, char *options) {
     m->buff[i][w++] = ' '; m->buff[i][w] = '\0'; // extra space on all strings avoids issues with raster printing
   }
   m->lines += 1;
-
 }
 
 void DrawMenu(menu_context *m) {
@@ -485,70 +481,6 @@ void DrawMenu(menu_context *m) {
       if (i-m->scroll_base+1 == m->displayable_lines) break;
     }  
   }
-
-#ifdef NEVER
-  // We do our action selection after drawing the menu.  If the action affects the menu display,
-  // it will be updated on the next iteration.
-  // During development we'll cheat and use Unix terminal I/O.
-  c = kbhit();
-  if (c < 0) return 0;
-  switch (c) {
-  case 'a':
-  case 'A': // b1 (leftmost)
-    if (m->b1) m->b1(m);
-    return m->selected << 24;
-  case 's':
-  case 'S': // b2
-    if (m->b2) m->b2(m);
-    return m->selected << 16;
-  case 'd':
-  case 'D': // b3
-    if (m->b3) m->b3(m);
-    return m->selected << 8;
-  case 13:
-  case 10:
-  case 'f':
-  case 'F': // b4
-    if (m->b4) m->b4(m);
-    return m->selected;
-  case '8': // up
-  case KEY_UP:
-    if (m->up) m->up(m);
-
-    if (m->display_line == 0) {
-      if (m->selected == 1) return 0;
-      m->scroll_base -= 1; // scroll the list downwards when you hit the top of the display (not of the options)
-    } else {
-      m->display_line -= 1; // move cursor up a line, don't scroll options
-    }
-    m->selected -= 1;
-    
-    return 0;
-  case '2': // down
-  case KEY_DOWN:
-    if (m->down) m->down(m);
-
-    if (m->selected >= m->lines) return 0;
-    if (m->display_line+1 >= m->displayable_lines) {
-      m->scroll_base += 1; // scroll the list upwards when you hit the bottom of the display (not of the options)
-    } else {
-      m->display_line += 1; // move cursor down a line, don't scroll options
-    }
-    m->selected += 1;
-
-    return 0;
-  case '4': // left - back to previous menu level?
-  case KEY_LEFT:
-    if (m->left) m->left(m);
-    return 0;
-  case '6': // right - down to next menu level?
-  case KEY_RIGHT:
-    if (m->right) m->right(m);
-    return 0;
-    
-  default: return 0;
-  }
-#endif
 }
 
 // This is a test program to draw something (doesn't matter what), and then add
@@ -606,22 +538,9 @@ void m_directDraw32Patterned(int xl, int yb, int xr, int yt, int pattern, int br
   }
 }
 
-void CursorUp(menu_context *m) {
-}
-
-void CursorDown(menu_context *m) {
-}
-
 int popup_menu_Select(menu_context *m) { // B4 - perform action if 'selected' is an action. If it's a submenu enter it. (TO DO)
   m->active = FALSE; // must do this on any return from menu
   return m->selected;
-
-#ifdef NEVER
-  if (strcmp(m->selected_str, "Quit") == 0) {
-    echoOn();
-    exit(0); // haven't yet built the user side cleanly.
-  }
-#endif
 }
 
 void popup_menu_Cancel(menu_context *m) { // B3 - pop up if submenu, exit menu if top-level (TO DO)
@@ -660,6 +579,9 @@ int main(int argc, char **argv) {
   menu_context menu; // declared in the application. Not globally.
   int tick = 0;
 
+  // This is how we get a list of wifi APs...
+  // sudo iwlist wlan0 scan | grep -e ESSID -e level|ecce - - -command "(jm)0;m-0(u/=/ef1./.s. .m,m)0;m-0(f/ /u/ESSID:/s/ /m,m)0m-0(f/\"\"/k)0;%c" 2>/dev/null | grep -v "\\x00"|grep -v "\\x00"|sort -nr|ecce - - -command "(u/ /em,m)0;%c" 2>/dev/null|uniq
+  
   vectrexinit(1);
   v_setName("popup");
   v_init();
@@ -677,23 +599,36 @@ int main(int argc, char **argv) {
   //CreateMenu(&menu, NULL, "Setup Net\nCalibrate\nIntro\nMulticart\nArcade\nVectrex\nBasic\nBash\nQuit");
   //CreateMenu(&menu, "Action", "Setup Net\nCalibrate\nIntro\nMulticart\nArcade Games\nVectrex\nBasic\nBash\nQuit\n10\n11\n12\nhidden\nmore\ndone\nno\nnot\nreally");
   //CreateMenu(&menu, NULL, "Setup Net\nCalibrate\nIntro\nMulticart\nArcade Games\nVectrex\nBasic\nBash\nQuit\n10\n11\n12\nhidden\nmore\ndone\nno\nnot\nreally");
-  menu.b1 = &Up;     // bind user procedures to buttons.
-  menu.b2 = &Down;
-  menu.b3 = &Cancel;
-  menu.b4 = &Select;
+  menu.b1 = &popup_menu_Up;     // bind user procedures to buttons.
+  menu.b2 = &popup_menu_Down;
+  menu.b3 = &popup_menu_Cancel;
 
   echoOff();
-  menu.active = FALSE; // menus don't have to be created just before use. They can
+  menu.active = TRUE; // menus don't have to be created just before use. They can
   for (;;) {
-    startFrame();
+    int c = kbhit();
+    // read joysticks, buttons ...
 
-    // PacAnimate(); // restore these once bitmaps working again
-    // Ghosts();
-    // Pills();
+    v_WaitRecal();
+    //v_doSound();
+    v_setBrightness(80);
+    v_readButtons();
+    v_readJoystick1Analog();
+    //v_playAllSFX();
 
-    if (menu.active /* menu is already up */ || (kbhit() > 0) /* invoke menu */) {
-      int choice = DrawMenu(&menu); // both creates and displays.  Later should separate those out into two procs.
-      (void)choice; // programmer could use this return instead of a callback proc...
+    if (menu.active /* menu is already up */ || (c > 0) /* invoke menu */) {
+      int choice;
+      DrawMenu(&menu);
+      if (c == '\n') {
+	choice = popup_menu_Select(&menu);
+        if (choice > 0) {
+	  fprintf(stderr, "Option %d selected\n", choice);
+          if (strcmp(menu.selected_str, "Quit") == 0) {
+	    echoOn();
+            exit(0);
+	  }
+	}
+      }
     }
 
     if (tick++ == 2000) { // temporary failsafe to exit if I mess up with menu actions
@@ -701,7 +636,68 @@ int main(int argc, char **argv) {
       exit(0);
     }
 
-    drawMaze(&menu);
+    // We do our action selection after drawing the menu.  If the action affects the menu display,
+    // it will be updated on the next iteration.
+    // During development we'll cheat and use Unix terminal I/O.
+
+    if (c < 0) continue;
+
+    switch (c) {
+    case 'a':
+    case 'A': // b1 (leftmost)
+      if (menu.b1) menu.b1(&menu);
+      break;
+    case 's':
+    case 'S': // b2
+      if (menu.b2) menu.b2(&menu);
+      break;
+    case 'd':
+    case 'D': // b3
+      if (menu.b3) menu.b3(&menu);
+      break;
+    case 13:
+    case 10:
+    case 'f':
+    case 'F': // b4
+      if (menu.b4) menu.b4(&menu);
+      break;
+    case '8': // up
+    case KEY_UP:
+      if (menu.up) menu.up(&menu);
+
+      if (menu.display_line == 0) {
+        if (menu.selected == 1) break;
+        menu.scroll_base -= 1; // scroll the list downwards when you hit the top of the display (not of the options)
+      } else {
+        menu.display_line -= 1; // move cursor up a line, don't scroll options
+      }
+      menu.selected -= 1;
+      
+      break;
+    case '2': // down
+    case KEY_DOWN:
+      if (menu.down) menu.down(&menu);
+
+      if (menu.selected >= menu.lines) break;
+      if (menu.display_line+1 >= menu.displayable_lines) {
+        menu.scroll_base += 1; // scroll the list upwards when you hit the bottom of the display (not of the options)
+      } else {
+        menu.display_line += 1; // move cursor down a line, don't scroll options
+      }
+      menu.selected += 1;
+
+      break;
+    case '4': // left - back to previous menu level?
+    case KEY_LEFT:
+      if (menu.left) menu.left(&menu);
+      break;
+    case '6': // right - down to next menu level?
+    case KEY_RIGHT:
+      if (menu.right) menu.right(&menu);
+      break;
+      
+    default: break;
+    }
   }
   echoOn();
   exit(0);

@@ -54,7 +54,7 @@ fonttest: $(BUILD_DIR)fonttest.o pitrexLib
 	$(BUILD_DIR)fonttest.o
 
 $(BUILD_DIR)popup-menu.o: popup-menu.c
-	$(CC) $(CFLAGS) -o $(BUILD_DIR)popup-menu.o -c popup-menu.c
+	$(CC) -DDBMAIN $(CFLAGS) -o $(BUILD_DIR)popup-menu.o -c popup-menu.c
 
 popup-menu: $(BUILD_DIR)popup-menu.o pitrexLib
 	$(RM) popup-menu

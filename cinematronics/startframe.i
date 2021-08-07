@@ -1,4 +1,3 @@
-int boxingbugs_angle = 0x200; // hacked into interpreter at very low level!
 static void debug_this_game(void) {
   static int last[256];
   static int initialised = 0, debug_ram = 0;    // for debouncing
@@ -541,7 +540,8 @@ void startFrame_spacewars(void) {
 }
 
 void startFrame_boxingbugs(void) {
-  debug_this_game();
+static int boxingbugs_angle = 0;
+// debug_this_game();
 #define BB_IO_LCANNON 0x0001 // b1.4
 #define BB_IO_LGLOVE 0x0002  // b1.3
 #define BB_IO_LPANIC 0x0004  // b1.2 two player
@@ -549,15 +549,9 @@ void startFrame_boxingbugs(void) {
 #define BB_IO_RGLOVE 0x0010  // b2.3
 #define BB_IO_RCANNON 0x0020 // b2.4
 #define BB_IO_ACCOUNTING 0x0040 // b2.1 ?
-#define BB_IO_X80 0x0080 // attaching these 5 to the 2nd controller buttons seems to do nothing when pressed
-#define BB_IO_X100 0x0100
-#define BB_IO_X200 0x0200
-#define BB_IO_X400 0x0400
-#define BB_IO_X800 0x0800
 
-#define BB_SW_1024 1024 // attaching these 3 to the 2nd controller buttons seems to do nothing when pressed either
-#define BB_SW_512 512
-#define BB_SW_256 256
+#define BB_IO_DIAL 0xf000
+
 #define BB_SW_ABORT   SW_ABORT	/* 0x100 */
 #define BB_SW_COIN    0x080
 #define BB_SW_DIAG 0x40
@@ -581,7 +575,7 @@ void startFrame_boxingbugs(void) {
  ;            01 = 3 credits per 2 quarters
  ;            11 = 3 credits per 4 quarters
   */
-   static int prevButtonState, prevJoy1X=0, accountingtoggle = 1;	// for debouncing
+   static int prevButtonState, accountingtoggle = 1;	// for debouncing
 
    frameCounter += 1;
    DEBUG_OUT("// Frame %d\n", frameCounter);
@@ -599,7 +593,7 @@ void startFrame_boxingbugs(void) {
    // handle this...
    
    // active low:
-   ioInputs = BB_IO_X80 | BB_IO_X100 | BB_IO_X200 | BB_IO_X400 | BB_IO_X800;
+   ioInputs = 0;
    // all turned off until wanted
    ioInputs |= BB_IO_LCANNON | BB_IO_LGLOVE | BB_IO_LPANIC |
                BB_IO_RPANIC | BB_IO_RGLOVE | BB_IO_RCANNON |
@@ -607,22 +601,32 @@ void startFrame_boxingbugs(void) {
 
    // active high, except for coin?:
    ioSwitches = 0x0000; // switches appear to be 12 bits. Looking for the rotation bits!
-   ioSwitches |=   BB_SW_1024 | BB_SW_512 | BB_SW_256 | BB_SW_ABORT | BB_SW_COIN | BB_SW_DIAG | BB_SW_FREEPLAY | BB_SW_QUIET | BB_SW_EARLYBONUS | BB_SW_EXTRACANNONS | BB_SW_1Q1C;
-   ioSwitches &= ~(                                     BB_SW_ABORT |                           BB_SW_FREEPLAY | BB_SW_QUIET | BB_SW_EARLYBONUS | BB_SW_EXTRACANNONS | BB_SW_1Q1C);
+   ioSwitches |=   BB_SW_ABORT | BB_SW_COIN | BB_SW_DIAG | BB_SW_FREEPLAY | BB_SW_QUIET | BB_SW_EARLYBONUS | BB_SW_EXTRACANNONS | BB_SW_1Q1C;
+   ioSwitches &= ~(BB_SW_ABORT |                           BB_SW_FREEPLAY | BB_SW_QUIET | BB_SW_EARLYBONUS | BB_SW_EXTRACANNONS | BB_SW_1Q1C);
 
-      //ioSwitches &= ~(BB_SW_1024 | BB_SW_512 | BB_SW_256 | BB_SW_ABORT | BB_SW_COIN | BB_SW_DIAG | BB_SW_FREEPLAY | BB_SW_QUIET | BB_SW_EARLYBONUS | BB_SW_EXTRACANNONS | BB_SW_1Q1C);
+   // use joystick as a dial substitute for now - needs some tuning, but at least it now plays.
+   // I might map the joystick position to the angle and use it like a poor-man's spinner...
+   
+   if (currentJoy1X < -30) {
+     if ((frameCounter&15) == 0) boxingbugs_angle = (boxingbugs_angle+1)&15;
+     //fprintf(stderr, "Down %03x\n", boxingbugs_angle);
+   }
+   if (currentJoy1X > 30) {
+     if ((frameCounter&15) == 0) boxingbugs_angle = (boxingbugs_angle-1)&15;
+     //fprintf(stderr, "Up %03x\n", boxingbugs_angle);
+   }
 
-   // no joysticks..?
-   if ( (currentJoy1X < -30) && !(prevJoy1X < -30)) {
-     fprintf(stderr, "Down %03x\n", RCram[2]);
-     boxingbugs_angle -= 1; if (boxingbugs_angle < 0x1F0) boxingbugs_angle = 0x1F0;
+   if (currentJoy1Y < -30) {
+     if ((frameCounter&15) == 0) boxingbugs_angle = (boxingbugs_angle+1)&15;
+     //fprintf(stderr, "Down %03x\n", boxingbugs_angle);
    }
-   if ( (currentJoy1X > 30) && !(prevJoy1X > 30)) {
-     fprintf(stderr, "Up %03x\n", RCram[2]);
-     boxingbugs_angle += 1; if (boxingbugs_angle > 0x20F) boxingbugs_angle = 0x20F; 
+   if (currentJoy1Y > 30) {
+     if ((frameCounter&15) == 0) boxingbugs_angle = (boxingbugs_angle-1)&15;
+     //fprintf(stderr, "Up %03x\n", boxingbugs_angle);
    }
-   RCram[2] = boxingbugs_angle;
-   prevJoy1X = currentJoy1X < -30;
+
+   ioInputs |= boxingbugs_angle<<12;
+
    //if ((currentButtonState & ~prevButtonState) & (VEC_BUTTON_1_1 | VEC_BUTTON_2_1)) ioSwitches &= ~BB_SW_COIN;	// only on rising edge
    if ((currentButtonState & ~prevButtonState) & VEC_BUTTON_1_1 ) ioSwitches &= ~BB_SW_COIN;	// only on rising edge NOTE B2 starts the game after coining.
 

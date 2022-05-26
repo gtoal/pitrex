@@ -157,8 +157,51 @@ static inline int stricmp(const char *s1, const char *s2) {
 
   return (int) (bm_tolower((int) *p1) - bm_tolower((int) *p2));
 }
-#else
+#else // Not FREESTANDING
+
+// Most of what this is for is already supplied under linux
 #include <dirent.h>
 typedef struct dirent dirent;
 void initFileSystem();
-#endif
+
+#endif // Not FREESTANDING
+
+// This is for my WIP in reintegrating some of Malban's fork with the dual system base.
+// I strongly recommend against anyone else enabling this for now.
+
+#ifdef USE_MALBAN_BAREMETAL_CALLS // These are from Malban's fork of the bare metal environment.
+                                  // They might be needed from linux while backporting apps like 'sim'.
+                                  // or maybe in linux I should supply dummy versions that do nothing?
+
+#define EnableInterrupts()  __asm volatile ("cpsie i")
+#define DisableInterrupts() __asm volatile ("cpsid i")
+
+//
+// Cache control
+//
+#define InvalidateInstructionCache()    \
+                __asm volatile ("mcr p15, 0, %0, c7, c5,  0" : : "r" (0) : "memory")
+#define FlushPrefetchBuffer()   __asm volatile ("mcr p15, 0, %0, c7, c5,  4" : : "r" (0) : "memory")
+#define FlushBranchTargetCache()    \
+                __asm volatile ("mcr p15, 0, %0, c7, c5,  6" : : "r" (0) : "memory")
+#define InvalidateDataCache()   __asm volatile ("mcr p15, 0, %0, c7, c6,  0" : : "r" (0) : "memory")
+#define CleanDataCache()    __asm volatile ("mcr p15, 0, %0, c7, c10, 0" : : "r" (0) : "memory")
+
+//
+// Barriers
+//
+#define DataSyncBarrier()   __asm volatile ("mcr p15, 0, %0, c7, c10, 4" : : "r" (0) : "memory")
+#define DataMemBarrier()    __asm volatile ("mcr p15, 0, %0, c7, c10, 5" : : "r" (0) : "memory")
+
+#define InstructionSyncBarrier() FlushPrefetchBuffer()
+#define InstructionMemBarrier() FlushPrefetchBuffer()
+
+#define CompilerBarrier()   __asm volatile ("" ::: "memory")
+
+void EnterCritical (void);
+void LeaveCritical (void);
+
+void MsDelay (unsigned nMilliSeconds);
+void usDelay (unsigned nMicroSeconds);
+
+#endif // USE_MALBAN_BAREMETAL_CALLS

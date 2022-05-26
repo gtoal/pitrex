@@ -18,6 +18,7 @@
 #include        "cines.h"
 #include	    "options.h"
 #include        "inifile.h"
+extern int ccpu_game_id;
 
 // globals setup by options
 
@@ -778,7 +779,7 @@ int execIniFile (void)
 }
 
 #define MAX_ROMS 8
-#define MAX_ROM_SIZE 4096
+#define MAX_ROM_SIZE /*4096*/8192
 
 unsigned char rom1[MAX_ROM_SIZE];
 unsigned char rom2[MAX_ROM_SIZE];
@@ -878,8 +879,14 @@ uint readRoms (char *ListOfRoms, uchar * objCode, uchar OptMemSize)
       break;
 
    case 3:			// 32k game
-      romSize = 4096;
-      romCount = 8;
+      // BEWARE: QB3 is 4 x 8K rom files, not the usual 8 x 4K files...
+      if (ccpu_game_id == GAME_QB3) {
+        romSize = 8192;
+        romCount = 4;
+      } else {
+        romSize = 4096;
+        romCount = 8;
+      }
       break;
    }
    if (romBfr == 0) {

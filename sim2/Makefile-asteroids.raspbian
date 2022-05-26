@@ -1,0 +1,68 @@
+# I prefer "handmade" make files, it is a little bit of more worktime to start with
+# but I can read them, others can, and I know what they do!
+
+EMU_NAME := asteroids
+
+BUILD_DIR_PURE := build.raspbian
+BUILD_DIR := $(BUILD_DIR_PURE)/
+
+SIM_DIR := ./
+PITREX_DIR := ../pitrex/pitrex/
+VECTREX_DIR := ../pitrex/vectrex/
+CFLAGS := -Wall -Wno-unused-variable -Wno-unused-but-set-variable -Ofast -I../pitrex/ -DPIZERO -DRPI0
+CC := gcc
+
+.PHONY: pitrexLib
+.PHONY: dirCheck
+.PHONY: simLib
+
+all:	dirCheck pitrexLib simLib $(EMU_NAME)
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
+
+pitrexLib:
+	$(MAKE) -C $(PITREX_DIR) -f Makefile.raspbian all
+	$(MAKE) -C $(VECTREX_DIR) -f Makefile.raspbian all
+
+simLib:
+	$(MAKE) -C $(SIM_DIR) -f Makefile.raspbian all
+
+$(BUILD_DIR)sim.o: $(EMU_NAME).c $(SIM_DIR)framework.c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)sim.o -DSINGLE_GAME="\"$(EMU_NAME)\"" -DGAME_INC="\"$(EMU_NAME).c\"" -c $(SIM_DIR)framework.c
+
+$(BUILD_DIR)malban.o: malban.c
+	$(CC) -c $(CFLAGS) -o $(BUILD_DIR)malban.o malban.c
+
+$(BUILD_DIR)asteroids-main.o: asteroids-main.c  $(EMU_NAME).c
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)asteroids-main.o -c asteroids-main.c -DSINGLE_GAME="\"$(EMU_NAME)\""
+
+$(EMU_NAME): $(BUILD_DIR)asteroids-main.o $(BUILD_DIR)sim.o $(BUILD_DIR)malban.o pitrexLib simLib $(VECTREX_DIR)$(BUILD_DIR)ini.o
+	make -f Makefile.raspbian
+	$(RM) $(EMU_NAME)
+	$(CC) $(CFLAGS) -o $(EMU_NAME) \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(VECTREX_DIR)$(BUILD_DIR)vectrexInterface.o \
+	$(VECTREX_DIR)$(BUILD_DIR)osWrapper.o \
+	$(VECTREX_DIR)$(BUILD_DIR)baremetalUtil.o \
+	$(VECTREX_DIR)$(BUILD_DIR)ini.o \
+	$(SIM_DIR)$(BUILD_DIR)dis6502.o \
+	$(SIM_DIR)$(BUILD_DIR)display.o \
+	$(SIM_DIR)$(BUILD_DIR)game.o \
+	$(SIM_DIR)$(BUILD_DIR)memory.o \
+	$(SIM_DIR)$(BUILD_DIR)mathbox.o \
+	$(SIM_DIR)$(BUILD_DIR)pokey.o \
+	$(SIM_DIR)$(BUILD_DIR)debugger.o \
+	$(SIM_DIR)$(BUILD_DIR)vx_interface.o \
+	$(BUILD_DIR)asteroids-main.o \
+	$(BUILD_DIR)malban.o \
+	$(BUILD_DIR)sim.o
+
+clean:
+	make -f Makefile.raspbian clean
+	$(RM) $(BUILD_DIR)*.*
+	$(RM) $(EMU_NAME)
+
+install: $(EMU_NAME)
+	install -o root -g games -m 6555 $(EMU_NAME) /opt/pitrex/bin

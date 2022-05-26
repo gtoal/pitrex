@@ -132,12 +132,11 @@ extern void hotkeys(int &cc);
 #define GAME_SPEEDFREAK 8
 #define GAME_DEMON 9
 #define GAME_SOLARQUEST 10
-#define GAME_COSMICCHASM 11
-#define GAME_WAROFTHEWORLDS 12
-#define GAME_WARRIOR 13
-#define GAME_BARRIER 14
-#define GAME_SUNDANCE 15
-#define GAME_QB3 16
+#define GAME_WAROFTHEWORLDS 11
+#define GAME_WARRIOR 12
+#define GAME_BARRIER 13
+#define GAME_SUNDANCE 14
+#define GAME_QB3 15
 
 extern void vgSetMode(int mode);
 extern void vgSetCineSize(int Xmin, int Ymin, int Xmax, int Ymax);
@@ -173,7 +172,6 @@ extern void startFrame_starhawk(void);
 extern void startFrame_speedfreak(void);
 extern void startFrame_demon(void);
 extern void startFrame_solarquest(void);
-extern void startFrame_cosmicchasm(void);
 extern void startFrame_waroftheworlds(void);
 extern void startFrame_warrior(void);
 extern void startFrame_barrier(void);

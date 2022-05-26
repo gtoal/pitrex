@@ -29,6 +29,7 @@
 */
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 #define PI 3.14159265358979323846
 
@@ -44,6 +45,242 @@
 #define BUFFER_SIZE 4096
 
 
+/*  *********************** Graphics Stuff ***********************************************/
+#ifndef FALSE
+#define FALSE (0!=0)
+#define TRUE (0==0)
+#endif
+
+//        !     "     #     $     %     &     '     (     )     *     +     ,     -     .     /   
+//  0     1     2     3     4     5     6     7     8     9     :     ;     <     =     >     ?   
+//  @     A     B     C     D     E     F     G     H     I     J     K     L     M     N     O   
+//  P     Q     R     S     T     U     V     W     X     Y     Z     [     \     ]     ^     _   
+//  `     a     b     c     d     e     f     g     h     i     j     k     l     m     n     o   
+//  p     q     r     s     t     u     v     w     x     y     z     {     |     }     ~      
+unsigned char lcrasterline1[] = {
+  0x00, 0x18, 0x6c, 0x6c, 0x30, 0x00, 0x38, 0x60, 0x18, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 
+  0x7c, 0x30, 0x78, 0x78, 0x1c, 0xfc, 0x38, 0xfc, 0x78, 0x78, 0x00, 0x00, 0x18, 0x00, 0x60, 0x78, 
+  0x7c, 0x30, 0xfc, 0x3c, 0xf8, 0xfe, 0xfe, 0x3c, 0xcc, 0x78, 0x1e, 0xe6, 0xf0, 0xc6, 0xc6, 0x38, 
+  0xfc, 0x78, 0xfc, 0x78, 0xfc, 0xcc, 0xcc, 0xc6, 0xc6, 0xcc, 0xfe, 0x78, 0xc0, 0x78, 0x10, 0x00, 
+  0x30, 0x00, 0xe0, 0x00, 0x1c, 0x00, 0x38, 0x00, 0xe0, 0x30, 0x0c, 0xe0, 0x70, 0x00, 0x00, 0x00, 
+  0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1c, 0x18, 0xe0, 0x76, 0x00, 
+};
+unsigned char lcrasterline2[] = {
+  0x00, 0x3c, 0x6c, 0x6c, 0x7c, 0xc6, 0x6c, 0x60, 0x30, 0x30, 0x66, 0x30, 0x00, 0x00, 0x00, 0x0c, 
+  0xc6, 0x70, 0xcc, 0xcc, 0x3c, 0xc0, 0x60, 0xcc, 0xcc, 0xcc, 0x30, 0x30, 0x30, 0x00, 0x30, 0xcc, 
+  0xc6, 0x78, 0x66, 0x66, 0x6c, 0x62, 0x62, 0x66, 0xcc, 0x30, 0x0c, 0x66, 0x60, 0xee, 0xe6, 0x6c, 
+  0x66, 0xcc, 0x66, 0xcc, 0xb4, 0xcc, 0xcc, 0xc6, 0xc6, 0xcc, 0xc6, 0x60, 0x60, 0x18, 0x38, 0x00, 
+  0x30, 0x78, 0x60, 0x78, 0x0c, 0x78, 0x60, 0x76, 0x6c, 0x00, 0x00, 0x66, 0x30, 0xcc, 0xf8, 0x78, 
+  0xdc, 0x76, 0xdc, 0x7c, 0x7c, 0xcc, 0xcc, 0xc6, 0xc6, 0xcc, 0xfc, 0x30, 0x18, 0x30, 0xdc, 0x00, 
+};
+unsigned char lcrasterline3[] = {
+  0x00, 0x3c, 0x00, 0xfe, 0xc0, 0xcc, 0x38, 0xc0, 0x60, 0x18, 0x3c, 0x30, 0x00, 0x00, 0x00, 0x18, 
+  0xce, 0x30, 0x0c, 0x0c, 0x6c, 0xf8, 0xc0, 0x0c, 0xcc, 0xcc, 0x30, 0x30, 0x60, 0xfc, 0x18, 0x0c, 
+  0xde, 0xcc, 0x66, 0xc0, 0x66, 0x68, 0x68, 0xc0, 0xcc, 0x30, 0x0c, 0x6c, 0x60, 0xfe, 0xf6, 0xc6, 
+  0x66, 0xcc, 0x66, 0xe0, 0x30, 0xcc, 0xcc, 0xc6, 0x6c, 0xcc, 0x8c, 0x60, 0x30, 0x18, 0x6c, 0x00, 
+  0x18, 0x0c, 0x7c, 0xcc, 0x7c, 0xcc, 0xf0, 0xcc, 0x76, 0x70, 0x0c, 0x6c, 0x30, 0xfe, 0xcc, 0xcc, 
+  0x66, 0xcc, 0x76, 0xc0, 0x30, 0xcc, 0xcc, 0xd6, 0x6c, 0xcc, 0x98, 0x30, 0x18, 0x30, 0x00, 0x00, 
+};
+unsigned char lcrasterline4[] = {
+  0x00, 0x18, 0x00, 0x6c, 0x78, 0x18, 0x76, 0x00, 0x60, 0x18, 0xfe, 0xfc, 0x00, 0xfc, 0x00, 0x30, 
+  0xde, 0x30, 0x38, 0x38, 0xcc, 0x0c, 0xf8, 0x18, 0x78, 0x7c, 0x00, 0x00, 0xc0, 0x00, 0x0c, 0x18, 
+  0xde, 0xcc, 0x7c, 0xc0, 0x66, 0x78, 0x78, 0xce, 0xfc, 0x30, 0x0c, 0x78, 0x60, 0xfe, 0xde, 0xc6, 
+  0x7c, 0xcc, 0x7c, 0x70, 0x30, 0xcc, 0xcc, 0xd6, 0x38, 0x78, 0x18, 0x60, 0x18, 0x18, 0xc6, 0x00, 
+  0x00, 0x7c, 0x66, 0xc0, 0xcc, 0xfc, 0x60, 0xcc, 0x66, 0x30, 0x0c, 0x78, 0x30, 0xfe, 0xcc, 0xcc, 
+  0x66, 0xcc, 0x66, 0x78, 0x30, 0xcc, 0xcc, 0xfe, 0x38, 0xcc, 0x30, 0xe0, 0x00, 0x1c, 0x00, 0x00, 
+};
+unsigned char lcrasterline5[] = {
+  0x00, 0x18, 0x00, 0xfe, 0x0c, 0x30, 0xdc, 0x00, 0x60, 0x18, 0x3c, 0x30, 0x00, 0x00, 0x00, 0x60, 
+  0xf6, 0x30, 0x60, 0x0c, 0xfe, 0x0c, 0xcc, 0x30, 0xcc, 0x0c, 0x00, 0x00, 0x60, 0x00, 0x18, 0x30, 
+  0xde, 0xfc, 0x66, 0xc0, 0x66, 0x68, 0x68, 0xce, 0xcc, 0x30, 0xcc, 0x6c, 0x62, 0xd6, 0xce, 0xc6, 
+  0x60, 0xdc, 0x6c, 0x1c, 0x30, 0xcc, 0xcc, 0xfe, 0x38, 0x30, 0x32, 0x60, 0x0c, 0x18, 0x00, 0x00, 
+  0x00, 0xcc, 0x66, 0xcc, 0xcc, 0xc0, 0x60, 0x7c, 0x66, 0x30, 0xcc, 0x6c, 0x30, 0xd6, 0xcc, 0xcc, 
+  0x7c, 0x7c, 0x60, 0x0c, 0x34, 0xcc, 0x78, 0xfe, 0x6c, 0x7c, 0x64, 0x30, 0x18, 0x30, 0x00, 0x00, 
+};
+unsigned char lcrasterline6[] = {
+  0x00, 0x00, 0x00, 0x6c, 0xf8, 0x66, 0xcc, 0x00, 0x30, 0x30, 0x66, 0x30, 0x30, 0x00, 0x30, 0xc0, 
+  0xe6, 0x30, 0xcc, 0xcc, 0x0c, 0xcc, 0xcc, 0x30, 0xcc, 0x18, 0x30, 0x30, 0x30, 0xfc, 0x30, 0x00, 
+  0xc0, 0xcc, 0x66, 0x66, 0x6c, 0x62, 0x60, 0x66, 0xcc, 0x30, 0xcc, 0x66, 0x66, 0xc6, 0xc6, 0x6c, 
+  0x60, 0x78, 0x66, 0xcc, 0x30, 0xcc, 0x78, 0xee, 0x6c, 0x30, 0x66, 0x60, 0x06, 0x18, 0x00, 0x00, 
+  0x00, 0x76, 0xdc, 0x78, 0x76, 0x78, 0xf0, 0x0c, 0xe6, 0x78, 0xcc, 0xe6, 0x78, 0xc6, 0xcc, 0x78, 
+  0x60, 0x0c, 0xf0, 0xf8, 0x18, 0x76, 0x30, 0x6c, 0xc6, 0x0c, 0xfc, 0x30, 0x18, 0x30, 0x00, 0x00, 
+};
+unsigned char lcrasterline7[] = {
+  0x00, 0x18, 0x00, 0x6c, 0x30, 0xc6, 0x76, 0x00, 0x18, 0x60, 0x00, 0x00, 0x70, 0x00, 0x30, 0x80, 
+  0x7c, 0xfc, 0xfc, 0x78, 0x1e, 0x78, 0x78, 0x30, 0x78, 0x70, 0x30, 0x70, 0x18, 0x00, 0x60, 0x30, 
+  0x78, 0xcc, 0xfc, 0x3c, 0xf8, 0xfe, 0xf0, 0x3e, 0xcc, 0x78, 0x78, 0xe6, 0xfe, 0xc6, 0xc6, 0x38, 
+  0xf0, 0x1c, 0xe6, 0x78, 0x78, 0xfc, 0x30, 0xc6, 0xc6, 0x78, 0xfe, 0x78, 0x02, 0x78, 0x00, 0xfe, 
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf8, 0x00, 0x00, 0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 
+  0xf0, 0x1e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf8, 0x00, 0x1c, 0x18, 0xe0, 0x00, 0x00, 
+};
+
+unsigned char *lcrasterlines[7] = {
+  lcrasterline1, lcrasterline2, lcrasterline3, lcrasterline4, lcrasterline5, lcrasterline6, lcrasterline7
+};
+
+// This will move to the vectrex graphics library.
+static int64_t ScaleXMul = 1LL, ScaleXDiv = 1LL, ScaleXOffsetPre = 0LL, ScaleXOffsetPost = 0LL,
+               ScaleYMul = 1LL, ScaleYDiv = 1LL, ScaleYOffsetPre = 0LL, ScaleYOffsetPost = 0LL;
+static int v_rotate = 0, v_flip_x = 0, v_flip_y = 0;
+static int v_xl = 0, v_yb = 0, v_xr = 0, v_yt = 0;
+
+int tx (int x) {				// convert x from window to viewport
+   x = x * 2; // correct the seriously broken aspect ratio..!
+   if (v_flip_x) x = v_xr - (x - v_xl);
+   return (int) (((((int64_t) x) + ScaleXOffsetPre) * ScaleXMul) / ScaleXDiv + ScaleXOffsetPost);
+}
+
+int ty (int y) {				// and y
+   if (v_flip_y) y = v_yt - (y - v_yb);
+   return (int) (((((int64_t) y) + ScaleYOffsetPre) * ScaleYMul) / ScaleYDiv + ScaleYOffsetPost);
+}
+
+enum { TOP = 0x1, BOTTOM = 0x2, RIGHT = 0x4, LEFT = 0x8 };
+
+typedef unsigned int outcode;
+
+static outcode compute_outcode (int x, int y, int xmin, int ymin, int xmax, int ymax) {
+  outcode oc = 0;
+
+  if (y > ymax)
+    oc |= TOP;
+  else if (y < ymin)
+    oc |= BOTTOM;
+  if (x > xmax)
+    oc |= RIGHT;
+  else if (x < xmin)
+    oc |= LEFT;
+  return oc;
+}
+
+static int retain_after_clipping (int *x1p, int *y1p, int *x2p, int *y2p, int xmin, int ymin, int xmax, int ymax) {
+#define x1 (*x1p)
+#define y1 (*y1p)
+#define x2 (*x2p)
+#define y2 (*y2p)
+
+  int accept;
+  int done;
+  outcode outcode1, outcode2;
+
+  accept = FALSE;
+  done = FALSE;
+  outcode1 = compute_outcode (x1, y1, xmin, ymin, xmax, ymax);
+  outcode2 = compute_outcode (x2, y2, xmin, ymin, xmax, ymax);
+  do {
+    if (outcode1 == 0 && outcode2 == 0) {
+      accept = TRUE;
+      done = TRUE;
+    } else if (outcode1 & outcode2) {
+      done = TRUE;
+    } else {
+      int x, y;
+      int outcode_ex = outcode1 ? outcode1 : outcode2;
+
+      if (outcode_ex & TOP) {
+        x = x1 + (x2 - x1) * (ymax - y1) / (y2 - y1);
+        y = ymax;
+      } else if (outcode_ex & BOTTOM) {
+        x = x1 + (x2 - x1) * (ymin - y1) / (y2 - y1);
+        y = ymin;
+      } else if (outcode_ex & RIGHT) {
+        y = y1 + (y2 - y1) * (xmax - x1) / (x2 - x1);
+        x = xmax;
+      } else {
+        y = y1 + (y2 - y1) * (xmin - x1) / (x2 - x1);
+        x = xmin;
+      }
+      if (outcode_ex == outcode1) {
+        x1 = x;
+        y1 = y;
+        outcode1 = compute_outcode (x1, y1, xmin, ymin, xmax, ymax);
+      } else {
+        x2 = x;
+        y2 = y;
+        outcode2 = compute_outcode (x2, y2, xmin, ymin, xmax, ymax);
+      }
+    }
+  } while (done == FALSE);
+  return accept && done;
+#undef x1
+#undef y1
+#undef x2
+#undef y2
+}
+
+void w_directMove32(int x, int y) {
+       v_directMove32 (tx (x), ty (y));
+}
+
+void w_directDraw32(int xl, int yb, int xr, int yt, int col) {
+       if (!retain_after_clipping(&xl,&yb,&xr,&yt, v_xl,v_yb,v_xr,v_yt)) return;
+       v_directDraw32 (tx (xl), ty (yb), tx (xr), ty (yt), col);
+}
+
+void window (int xl, int yb, int xr, int yt)
+{
+   // We will use normalised viewport coordinates of x = -18000:18000 and y = -24000:24000 for consistency
+   int64_t width, height, owidth, oheight;
+   int xc, yc;
+
+   v_xl = xl; v_yb = yb; v_xr = xr; v_yt = yt;
+   owidth = width = (int64_t) xr - (int64_t) xl;
+   oheight = height = (int64_t) yt - (int64_t) yb;
+
+   // However, if OS tells us that vectrex is on its side, we'll handle these differently.
+   // For now, though, Malban's orientation code is doing the rotation behind the scenes
+   // so we don't want to do it twice.  Need to think about whether that solution is OK
+   // or has to be changed. Although it doesn't matter too much in terms of what is displayed,
+   // it makes a different with respect to loading and saving configs and using the same
+   // default for multiple games.
+   if (width * 4 >= height * 3) {
+      // window is wider than aspect ratio, so we will have black bars at the top and bottom
+      height = (width * 4) / 3;
+      yc = (yb + yt) / 2;
+      yb = yc - height / 2;
+      yt = yc + height / 2;
+   } else if (width * 4 < height * 3) {
+      // window is taller than aspect ratio, so we will have black bars at
+      // the sides
+      width = (height * 3) / 4;
+      xc = (xl + xr) / 2;
+      xl = xc - width / 2;
+      xr = xc + width / 2;
+   }
+
+   //printf("old window: (%d,%d) to (%d,%d)\n", v_xl,v_yb, v_xr,v_yt);
+   //printf("new window: (%d,%d) to (%d,%d)\n", xl,yb, xr,yt);
+   
+   ScaleXMul = 36000LL;
+   ScaleXDiv = width;
+
+   //ScaleXOffsetPre = -width / 2LL;
+   ScaleXOffsetPre = 0LL;
+   ScaleXOffsetPost = 0LL;
+   // adjust center of window to center of screen
+   ScaleXOffsetPost =  -(tx (v_xr)+tx (v_xl)) / 2LL;
+
+   ScaleYMul = 48000LL;
+   ScaleYDiv = height;
+
+   ScaleYOffsetPre = 0LL; // -height / 2LL;
+   ScaleYOffsetPost = 0LL;
+   // adjust center of window to center of screen
+   ScaleYOffsetPost = -(ty (v_yt)+ty (v_yb)) / 2LL;
+
+   //printf("X: scale %lld, pre %lld, post %lld\n", ScaleXMul/ScaleXDiv,  ScaleXOffsetPre,  ScaleXOffsetPost);
+   //printf("Y: scale %lld, pre %lld, post %lld\n", ScaleYMul/ScaleYDiv,  ScaleYOffsetPre,  ScaleYOffsetPost);
+   //printf("new transformed window: (%d,%d) to (%d,%d)\n", tx(xl),ty(yb), tx(xr),ty(yt));
+
+   //setCustomClipping(TRUE, tx(v_xl), ty(v_yb), tx(v_xr), ty(v_yt));
+       // transform world (window) coordinates to viewport (normalised device
+       // coordinates) before clipping.  That way clipping code does not need to know about world
+       // coordinates. NOT SURE IF THIS IS WORKING. Speedfreak seems to draw lines outside the window.
+       // I think setCustomClipping must only apply to one of the buffered drawing modes.
+   // I've added a local clipping procedure to ensure we have complete local control over clipping.
+}
+
+// end of window library
 /*  *********************** Game Stuff ***************************************************/
 
 // Rock
@@ -258,12 +495,7 @@ void movetoRelative(int x, int y)
 
   py = py*16 ;
   px = px*16 ;
-#ifdef NEVER
-  v_directDeltaMove32start(px, py);
-  v_directDeltaMoveEnd();
-#else
   v_directMove32(new_x = old_x + px, new_y = old_y + py); old_x = new_x; old_y = new_y;
-#endif
 }
 
 void linetoRelative(int x, int y)
@@ -274,13 +506,7 @@ void linetoRelative(int x, int y)
   py = y;
   py = py*16 ;
   px = px*16 ;
-#ifdef NEVER
-  // delta draw calls don't yet have support for interrupt avoidance (ie glitchy)
-  // so code has been modified to use absolute coordinates.
-  v_directDeltaDraw32(px, py, currentZSH);
-#else
-  v_directDraw32(old_x, old_y, new_x = old_x + px, new_y = old_y + py, currentZSH); old_x = new_x; old_y = new_y;
-#endif
+  w_directDraw32(old_x, old_y, new_x = old_x + px, new_y = old_y + py, currentZSH); old_x = new_x; old_y = new_y;
 }
 
 // absolut from 0,0 (center)
@@ -299,7 +525,7 @@ void moveto(int x, int y)
 
   py = py*16 -32768;
   px = px*16 -32768;
-  v_directMove32(new_x = px, new_y = py); old_x = new_x; old_y = new_y;
+  w_directMove32(new_x = px, new_y = py); old_x = new_x; old_y = new_y;
 }
 
 int draw_character(char c, int x, int y, int size)
@@ -724,13 +950,19 @@ void video()
   ship.x = constrain(ship.x, 400, 3700);
   ship.y = constrain(ship.y, 400, 3700);
 
+  v_setBrightness(60);
   update_stars(s);
+  v_setBrightness(127);
   update_bullets(b);
+  v_setBrightness(74);
   update_rocks(r);
   if (rand() % 500 == 1) add_rock(r);
+  v_setBrightness(68);
   update_enemies(e);
   if (rand() % 500 == 1) add_enemy(e);
+  v_setBrightness(100);
   update_ship(&ship);
+  v_setBrightness(80);
   draw_field();
 }
 
@@ -745,12 +977,11 @@ void setup()
   vectrexinit(1);
   v_setName("gyrocks");
   v_init();
+  v_set_font(lcrasterlines);
+  bufferType = 2; usePipeline = 1; 
   usePipeline = 2; //usePipeline = 0 => no size adjustment, glitches
-  //v_loadSettings("gyrocks", settingsBlob, SETTINGS_SIZE);
-  v_setRefresh(60);
-  // needs to have scaling added - these sizes fix it for average screen:
-  // stretch x,y: 0.54 0.65
-  // but can handle that later
+  v_setRefresh(50);
+  window(-28500,-40000,28500,40000);
   initVars();
   init_stars(s);
 }
@@ -760,7 +991,7 @@ void startFrame()
     v_readButtons();
     v_readJoystick1Analog();
     v_WaitRecal(); old_x = 0; old_y = 0; new_x = 0; new_y = 0;
-    v_setBrightness(64);        /* set intensity of vector beam... */
+    v_setBrightness(80);        /* set intensity of vector beam... */
 }
 
 // Hauptfunktion
@@ -772,31 +1003,37 @@ void main()
   int clockAvailable = 0;
 
   long start_time = v_micros();
+  long tick = 0;
+  char FPSBuf[32];
+  char ScoreBuf[32];
+
   clockAvailable = start_time!=0;
+  sprintf(FPSBuf, "FPS: ");
+  sprintf(ScoreBuf, "Points: ");
 
-  printf("setup done\r\n");
-  while (1)
-  {
-    char buf[12];
+  if (!clockAvailable) {
+    sprintf(FPSBuf+5, "n/a ");
+  }
 
+  while (1) {
     video();
+
     // Punktezähler ausgeben
-    draw_string("Points:", 100, 150, 6);
-    draw_string(itoa(score, buf, 10), 800, 150, 6);
 
-    // FPS Todo: Debug Switch?!
-    draw_string("FPS:", 3000, 150, 6);
+    itoa(score, ScoreBuf+8, 10); strcat(ScoreBuf, " ");
+    v_printStringRaster (-115, 100, ScoreBuf, 5*8, -7, '\0');
 
-    if (clockAvailable)
-    {
-      draw_string(itoa(fps, buf, 10), 3400, 150, 6);
+    v_printStringRaster (70, 100, FPSBuf, 5*8, -7, '\0');
+
+    if (clockAvailable) {
+      //draw_string(itoa(fps, buf, 10), 3400, 150, 6);
+      if ((tick&31) == 31) {itoa(fps, FPSBuf+5, 10); strcat(FPSBuf, " ");}
+      // slow down the rate at which the fps display is updated.
       fps = 1000000 / (v_micros() - start_time);
       start_time = v_micros();
     }
-    else
-    {
-      draw_string("n/a", 3400, 150, 6);
-    }
+
     startFrame();
+    tick++;
   }
 }

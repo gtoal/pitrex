@@ -18,6 +18,7 @@
  */
  opCodeTblA:
 
+   // if (ccpu_game_id == GAME_BOXINGBUGS) RCram[2] = boxingbugs_angle;
    switch (rom[RCregister_PC]) {
    case 0:
       goto opLDAimm_A_AA;
@@ -3694,7 +3695,7 @@
  opASRDf_AA_AA:
  opASRDf_BB_AA:
    //UNFINISHED ("opASRDf 1\n");
-   // code added for cosmicchasm
+   // code added for cosmicchasm - in error because it is a 68000 game!
    temp_word = 0xFFF;
 
    RCregister_PC++;
@@ -3720,7 +3721,7 @@
 
  opASRDf_B_AA:
    //UNFINISHED ("opASRDf 2\n");
-   // code added for cosmicchasm
+   // code added for cosmicchasm - in error because it is a 68000 game!
    RCregister_PC++;
 
    temp_word = 0xFFF;

@@ -55,9 +55,12 @@ void main (int argc, char **argv)
 
    if ((argc != 2) || (strcmp(argv[1], "-h") == 0)) 
    {
+      // NOTE: Cosmic Chasm removed because it is a 68000 game!
       fprintf (stderr, "syntax: cinemu [-h | -V | <game>]  where the supported games are:\n");
-      fprintf (stderr, "  armorattack  boxingbugs   demon  ripoff      spacewars   starcastle  sundance    waroftheworlds\n");
-      fprintf (stderr, "  barrier      cosmicchasm  qb3    solarquest  speedfreak  starhawk    tailgunner  warrior\n");
+      fprintf (stderr, "  armorattack  boxingbugs   qb3*   solarquest* speedfreak  starhawk  tailgunner     warrior\n");
+      fprintf (stderr, "  barrier      demon        ripoff spacewars   starcastle  sundance  waroftheworlds\n");
+      fprintf (stderr, "\n");
+      fprintf (stderr, "[*: qb3 and solarquest not yet working]\n");
       fprintf (stderr, "\n");
       exit (1);
    }
@@ -92,8 +95,6 @@ void main (int argc, char **argv)
      Game = GAME_DEMON;
    } else if (strcasecmp (argv[1], "solarquest") == 0) {
      Game = GAME_SOLARQUEST;
-   } else if (strcasecmp (argv[1], "cosmicchasm") == 0) {
-     Game = GAME_COSMICCHASM;
    } else if (strcasecmp (argv[1], "waroftheworlds") == 0) {
      Game = GAME_WAROFTHEWORLDS;
    } else if (strcasecmp (argv[1], "warrior") == 0) {
@@ -106,8 +107,10 @@ void main (int argc, char **argv)
      Game = GAME_QB3;
    } else {
       fprintf (stderr, "The supported games are:\n");
-      fprintf (stderr, "  armorattack  boxingbugs   demon  ripoff      spacewars   starcastle  sundance    waroftheworlds\n");
-      fprintf (stderr, "  barrier      cosmicchasm  qb3    solarquest  speedfreak  starhawk    tailgunner  warrior\n");
+      fprintf (stderr, "  armorattack  boxingbugs   qb3*    solarquest* speedfreak  starhawk  tailgunner     warrior\n");
+      fprintf (stderr, "  barrier      demon        ripoff  spacewars   starcastle  sundance  waroftheworlds\n");
+      fprintf (stderr, "\n");
+      fprintf (stderr, "[*: qb3 and solarquest not yet working]\n");
       fprintf (stderr, "\n");
       exit (1);
    }
@@ -167,20 +170,37 @@ void main (int argc, char **argv)
    bufferType = 2; // 0 = none, 1 = double buffer, 2 = auto buffer (if pipeline is empty -> use previous
    optimizationON = 1; // don't optimise, ie reset to 0 for every line... - game is more than fast enough to handle it
    
-   
-   v_setRefresh (60); // need to work on 38/76 to match hardware...
+   // I've moved the speed control into each game so they can be tweaked separately.
+   // I think the games are generally supposed to run at 38Hz which is slow for the
+   // vectrex (shorter persistence phosphor) so maybe the best plan is to run at
+   // 76Hz and fill in every alternate frame.
 
+   // (Note: This is *not* related to the fact that the cinematronics code calls WAI
+   //  twice in a row between frames and that one of those calls has to be skipped.
+   //  That's just a distracting coincidence.)
+
+   // btw Malban recommends displaying at 50Hz if possible to get a smoother update.
+   // I'm running several (most) of the games at that speed for the moment but that
+   // does cause them to run at the wrong rate - probably 25% too fast.  So I really
+   // do need to come back and revisit this.  In Malban's interrupt-driven code in the
+   // bare-metal environment, he separates the frame generation rate from the display
+   // rate, which is the best option and one I'ld like to do here, but I don't think
+   // our current system code supports that properly.  The auto buffer mode is the
+   // closest we have to it which is what is used here, but to make it work we have
+   // to run at double the rate and redraw every second frame, which we don't yet do.
+   
    switch (Game) {
 
    case GAME_RIPOFF:     
      {
        static int parity = 0;
+       v_setRefresh (76);
        for (;;) {
          cineExec ();		/* either run one instruction or a lot ending in a vsync */
          if (bNewFrame != 0) {
            bNewFrame = 0;
            parity ^= 1;
-           if (parity) startFrame_ripoff();
+           if (parity) startFrame_ripoff(); else v_WaitRecal (); // halve the game speed, keep the refresh rate
          }
        }
      }
@@ -189,12 +209,13 @@ void main (int argc, char **argv)
    case GAME_SPACEWARS:     
      {
        static int parity = 0;
+       v_setRefresh (76);
        for (;;) {
          cineExec ();		/* either run one instruction or a lot ending in a vsync */
          if (bNewFrame != 0) {
            bNewFrame = 0;
            parity ^= 1;
-           if (parity) startFrame_spacewars();
+           if (parity) startFrame_spacewars(); else v_WaitRecal (); // halve the game speed, keep the refresh rate
          }
        }
      }
@@ -203,12 +224,13 @@ void main (int argc, char **argv)
    case GAME_BOXINGBUGS:     
      {
        static int parity = 0;
+       v_setRefresh (76);
        for (;;) {
          cineExec ();		/* either run one instruction or a lot ending in a vsync */
          if (bNewFrame != 0) {
            bNewFrame = 0;
            parity ^= 1;
-           if (parity) startFrame_boxingbugs();
+           if (parity) startFrame_boxingbugs(); else v_WaitRecal (); // halve the game speed, keep the refresh rate
          }
        }
      }
@@ -217,12 +239,13 @@ void main (int argc, char **argv)
    case GAME_ARMORATTACK:     
      {
        static int parity = 0;
+       v_setRefresh (76);
        for (;;) {
          cineExec ();		/* either run one instruction or a lot ending in a vsync */
          if (bNewFrame != 0) {
            bNewFrame = 0;
            parity ^= 1;
-           if (parity) startFrame_armorattack();
+           if (parity) startFrame_armorattack(); else v_WaitRecal (); // halve the game speed, keep the refresh rate
          }
        }
      }
@@ -231,12 +254,13 @@ void main (int argc, char **argv)
    case GAME_STARCASTLE:     
      {
        static int parity = 0;
+       v_setRefresh (76);
        for (;;) {
          cineExec ();		/* either run one instruction or a lot ending in a vsync */
          if (bNewFrame != 0) {
            bNewFrame = 0;
            parity ^= 1;
-           if (parity) startFrame_starcastle();
+           if (parity) startFrame_starcastle(); else v_WaitRecal (); // halve the game speed, keep the refresh rate
          }
        }
      }
@@ -245,12 +269,13 @@ void main (int argc, char **argv)
    case GAME_STARHAWK:     
      {
        static int parity = 0;
+       v_setRefresh (76);
        for (;;) {
          cineExec ();		/* either run one instruction or a lot ending in a vsync */
          if (bNewFrame != 0) {
            bNewFrame = 0;
            parity ^= 1;
-           if (parity) startFrame_starhawk();
+           if (parity) startFrame_starhawk(); else v_WaitRecal (); // halve the game speed, keep the refresh rate
          }
        }
      }
@@ -259,26 +284,13 @@ void main (int argc, char **argv)
    case GAME_SOLARQUEST:     
      {
        static int parity = 0;
+       v_setRefresh (76);
        for (;;) {
          cineExec ();		/* either run one instruction or a lot ending in a vsync */
          if (bNewFrame != 0) {
            bNewFrame = 0;
            parity ^= 1;
-           if (parity) startFrame_solarquest();
-         }
-       }
-     }
-     return;
-
-   case GAME_COSMICCHASM:     
-     {
-       static int parity = 0;
-       for (;;) {
-         cineExec ();		/* either run one instruction or a lot ending in a vsync */
-         if (bNewFrame != 0) {
-           bNewFrame = 0;
-           parity ^= 1;
-           if (parity) startFrame_cosmicchasm();
+           if (parity) startFrame_solarquest(); else v_WaitRecal (); // halve the game speed, keep the refresh rate
          }
        }
      }
@@ -287,12 +299,13 @@ void main (int argc, char **argv)
    case GAME_WAROFTHEWORLDS:     
      {
        static int parity = 0;
+       v_setRefresh (76);
        for (;;) {
          cineExec ();		/* either run one instruction or a lot ending in a vsync */
          if (bNewFrame != 0) {
            bNewFrame = 0;
            parity ^= 1;
-           if (parity) startFrame_waroftheworlds();
+           if (parity) startFrame_waroftheworlds(); else v_WaitRecal (); // halve the game speed, keep the refresh rate
          }
        }
      }
@@ -301,12 +314,13 @@ void main (int argc, char **argv)
    case GAME_WARRIOR:     
      {
        static int parity = 0;
+       v_setRefresh (76);
        for (;;) {
          cineExec ();		/* either run one instruction or a lot ending in a vsync */
          if (bNewFrame != 0) {
            bNewFrame = 0;
            parity ^= 1;
-           if (parity) startFrame_warrior();
+           if (parity) startFrame_warrior(); else v_WaitRecal (); // halve the game speed, keep the refresh rate
          }
        }
      }
@@ -315,12 +329,13 @@ void main (int argc, char **argv)
    case GAME_BARRIER:     
      {
        static int parity = 0;
+       v_setRefresh (76);
        for (;;) {
          cineExec ();		/* either run one instruction or a lot ending in a vsync */
          if (bNewFrame != 0) {
            bNewFrame = 0;
            parity ^= 1;
-           if (parity) startFrame_barrier();
+           if (parity) startFrame_barrier(); else v_WaitRecal (); // halve the game speed, keep the refresh rate
          }
        }
      }
@@ -329,12 +344,13 @@ void main (int argc, char **argv)
    case GAME_SUNDANCE:
      {
        static int parity = 0;
+       v_setRefresh (76);
        for (;;) {
          cineExec ();		/* either run one instruction or a lot ending in a vsync */
          if (bNewFrame != 0) {
            bNewFrame = 0;
            parity ^= 1;
-           if (parity) startFrame_sundance();
+           if (parity) startFrame_sundance(); else v_WaitRecal (); // halve the game speed, keep the refresh rate
          }
        }
      }
@@ -344,12 +360,13 @@ void main (int argc, char **argv)
    case GAME_QB3:
      {
        static int parity = 0;
+       v_setRefresh (76);
        for (;;) {
          cineExec ();		/* either run one instruction or a lot ending in a vsync */
          if (bNewFrame != 0) {
            bNewFrame = 0;
            parity ^= 1;
-           if (parity) startFrame_qb3();
+           if (parity) startFrame_qb3(); else v_WaitRecal (); // halve the game speed, keep the refresh rate
          }
        }
      }
@@ -359,12 +376,15 @@ void main (int argc, char **argv)
    case GAME_TAILGUNNER:
      {
        static int parity = 0;
+       v_setRefresh (76);
        for (;;) {
          cineExec ();		/* either run one instruction or a lot ending in a vsync */
          if (bNewFrame != 0) {
            bNewFrame = 0;
            parity ^= 1;
-           if (parity) startFrame_tailgunner(); // Tailgunner calls the instruction that we use to determine vsync twice in a row without intervening drawing code.
+           if (parity) startFrame_tailgunner(); else v_WaitRecal (); // halve the game speed, keep the refresh rate
+	   // Tailgunner calls the instruction that we use to determine vsync twice in a row without intervening drawing code.
+	   // ... turns out so does everything else ...
          }
        }
      }
@@ -373,12 +393,13 @@ void main (int argc, char **argv)
    case GAME_DEMON:
      {
        static int parity = 0;
+       v_setRefresh (76);
        for (;;) {
          cineExec ();		/* either run one instruction or a lot ending in a vsync */
          if (bNewFrame != 0) {
            bNewFrame = 0;
            parity ^= 1;
-           if (parity) startFrame_demon(); // Demon calls the instruction that we use to determine vsync twice in a row without intervening drawing code.
+           if (parity) startFrame_demon(); else v_WaitRecal (); // halve the game speed, keep the refresh rate
          }
        }
      }
@@ -387,12 +408,13 @@ void main (int argc, char **argv)
    case GAME_SPEEDFREAK:
      {
        static int parity = 0;
+       v_setRefresh (76);
        for (;;) {
          cineExec ();		/* either run one instruction or a lot ending in a vsync */
          if (bNewFrame != 0) {
            bNewFrame = 0;
            parity ^= 1;
-           if (parity) startFrame_speedfreak(); // Speedfreak calls the instruction that we use to determine vsync twice in a row without intervening drawing code.
+           if (parity) startFrame_speedfreak(); else v_WaitRecal (); // halve the game speed, keep the refresh rate
          }
        }
      }
@@ -400,6 +422,7 @@ void main (int argc, char **argv)
 
    default:
      {
+       v_setRefresh (76);
        for (;;) {
          cineExec ();		/* either run one instruction or a lot ending in a vsync */
          if (bNewFrame != 0) {

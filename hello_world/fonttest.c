@@ -95,18 +95,19 @@ int main(int argc, char **argv) {
   for (;;) {
     startFrame();
     v_setBrightness(80);
-    for (y = 32; y < 128 /* 32+64+16 */; y+=16 /*8*/) {
+    for (y = 32; y < 128 /* 32+64+16 */; y+=32 /*8*/) {
       line[0] = ' ';
-      for (x = 0; x < 16; x++) {
+      for (x = 0; x < 32; x++) {
 	int c = x+y;
 	//if (c == 32+9*8-1) c = ' '; // @
 	//if (c == 32+10*8-1) c = ' '; // wide block
         //line[x*2+1] = c; line[x*2+1+1] = ' ';
         line[x] = c;
       }
-      line[16] = ' '; line[17] = '\0';
+      line[32] = ' '; line[33] = '\0';
       //line[8] = '\0';
-      v_printStringRaster(-110, -((y-32)* 2 /*3*/ -88), line, 70, -14, '\0');
+      v_printStringRaster(-110, -((y-32)* 2 /*3*/ -88), line, 70/2, -14/4, '\0');
+      //v_printStringRaster(-110, -((y-32)* 2 /*3*/ -88), line, 70, -14, '\0');
       //v_printStringRaster(-128, -((y-32)*3-88), line, 110, -14, '\0');
     }
   }

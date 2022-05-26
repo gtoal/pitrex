@@ -32,6 +32,7 @@ void v_zeroWait(void);
 void v_deflok(void);
 void v_setRefresh(int hz);
 void v_WaitRecal(void);
+void v_WaitRecal_buffered (int buildBuffer);
 void v_resetDetection(void);
 void v_calibrate(void);
 uint8_t v_readButtons(void);

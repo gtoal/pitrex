@@ -1,0 +1,74 @@
+XCOMM $XFree86: xc/lib/Xxf86dga/Imakefile,v 3.9 2004/06/25 15:38:50 tsi Exp $
+
+#define DoNormalLib NormalLibXxf86dga
+#define DoSharedLib SharedLibXxf86dga
+#define DoExtraLib ExtraLibXxf86dga
+#define DoDebugLib DebugLibXxf86dga
+#define DoProfileLib ProfileLibXxf86dga
+#define LibName Xxf86dga
+#define SoRev SOXXF86DGAREV
+#define LibHeaders NO
+
+#include <Threads.tmpl>
+
+#ifdef SharedXxf86dgaReqs
+REQUIREDLIBS = SharedXxf86dgaReqs
+#endif
+
+XF86DGASRCS = XF86DGA.c XF86DGA2.c
+XF86DGAOBJS = XF86DGA.o XF86DGA2.o
+
+#if Malloc0ReturnsNull
+ALLOC_DEFINES = -DMALLOC_0_RETURNS_NULL
+#endif
+
+#if defined(HasNetBSDApertureDriver) && HasNetBSDApertureDriver
+APERTURE_DEFINES = -DHAS_APERTURE_DRV
+#endif
+
+      DEFINES = $(ALLOC_DEFINES) $(APERTURE_DEFINES)
+     INCLUDES = -I/usr/src/linux-headers-5.4.83+/include
+         SRCS = $(XF86DGASRCS)
+         OBJS = $(XF86DGAOBJS)
+     LINTLIBS = $(LINTXLIB)
+
+#define IncludeSharedObjectInNormalLib
+
+#include <Library.tmpl>
+
+#if defined(SunArchitecture) && defined(SparcArchitecture)
+
+LFS_DEFINES = `getconf LFS_CFLAGS`
+
+SpecialCLibObjectRule(XF86DGA2,NullParameter,$(LFS_DEFINES))
+
+#endif
+
+MANDIR = $(LIBMANDIR)
+MANSUFFIX = $(LIBMANSUFFIX)
+
+InstallManPage(XDGA,$(MANDIR))
+#if ExpandManNames
+DGAFUNCS = XDGAQueryExtension \
+	   XDGAQueryVersion \
+	   XDGAQueryModes \
+	   XDGASetMode \
+	   XDGAOpenFramebuffer \
+	   XDGACloseFramebuffer \
+	   XDGASetViewport \
+	   XDGAInstallColormap \
+	   XDGACreateColormap \
+	   XDGASelectInput \
+	   XDGAFillRectangle \
+	   XDGACopyArea \
+	   XDGACopyTransparentArea \
+	   XDGAGetViewportStatus \
+	   XDGASync \
+	   XDGASetClientVersion \
+	   XDGAChangePixmapMode \
+	   XDGAKeyEventToXKeyEvent
+
+InstallManPageAliases(XDGA,$(MANDIR),XF86DGA XFree86-DGA $(DGAFUNCS))
+#endif
+
+DependTarget()

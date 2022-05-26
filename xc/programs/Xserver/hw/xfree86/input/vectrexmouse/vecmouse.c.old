@@ -1,0 +1,369 @@
+/* Vectrex Controller driver pretending to be a mouse, for PiTrex.
+   Based on mouse, joystick, and sample drivers. Particularly
+   xf86Jstk.c.
+   
+   Note: There won't be any way to use the second controller here.
+
+   Kevin Koster, 2022.
+*/
+
+#include <misc.h>
+#include <xf86.h>
+#include <xf86_ansic.h>
+#include <xf86_OSproc.h>
+#include <xf86Xinput.h>
+#include <xisb.h>
+#include <exevents.h>		/* Needed for InitValuator/Proximity stuff */
+#include <X11/keysym.h>
+
+#include <xf86Module.h>
+
+#include <pitrex/pitrexio-gpio.h>
+#include <vectrex/vectrexInterface.h>
+
+/******************************************************************************
+ * device records
+ *****************************************************************************/
+
+typedef struct 
+{
+  OsTimerPtr    vecmouseTimer;      /* timer object */
+  int           vecmouseTimeout;    /* timeout to poll device */
+  int           vecmouseOldX;       /* previous X position */
+  int           vecmouseOldY;       /* previous Y position */
+  uint8_t       vecmouseOldButtons; /* previous buttons state */
+  int           vecmouseMaxX;       /* max X value */
+  int           vecmouseMaxY;       /* max Y value */
+  int           vecmouseMinX;       /* min X value */
+  int           vecmouseMinY;       /* min Y value */
+  int           vecmouseCenterX;    /* X center value */
+  int           vecmouseCenterY;    /* Y center value */
+  int           vecmouseDelta;      /* delta cursor */
+} VectrexMouseDevRec, *VectrexMouseDevPtr;
+
+/*
+ ***************************************************************************
+ *
+ * xf86VectrexMouseConvert --
+ *	Convert valuators to X and Y.
+ *
+ ***************************************************************************
+ */
+static Bool
+xf86VectrexMouseConvert(LocalDevicePtr	local,
+		int		first,
+		int		num,
+		int		v0,
+		int		v1,
+		int		v2,
+		int		v3,
+		int		v4,
+		int		v5,
+		int*		x,
+		int*		y)
+{
+    if (first != 0 || num != 2)
+      return FALSE;
+
+    *x = v0;
+    *y = v1;
+
+    return TRUE;
+}
+
+/*
+ * xf86VectrexMouseEvents --
+ *      Read the new events from the device, and enqueue them.
+ *       Called from timer.
+ */
+static CARD32
+xf86VectrexMouseEvents(OsTimerPtr        timer,
+               CARD32            atime,
+               pointer           arg)
+{
+  DeviceIntPtr          device = (DeviceIntPtr)arg;
+  VectrexMouseDevPtr        priv = (VectrexMouseDevPtr) PRIVATE(device);
+  int                   timeout = priv->VectrexMouseTimeout;
+
+  /* Check whether inputs have changed and send events if they have.
+     Analogue range: -128, 0, +127 int8_t currentJoy1X; int8_t currentJoy1Y;
+     Buttons: uint8_t currentButtonState;
+      bit 0 - Joyport 1 button 1
+      bit 1 - Joyport 1 button 2
+      bit 2 - Joyport 1 button 3
+      bit 3 - Joyport 1 button 4
+      bit 5 - Joyport 2 button 1
+      bit 6 - Joyport 2 button 2
+      bit 7 - Joyport 2 button 3
+      bit 8 - Joyport 2 button 4
+      
+      Linux (old) joystick X-Y range: "1 being the minimum, 128 the center,
+       and 255 maximum value"
+       https://www.kernel.org/doc/html/latest/input/joydev/joystick-api.html#backward-compatibility
+   */
+
+    unsigned char loop;
+    int length = priv->VectrexMouseMaxX - priv->VectrexMouseMinX;
+    int height = priv->VectrexMouseMaxY - priv->VectrexMouseMinY;
+
+    /* This copies the joystick driver, TODO: Make it work like mouse.c */
+    v_readJoystick1Analog();
+    int x = (int)currentJoy1X + 128;
+    int y = (int)currentJoy1Y + 128;
+    int v0 = ((x - priv->VectrexMouseMinX) * priv->VectrexMouseDelta) / length -
+      (priv->VectrexMouseDelta / 2);
+    int v1 = ((y - priv->VectrexMouseMinY) * priv->VectrexMouseDelta) / height - 
+      (priv->VectrexMouseDelta / 2);
+
+    if ((abs(v0) > (priv->VectrexMouseDelta / 20)) ||
+        (abs(v1) > (priv->VectrexMouseDelta / 20)))
+      {
+	xf86PostMotionEvent(device, 0, 0, 2, v0, v1);
+	
+        priv->VectrexMouseOldX = x;
+        priv->VectrexMouseOldY = y;          
+      }
+
+    v_readButtons();
+    /* TODO: check that four buttons is do-able for a mouse (prob. not?)
+        MAME will only know about three max anyway... */
+    for(loop=0; loop<4; loop++)
+      {
+        if ((priv->VectrexMouseOldButtons & loop) != (currentButtonState & loop))
+          {
+	    xf86PostButtonEvent(device, 0, loop, ((currentButtonState & loop) == loop),
+				0, 2, v0, v1);
+          }
+      }
+    priv->VectrexMouseOldButtons = currentButtonState;
+
+    return timeout;
+}
+
+/*
+ * xf86VectrexMouseProc --
+ *      Handle the initialization, etc.
+ */
+static int
+xf86VectrexMouseProc(DeviceIntPtr       pVectrexMouse,
+		     int                what)
+{
+  LocalDevicePtr        local = (LocalDevicePtr)pVectrexMouse->public.devicePrivate;
+  VectrexMouseDevPtr        priv = (VectrexMouseDevPtr)PRIVATE(pVectrexMouse);
+
+/* mouse.c - TODO: adapt */
+      InputInfoPtr pInfo;
+    MouseDevPtr pMse;
+    mousePrivPtr mPriv;
+    unsigned char map[MSE_MAXBUTTONS + 1];
+    int i;
+    
+    pInfo = device->public.devicePrivate;
+    pMse = pInfo->private;
+    pMse->device 8= device;
+
+    switch (what)
+    {
+    case DEVICE_INIT:
+	device->public.on = FALSE;
+	/*
+	 * [KAZU-241097] We don't know exactly how many buttons the
+	 * device has, so setup the map with the maximum number.
+	 */
+	for (i = 0; i < MSE_MAXBUTTONS; i++)
+	    map[i + 1] = i + 1;
+
+	InitPointerDeviceStruct((DevicePtr)device, map,
+				min(pMse->buttons, MSE_MAXBUTTONS),
+				miPointerGetMotionEvents, pMse->Ctrl,
+				miPointerGetMotionBufferSize());
+
+	/* X valuator */
+	xf86InitValuatorAxisStruct(device, 0, 0, -1, 1, 0, 1);
+	xf86InitValuatorDefaults(device, 0);
+	/* Y valuator */
+	xf86InitValuatorAxisStruct(device, 1, 0, -1, 1, 0, 1);
+	xf86InitValuatorDefaults(device, 1);
+	xf86MotionHistoryAllocate(pInfo);
+       break;
+/* end mouse.c */ 
+     case DEVICE_ON:
+        priv->VectrexMouseTimer = TimerSet(NULL, 0, /*TimerAbsolute,*/
+                                   priv->VectrexMouseTimeout,
+                                   xf86VectrexMouseEvents,
+                                   (pointer)pVectrexMouse);
+        pJstk->public.on = TRUE;
+      break;
+    case DEVICE_OFF:
+    case DEVICE_CLOSE:
+      DBG(1, ErrorF("xf86VectrexMouseProc  pVectrexMouse=0x%x what=%s\n", pVectrexMouse,
+                    (what == DEVICE_CLOSE) ? "CLOSE" : "OFF"));
+
+      pVectrexMouse->public.on = FALSE;
+    break;
+
+    default:
+      ErrorF("unsupported mode=%d\n", what);
+      return !Success;
+      break;
+    }
+  DBG(2, ErrorF("END   xf86VectrexMouseProc dev=0x%x priv=0x%x xf86VectrexMouseEvents=0x%x\n",
+                pVectrexMouse, priv, xf86VectrexMouseEvents));
+  return Success;	
+}
+
+/*
+ ***************************************************************************
+ *
+ * Dynamic loading functions
+ *
+ ***************************************************************************
+ */
+#ifdef XFree86LOADER
+
+/*
+ * xf86VectrexMouseUnplug --
+ *
+ * called when the module subsection is found in XF86Config
+ */
+static void
+xf86VectrexMouseUnplug(pointer	p)
+{
+    LocalDevicePtr local = (LocalDevicePtr) p;
+    VectrexMouseDevPtr priv = (VectrexMouseDevPtr) local->private;
+    
+    ErrorF("xf86JstckUnplug\n");
+    
+    xf86VectrexMouseProc(local->dev, DEVICE_OFF);
+    
+    xfree (priv);
+    xfree (local);
+}
+
+/* called when the module subsection is found in XF86Config */
+static pointer
+xf86VectrexMousePlug(ModuleDescPtr	module,
+	     pointer	options,
+	     int	*errmaj,
+	     int	*errmin )
+{
+	LocalDevicePtr	local = NULL;
+	VectrexMouseDevPtr	priv = NULL;
+	char		*s;
+
+/* Internal config/defaults	*/
+
+  LocalDevicePtr        local = xalloc(sizeof(LocalDeviceRec));
+  JoystickDevPtr        priv = xalloc(sizeof(VectrexMouseDevRec));
+    /* Initialise the InputInfoRec. */
+  local->name = "VECTREX MOUSE";
+  local->flags = XI86_POINTER_CAPABLE | XI86_SEND_DRAG_EVENTS;
+  local->device_control = xf86VectrexMouseProc;
+  local->read_input = NULL;
+  local->close_proc = NULL;
+  local->control_proc = NULL;
+  local->switch_mode = NULL;
+  local->conversion_proc = xf86VectrexMouseConvert;
+  local->fd = -1;  
+  local->atom = 0;
+  local->dev = NULL;
+  local->private = priv;
+  local->type_name = XI_MOUSE;
+  local->history_size  = 0;
+  
+  priv->jstkFd = -1;
+  priv->jstkTimer = NULL;
+  priv->jstkTimeout = 0;
+  priv->jstkDevice = NULL;
+  priv->jstkOldX = -1;
+  priv->jstkOldY = -1;
+  priv->jstkOldButtons = -1;
+  priv->jstkMaxX = 1000;
+  priv->jstkMaxY = 1000;
+  priv->jstkMinX = 0;
+  priv->jstkMinY = 0;
+  priv->jstkCenterX = -1;
+  priv->jstkCenterY = -1;
+  priv->jstkDelta = 100;
+
+    if (!local || !priv) {
+	*errmaj = LDR_NOMEM;
+	goto SetupProc_fail;
+	}
+
+    /* Optional configuration- TODO: - check relevence of options */
+
+    s = xf86SetStrOption(options, "DeviceName", "Vectrex Controller PiTrex Mouse Driver");
+    if (s != NULL)
+	local->name = s;
+
+    priv->vecmouseMaxX = xf86SetIntOption(options, "MaxX", 1000);
+    if (priv->vecmouseMaxX != 1000) {
+	xf86Msg(X_CONFIG, "VECTREX MOUSE: max x = %d\n", priv->vecmouseMaxX);
+    }
+    priv->vecmouseMaxY = xf86SetIntOption(options, "MaxY", 1000);
+    if (priv->vecmouseMaxY != 1000) {
+	xf86Msg(X_CONFIG, "VECTREX MOUSE: max y = %d\n", priv->vecmouseMaxY);
+    }
+    priv->vecmouseMinX = xf86SetIntOption(options, "MinX", 0);
+    if (priv->vecmouseMinX != 0) {
+	xf86Msg(X_CONFIG, "VECTREX MOUSE: min x = %d\n", priv->vecmouseMinX);
+    }
+    priv->vecmouseMinY = xf86SetIntOption(options, "MinY", 0);
+    if (priv->vecmouseMinY != 0) {
+	xf86Msg(X_CONFIG, "VECTREX MOUSE: min y = %d\n", priv->vecmouseMinY);
+    }
+	    
+    priv->vecmouseCenterX = xf86SetIntOption(options, "CenterX", -1);
+    if (priv->vecmouseCenterX != -1) {
+	xf86Msg(X_CONFIG, "VECTREX MOUSE: center x = %d\n", priv->vecmouseCenterX);
+    }
+    priv->vecmouseCenterY = xf86SetIntOption(options, "CenterY", -1);
+    if (priv->vecmouseCenterY != 0) {
+	xf86Msg(X_CONFIG, "VECTREX MOUSE: center y = %d\n", priv->vecmouseCenterY);
+    }
+
+    priv->vecmouseTimeout = xf86SetIntOption(options, "Timeout", -1);
+    if (priv->vecmouseTimeout != -1) {
+	xf86Msg(X_CONFIG, "VECTREX MOUSE: timeout = %d\n", priv->vecmouseTimeout);
+    }
+
+    priv->vecmouseDelta = xf86SetIntOption(options, "Delta", 0);
+    if (priv->vecmouseDelta != 0) {
+	xf86Msg(X_CONFIG, "VECTREX MOUSE: delta = %d\n", priv->vecmouseDelta);
+    }
+
+   /* Register the device into XFree86 XInput layer */
+    xf86AddLocalDevice(local, options);
+
+    /* return the LocalDevice */
+    return (local);
+
+   SetupProc_fail:
+    if (priv)
+	xfree(priv);
+    if (local)
+	xfree(local);
+    return NULL;
+}
+
+static XF86ModuleVersionInfo xf86VectrexMouseVersionRec =
+{
+	"vectrexmouse",
+	MODULEVENDORSTRING,
+	MODINFOSTRING1,
+	MODINFOSTRING2,
+	XF86_VERSION_CURRENT,
+	1, 0, 0,
+	ABI_CLASS_XINPUT,
+	ABI_XINPUT_VERSION,
+	MOD_CLASS_XINPUT,
+	{0, 0, 0, 0}		/* signature, to be patched into the file by */
+				/* a tool */
+};
+
+XF86ModuleData joystickModuleData = {&xf86VectrexMouseVersionRec,
+					 xf86VectrexMousePlug,
+					 xf86VectrexMouseUnplug};
+#endif /* XFree86LOADER */
+/* end of vecmouse.c */

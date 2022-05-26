@@ -1,0 +1,31 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/input/vecmouse/Imakefile,v 1.8 2005/10/14 15:16:57 tsi Exp $
+
+#define IHaveModules
+#include <Server.tmpl>
+
+SRCS = vecmouse.c
+OBJS = vecmouse.o \
+	$(SERVERSRC)/pitrex/vectrex/build.raspbian/osWrapper.o \
+	$(SERVERSRC)/pitrex/vectrex/build.raspbian/baremetalUtil.o \
+	$(SERVERSRC)/pitrex/vectrex/build.raspbian/vectrexInterface.o \
+	$(SERVERSRC)/pitrex/pitrex/build.raspbian/bcm2835.o \
+	$(SERVERSRC)/pitrex/pitrex/build.raspbian/pitrexio-gpio.o
+
+DRIVER = vectrexmouse
+
+INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(SERVERSRC)/include \
+	-I$(SERVERSRC)/pitrex
+
+#if MakeHasPosixVariableSubstitutions
+SubdirLibraryRule($(OBJS))
+#endif
+
+ModuleObjectRule()
+
+ObjectModuleTarget($(DRIVER),$(OBJS),input)
+
+InstallObjectModule($(DRIVER),$(MODULEDIR),input)
+
+DependTarget()
+
+InstallDriverSDKObjectModule($(DRIVER),$(DRIVERSDKMODULEDIR),input)

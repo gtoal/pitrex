@@ -1,0 +1,23 @@
+* Move PiTrex display code out of dummy driver and into an
+  independent graphics driver.
+
+* Improve v_waitRecal and buffered frame management to minimise
+  flicker.
+
+* Fix segmentation fault on shut-down
+
+* Find better default dettings for vectrex mouse input driver
+
+* Automatic display scaling in display driver
+
+* Move uninterruptable vector drawing code to the GPU
+
+* Support key name strings instead of numbers in key assignments
+  for vectrex keyboard input driver (probably too much work to do
+  that from the server side though)
+
+* Support curved shapes (circles etc.) directly (though they're
+  not really used much, so probably not)
+
+* Tidy up fixes to modern ARM/Linux/GCC compatibility in general X
+  code

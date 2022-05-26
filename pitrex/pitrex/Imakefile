@@ -1,0 +1,23 @@
+BUILD_DIR_PURE := build.raspbian
+BUILD_DIR := $(BUILD_DIR_PURE)/
+
+CFLAGS := -Ofast -I../pitrex/ -DPIZERO -DRPI0
+CC := gcc
+
+.PHONY: dirCheck
+
+includes: all
+
+all: dirCheck $(BUILD_DIR)bcm2835.o $(BUILD_DIR)pitrexio-gpio.o
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
+
+$(BUILD_DIR)bcm2835.o: bcm2835.c bcm2835.h
+	$(CC) $(CFLAGS) -c bcm2835.c -o $(BUILD_DIR)bcm2835.o
+
+$(BUILD_DIR)pitrexio-gpio.o: pitrexio-gpio.c pitrexio-gpio.h bcm2835.h
+	$(CC) $(CFLAGS) -c pitrexio-gpio.c -o $(BUILD_DIR)pitrexio-gpio.o
+
+clean:
+	$(RM) $(BUILD_DIR)*.*

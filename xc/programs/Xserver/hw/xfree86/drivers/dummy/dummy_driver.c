@@ -472,6 +472,10 @@ DUMMYPreInit(ScrnInfoPtr pScrn, int flags)
     if (dPtr->yoffset != 0) {
 	xf86Msg(X_CONFIG, "PITREX XAA: Y offset = %d\n", dPtr->yoffset);
     }
+    dPtr->refreshInterval = xf86SetIntOption(pScrn->options, "Refresh Check Interval", 9);
+    if (dPtr->refreshInterval != 0) {
+	xf86Msg(X_CONFIG, "PITREX XAA: Refresh Check Interval = %d\n", dPtr->refreshInterval);
+    }
 
     return TRUE;
 }

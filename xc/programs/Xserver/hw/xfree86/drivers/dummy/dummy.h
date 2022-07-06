@@ -36,6 +36,7 @@ typedef struct dummyRec
     double yscale;
     int xoffset;
     int yoffset;
+    int refreshInterval;
 } DUMMYRec, *DUMMYPtr;
 
 /* The privates of the DUMMY driver */

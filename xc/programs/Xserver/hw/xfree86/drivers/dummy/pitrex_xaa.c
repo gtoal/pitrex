@@ -40,8 +40,9 @@ void __svgalib_vectrex_recalcheck(void)
 
 static CARD32 PitrexPaddingFrame (OsTimerPtr timer, CARD32 now, pointer arg)
 {
-#ifdef PITREX_DEBUG
         ScrnInfoPtr pScrn = (ScrnInfoPtr) arg;
+	DUMMYPtr dPtr = DUMMYPTR(pScrn);
+#ifdef PITREX_DEBUG
         xf86DrvMsg(pScrn->scrnIndex, X_INFO, "X-vectrex: Padding Frame.\n");
 #endif
         if ( (GET (VIA_int_flags) & 0x20) && started)
@@ -49,7 +50,7 @@ static CARD32 PitrexPaddingFrame (OsTimerPtr timer, CARD32 now, pointer arg)
          v_WaitRecal_buffered(0);
          v_readButtons();
         }
-        return 9;
+        return dPtr->refreshInterval;
 }
 
 static void
@@ -162,6 +163,7 @@ Bool pitrexXAAinit(ScreenPtr pScreen)
 {
     XAAInfoRecPtr infoPtr;
     ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+    DUMMYPtr dPtr = DUMMYPTR(pScrn);
 //    pitrexPtr pPitrex = pitrexPTR(pScrn);
 
 //    pPitrex->AccelInfoRec = 
@@ -208,7 +210,7 @@ Bool pitrexXAAinit(ScreenPtr pScreen)
      v_directDraw32(20,20,60,60,90);
 
      /* Set timer for automatic screen refreshes */
-     waitRecalTimer = TimerSet(NULL, 0, 9, PitrexPaddingFrame, pScrn);
+     waitRecalTimer = TimerSet(NULL, 0, dPtr->refreshInterval, PitrexPaddingFrame, pScrn);
 #ifdef WINDOW
         v_window(0, ydim, xdim, 0, NO_CLIP);
 #endif

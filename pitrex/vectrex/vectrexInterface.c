@@ -241,6 +241,10 @@ rpi_sys_timer_t *rpiSystemTimer;
 #ifdef AVOID_TICKS
 unsigned int scaleTotal = 0;
 uint32_t gpu_ier1 = 0, gpu_ier2 = 0, cpu_ier = 0, fiqtemp = 0;
+// RPi3 / Zero 2 (BCM2837)
+uint32_t cpu_pmir = 0,
+         cpu0_icr = 0, cpu1_icr = 0, cpu2_icr = 0, cpu3_icr = 0,
+	 cpu0_micr = 0, cpu1_micr = 0, cpu2_micr = 0, cpu3_micr = 0;
 
 #define MAP_FAILED	((void *) -1)
 volatile uint32_t *bcm2835_int = (uint32_t *) MAP_FAILED;
@@ -4031,12 +4035,54 @@ void disableLinuxInterrupts (unsigned int minOffset) {
 
   /* Save interrupt configuration and disable interrupts */
   if (bcm2835_int != MAP_FAILED) {
+    if ((int)bcm2835_peripherals == BCM2837_GPIO_BASE) {  // RPi3 / Zero2 (BCM2837)
+      paddr = bcm2835_int + BCM2837_INT_PMIR / 4;
+      cpu_pmir = bcm2835_peri_read (paddr);
+      paddr = bcm2835_int + BCM2837_INT_CORE0_ICR / 4;
+      cpu0_icr = bcm2835_peri_read (paddr);
+      paddr = bcm2835_int + BCM2837_INT_CORE1_ICR / 4;
+      cpu1_icr = bcm2835_peri_read (paddr);
+      paddr = bcm2835_int + BCM2837_INT_CORE2_ICR / 4;
+      cpu2_icr = bcm2835_peri_read (paddr);
+      paddr = bcm2835_int + BCM2837_INT_CORE3_ICR / 4;
+      cpu3_icr = bcm2835_peri_read (paddr);
+      paddr = bcm2835_int + BCM2837_INT_CORE0_MICR / 4;
+      cpu0_micr = bcm2835_peri_read (paddr);
+      paddr = bcm2835_int + BCM2837_INT_CORE1_MICR / 4;
+      cpu1_micr = bcm2835_peri_read (paddr);
+      paddr = bcm2835_int + BCM2837_INT_CORE2_MICR / 4;
+      cpu2_micr = bcm2835_peri_read (paddr);
+      paddr = bcm2835_int + BCM2837_INT_CORE3_MICR / 4;
+      cpu3_micr = bcm2835_peri_read (paddr);
+    }
+      
     paddr = bcm2835_int + BCM2835_INT_GPU_IER1 / 4;
     gpu_ier1 = bcm2835_peri_read (paddr);
     paddr = bcm2835_int + BCM2835_INT_GPU_IER2 / 4;
     gpu_ier2 = bcm2835_peri_read (paddr);
     paddr = bcm2835_int + BCM2835_INT_CPU_IER / 4;
     cpu_ier = bcm2835_peri_read (paddr);
+
+    if ((int)bcm2835_peripherals == BCM2837_GPIO_BASE) {  // RPi3 / Zero2 (BCM2837)
+      paddr = bcm2835_int + BCM2837_INT_PMICR / 4;
+      bcm2835_peri_write (paddr, cpu_pmir);
+      paddr = bcm2835_int + BCM2837_INT_CORE0_ICR / 4;
+      bcm2835_peri_write (paddr, 0);
+      paddr = bcm2835_int + BCM2837_INT_CORE1_ICR / 4;
+      bcm2835_peri_write (paddr, 0);
+      paddr = bcm2835_int + BCM2837_INT_CORE2_ICR / 4;
+      bcm2835_peri_write (paddr, 0);
+      paddr = bcm2835_int + BCM2837_INT_CORE3_ICR / 4;
+      bcm2835_peri_write (paddr, 0);
+      paddr = bcm2835_int + BCM2837_INT_CORE0_MICR / 4;
+      bcm2835_peri_write (paddr, 0);
+      paddr = bcm2835_int + BCM2837_INT_CORE1_MICR / 4;
+      bcm2835_peri_write (paddr, 0);
+      paddr = bcm2835_int + BCM2837_INT_CORE2_MICR / 4;
+      bcm2835_peri_write (paddr, 0);
+      paddr = bcm2835_int + BCM2837_INT_CORE3_MICR / 4;
+      bcm2835_peri_write (paddr, 0);
+    }
 
     paddr = bcm2835_int + BCM2835_INT_GPU_IDR1 / 4;
     bcm2835_peri_write (paddr, 0xFFFFFFFF);
@@ -4079,6 +4125,26 @@ void enableLinuxInterrupts (void) {
     fiqtemp |= (1 << 7);        // set FIQ enable bit
     bcm2835_peri_write (paddr, fiqtemp);        // write back to register
 #endif
+    if ((int)bcm2835_peripherals == BCM2837_GPIO_BASE) {  // RPi3 / Zero2 (BCM2837)
+      paddr = bcm2835_int + BCM2837_INT_PMIR / 4;
+      bcm2835_peri_write (paddr, cpu_pmir);
+      paddr = bcm2835_int + BCM2837_INT_CORE0_ICR / 4;
+      bcm2835_peri_write (paddr, cpu0_icr);
+      paddr = bcm2835_int + BCM2837_INT_CORE1_ICR / 4;
+      bcm2835_peri_write (paddr, cpu1_icr);
+      paddr = bcm2835_int + BCM2837_INT_CORE2_ICR / 4;
+      bcm2835_peri_write (paddr, cpu2_icr);
+      paddr = bcm2835_int + BCM2837_INT_CORE3_ICR / 4;
+      bcm2835_peri_write (paddr, cpu3_icr);
+      paddr = bcm2835_int + BCM2837_INT_CORE0_MICR / 4;
+      bcm2835_peri_write (paddr, cpu0_micr);
+      paddr = bcm2835_int + BCM2837_INT_CORE1_MICR / 4;
+      bcm2835_peri_write (paddr, cpu1_micr);
+      paddr = bcm2835_int + BCM2837_INT_CORE2_MICR / 4;
+      bcm2835_peri_write (paddr, cpu2_micr);
+      paddr = bcm2835_int + BCM2837_INT_CORE3_MICR / 4;
+      bcm2835_peri_write (paddr, cpu3_micr);
+    }
 //       printf("GPU IER1: 0x%X | GPU IER2: 0x%X | CPU IER: 0x%X\n",gpu_ier1,gpu_ier2,cpu_ier);
   }
 #endif

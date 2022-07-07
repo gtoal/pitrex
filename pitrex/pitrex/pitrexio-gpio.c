@@ -846,6 +846,16 @@ int vectrexinit (char viaconfig)
     printf("Raspberry Pi 4 Model B V1.2, 2GB\n");
 	uartdefault = PIZEROW_GPIO_CONFIG;
    }
+   else if (strcmp(fwareid,"b03114") == 0)
+   {
+    printf("Raspberry Pi 4 Model B V1.4, 2GB\n");
+	uartdefault = PIZEROW_GPIO_CONFIG;
+   }
+   else if (strcmp(fwareid,"b03115") == 0)
+   {
+    printf("Raspberry Pi 4 Model B V1.5, 2GB\n");
+	uartdefault = PIZEROW_GPIO_CONFIG;
+   }
    else if (strcmp(fwareid,"c03111") == 0)
    {
     printf("Raspberry Pi 4 Model B V1.1, 4GB\n");
@@ -856,9 +866,54 @@ int vectrexinit (char viaconfig)
     printf("Raspberry Pi 4 Model B V1.2, 4GB\n");
 	uartdefault = PIZEROW_GPIO_CONFIG;
    }
+   else if (strcmp(fwareid,"c03114") == 0)
+   {
+    printf("Raspberry Pi 4 Model B V1.4, 4GB\n");
+	uartdefault = PIZEROW_GPIO_CONFIG;
+   }
+   else if (strcmp(fwareid,"c03115") == 0)
+   {
+    printf("Raspberry Pi 4 Model B V1.5, 4GB\n");
+	uartdefault = PIZEROW_GPIO_CONFIG;
+   }
    else if (strcmp(fwareid,"d03114") == 0)
    {
     printf("Raspberry Pi 4 Model B V1.4, 8GB\n");
+	uartdefault = PIZEROW_GPIO_CONFIG;
+   }
+   else if (strcmp(fwareid,"d03115") == 0)
+   {
+    printf("Raspberry Pi 4 Model B V1.5, 8GB\n");
+	uartdefault = PIZEROW_GPIO_CONFIG;
+   }
+   else if (strcmp(fwareid,"c03130") == 0)
+   {
+    printf("Raspberry Pi 400 V1.0, 4GB\n");
+	uartdefault = PIZEROW_GPIO_CONFIG;
+   }
+   else if (strcmp(fwareid,"a03140") == 0)
+   {
+    printf("Raspberry Pi Compute Module 4 V1.0, 1GB\n");
+	uartdefault = PIZERO_GPIO_CONFIG;
+   }
+   else if (strcmp(fwareid,"a03140") == 0)
+   {
+    printf("Raspberry Pi Compute Module 4 V1.0, 2GB\n");
+	uartdefault = PIZERO_GPIO_CONFIG;
+   }
+   else if (strcmp(fwareid,"b03140") == 0)
+   {
+    printf("Raspberry Pi Compute Module 4 V1.0, 4GB\n");
+	uartdefault = PIZERO_GPIO_CONFIG;
+   }
+   else if (strcmp(fwareid,"c03140") == 0)
+   {
+    printf("Raspberry Pi Compute Module 4 V1.0, 8GB\n");
+	uartdefault = PIZERO_GPIO_CONFIG;
+   }
+   else if (strcmp(fwareid,"902120") == 0)
+   {
+    printf("Raspberry Pi Zero 2 W V1.0, 512MB\n");
 	uartdefault = PIZEROW_GPIO_CONFIG;
    }
    else

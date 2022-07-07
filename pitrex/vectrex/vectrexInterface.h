@@ -76,6 +76,19 @@ extern int (*executeDebugger)(int);
 #define BCM2835_INT_GPU_IDR2  0x220
 #define BCM2835_INT_CPU_IDR   0x224
 #define BCM2835_INT_FIQ       0x20C
+
+// RPi3 / Zero2 (BCM2837) (addresses from timtest.c)
+#define BCM2837_GPIO_BASE       0x3F000000
+#define BCM2837_INT_PMIR        0x10
+#define BCM2837_INT_PMICR       0x14
+#define BCM2837_INT_CORE0_ICR   0x40
+#define BCM2837_INT_CORE1_ICR   0x44
+#define BCM2837_INT_CORE2_ICR   0x48
+#define BCM2837_INT_CORE3_ICR   0x4C
+#define BCM2837_INT_CORE0_MICR  0x50
+#define BCM2837_INT_CORE1_MICR  0x54
+#define BCM2837_INT_CORE2_MICR  0x58
+#define BCM2837_INT_CORE3_MICR  0x5C
 #endif
 
 /* These are useful if programs want to do real-time reads/writes directly

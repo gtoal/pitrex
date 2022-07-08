@@ -440,8 +440,9 @@ for(f=-4;f<=4;f++)
   }
 */
 /* Vectrex Heading: */
+#ifndef USE_X
 v_printString(-128, 70, "ZBLAST", 48, 90);
-
+#endif
 /*
 vga_setcolor(3);
 centretextsize(90,bigwindow?2:1,
@@ -1682,7 +1683,8 @@ for(f=0;f<BADDIENUM;f++)
     }
   }
 
-if(score!=oldscore) showscore();
+  // on vectrex this lets the score blink!
+// if(score!=oldscore) showscore();
 }
 
 

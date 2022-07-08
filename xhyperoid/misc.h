@@ -48,7 +48,7 @@ enum
 
 /* object limits */
 #define MAX_PTS 8
-#define MAX_OBJS 100
+#define MAX_OBJS 70 //100
 #define MAX_COORD 0x2000
 #define CLIP_COORD (MAX_COORD+300)
 

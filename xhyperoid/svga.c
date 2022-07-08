@@ -2,10 +2,9 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <unistd.h>
-#include <pitrex/pitrexio-gpio.h>
 #include <vectrex/vectrexInterface.h>
-#include "svgalib-vectrex/svgalib-vectrex.h"
-#include "svgalib-vectrex/vectrextokeyboard.h"
+#include "lib/svgalib-vectrex/svgalib-vectrex.h"
+#include "lib/svgalib-vectrex/vectrextokeyboard.h"
 
 #include "misc.h"	/* for POINT */
 /* #include "convxpm.h" -SVGAvec - unsupported */
@@ -167,8 +166,84 @@ int SetIndicator( char * npBuff, char bitmap, int nQuant )
 	return( 5 );
 }
 */
+const signed char shieldList[]=
+{   (signed char) 9, // count of vectors
+    (signed char) 0x16, (signed char) 0x1C, (signed char) 0xE8, (signed char) 0xFA, // y0, x0, y1, x1
+    (signed char) 0xF3, (signed char) 0xDA, (signed char) 0x1D, (signed char) 0xFA, // y0, x0, y1, x1
+    (signed char) 0x3A, (signed char) 0xCB, (signed char) 0x3A, (signed char) 0x33, // y0, x0, y1, x1
+    (signed char) 0x3A, (signed char) 0x33, (signed char) 0xF9, (signed char) 0x34, // y0, x0, y1, x1
+    (signed char) 0xF9, (signed char) 0x34, (signed char) 0xD2, (signed char) 0x21, // y0, x0, y1, x1
+    (signed char) 0xD2, (signed char) 0x21, (signed char) 0xB2, (signed char) 0xFE, // y0, x0, y1, x1
+    (signed char) 0xB2, (signed char) 0xFE, (signed char) 0xD0, (signed char) 0xDC, // y0, x0, y1, x1
+    (signed char) 0xD0, (signed char) 0xDC, (signed char) 0xFA, (signed char) 0xCB, // y0, x0, y1, x1
+    (signed char) 0xFA, (signed char) 0xCB, (signed char) 0x3A, (signed char) 0xCB, // y0, x0, y1, x1
+};
+const signed char heartList[]=
+{   (signed char) 16, // count of vectors
+    (signed char) 0x17, (signed char) 0x01, (signed char) 0x2F, (signed char) 0xEB, // y0, x0, y1, x1
+    (signed char) 0x2F, (signed char) 0xEB, (signed char) 0x46, (signed char) 0xCE, // y0, x0, y1, x1
+    (signed char) 0x46, (signed char) 0xCE, (signed char) 0x34, (signed char) 0xB3, // y0, x0, y1, x1
+    (signed char) 0x34, (signed char) 0xB3, (signed char) 0x02, (signed char) 0xAE, // y0, x0, y1, x1
+    (signed char) 0x02, (signed char) 0xAE, (signed char) 0xD6, (signed char) 0xCA, // y0, x0, y1, x1
+    (signed char) 0xD6, (signed char) 0xCA, (signed char) 0xC1, (signed char) 0xE6, // y0, x0, y1, x1
+    (signed char) 0xC1, (signed char) 0xE6, (signed char) 0xB3, (signed char) 0x00, // y0, x0, y1, x1
+    (signed char) 0xB3, (signed char) 0x00, (signed char) 0xC1, (signed char) 0x1A, // y0, x0, y1, x1
+    (signed char) 0xC1, (signed char) 0x1A, (signed char) 0xD6, (signed char) 0x36, // y0, x0, y1, x1
+    (signed char) 0xD6, (signed char) 0x36, (signed char) 0x05, (signed char) 0x55, // y0, x0, y1, x1
+    (signed char) 0x05, (signed char) 0x55, (signed char) 0x34, (signed char) 0x4D, // y0, x0, y1, x1
+    (signed char) 0x34, (signed char) 0x4D, (signed char) 0x45, (signed char) 0x34, // y0, x0, y1, x1
+    (signed char) 0x45, (signed char) 0x34, (signed char) 0x32, (signed char) 0x18, // y0, x0, y1, x1
+    (signed char) 0x32, (signed char) 0x18, (signed char) 0x17, (signed char) 0x01, // y0, x0, y1, x1
+    (signed char) 0x2E, (signed char) 0xCF, (signed char) 0x13, (signed char) 0xC1, // y0, x0, y1, x1
+    (signed char) 0x13, (signed char) 0xC1, (signed char) 0xF1, (signed char) 0xCC, // y0, x0, y1, x1
+};
+const signed char bombList[]=
+{   (signed char) 24, // count of vectors
+    (signed char) 0x67, (signed char) 0x30, (signed char) 0x5A, (signed char) 0x27, // y0, x0, y1, x1
+    (signed char) 0x5B, (signed char) 0x22, (signed char) 0x64, (signed char) 0x13, // y0, x0, y1, x1
+    (signed char) 0x43, (signed char) 0x04, (signed char) 0x51, (signed char) 0x0F, // y0, x0, y1, x1
+    (signed char) 0x51, (signed char) 0x0F, (signed char) 0x55, (signed char) 0x24, // y0, x0, y1, x1
+    (signed char) 0x50, (signed char) 0x27, (signed char) 0x47, (signed char) 0x2E, // y0, x0, y1, x1
+    (signed char) 0x0E, (signed char) 0x25, (signed char) 0xF2, (signed char) 0x25, // y0, x0, y1, x1
+    (signed char) 0xF2, (signed char) 0x25, (signed char) 0xD9, (signed char) 0x15, // y0, x0, y1, x1
+    (signed char) 0xD9, (signed char) 0x15, (signed char) 0xD2, (signed char) 0xF1, // y0, x0, y1, x1
+    (signed char) 0x00, (signed char) 0xC6, (signed char) 0x18, (signed char) 0xCA, // y0, x0, y1, x1
+    (signed char) 0x18, (signed char) 0xCA, (signed char) 0x26, (signed char) 0xD5, // y0, x0, y1, x1
+    (signed char) 0x26, (signed char) 0xD5, (signed char) 0x38, (signed char) 0xEA, // y0, x0, y1, x1
+    (signed char) 0x38, (signed char) 0xEA, (signed char) 0x3C, (signed char) 0x00, // y0, x0, y1, x1
+    (signed char) 0x3C, (signed char) 0x00, (signed char) 0x38, (signed char) 0x14, // y0, x0, y1, x1
+    (signed char) 0x38, (signed char) 0x14, (signed char) 0x26, (signed char) 0x2A, // y0, x0, y1, x1
+    (signed char) 0x26, (signed char) 0x2A, (signed char) 0x18, (signed char) 0x36, // y0, x0, y1, x1
+    (signed char) 0x18, (signed char) 0x36, (signed char) 0xFF, (signed char) 0x3A, // y0, x0, y1, x1
+    (signed char) 0xFF, (signed char) 0x3A, (signed char) 0xE8, (signed char) 0x36, // y0, x0, y1, x1
+    (signed char) 0xE8, (signed char) 0x36, (signed char) 0xDA, (signed char) 0x2A, // y0, x0, y1, x1
+    (signed char) 0xDA, (signed char) 0x2A, (signed char) 0xC8, (signed char) 0x15, // y0, x0, y1, x1
+    (signed char) 0xC8, (signed char) 0x15, (signed char) 0xC4, (signed char) 0x00, // y0, x0, y1, x1
+    (signed char) 0xC4, (signed char) 0x00, (signed char) 0xC8, (signed char) 0xEB, // y0, x0, y1, x1
+    (signed char) 0xC8, (signed char) 0xEB, (signed char) 0xDA, (signed char) 0xD6, // y0, x0, y1, x1
+    (signed char) 0xDA, (signed char) 0xD6, (signed char) 0xE8, (signed char) 0xCA, // y0, x0, y1, x1
+    (signed char) 0xE8, (signed char) 0xCA, (signed char) 0x00, (signed char) 0xC6, // y0, x0, y1, x1
+};
 
 /* score_graphics - draw score and rest of status display */
+
+void displayList(int x,int y, const signed char list[])
+{
+  int count = *list++;
+  x = x<<7;
+  y = y<<7;
+  
+  
+  while (count >0)  
+  {
+    int y0 = *list++;
+    int x0 = *list++;
+    int y1 = *list++;
+    int x1 = *list++;
+    v_directDraw32(x+(x0<<3), y+(y0<<3),x+(x1<<3),y+(y1<<3), 0x30);
+    count --;
+  }
+}
 
 void score_graphics(int level,int score,int lives,int shield,int bomb)
 {
@@ -180,9 +255,31 @@ sprintf(scoreLine2, "%7.7d", score);
 sprintf(scoreLine3, "LIVES %1.1d  SHIELDS %1.1d  BOMBS %1.1d", lives, shield, bomb);
 //v_printStringRaster(-8, -4, scoreLine, 5 * 8, -7, '\0'); /* - looks bad with Linux glitches */
 //v_printString(-127, 127, scoreLine, 10, 85); // NEEDS TO BE SCALED ETC BY window.c
+
  v_printString(-110 /* x */, 110 /* y */, scoreLine1, 8 /* size */, 70 /* brightness */); // NEEDS TO BE SCALED ETC BY window.c
  v_printString(50 /* x */, 110 /* y */, scoreLine2, 8 /* size */, 80 /* brightness */); // NEEDS TO BE SCALED ETC BY window.c
- v_printString(-60 /* x */, -127 /* y */, scoreLine3, 4 /* size */, 55 /* brightness */); // NEEDS TO BE SCALED ETC BY window.c
+// v_printString(-60 /* x */, -127 /* y */, scoreLine3, 4 /* size */, 55 /* brightness */); // NEEDS TO BE SCALED ETC BY window.c
+
+if (lives >=3)
+  displayList(-72,-110, heartList);
+if (lives >1)
+  displayList(-60,-110, heartList);
+if (lives >0)
+  displayList(-48,-110, heartList);
+ 
+if (shield >=3)
+  displayList(-12,-110, shieldList);
+if (shield >1)
+  displayList(-00,-110, shieldList);
+if (shield >0)
+  displayList( 12,-110, shieldList);
+ 
+if (bomb >=3)
+  displayList(48,-113, bombList);
+if (bomb >1)
+  displayList(60,-113, bombList);
+if (bomb >0)
+  displayList(72,-113, bombList);
 
 /* -SVGAvec - unsupported -- Possible to draw xpms via Vectrex raster routines?
 static char szScore[40];

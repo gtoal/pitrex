@@ -1,0 +1,12 @@
+Begin4
+Title: xinvaders3d
+Version: 1.3.6
+Entered-date: 2000-10-11
+Description: XInvaders 3D is a 3D Vector Graphics Space Invaders clone for X11.
+Keywords: space invaders, arcade, games, x11, 3d
+Author: del23@users.sourceforge.net (Don Llopis)
+Maintained-by: del23@users.sourceforge.net (Don Llopis)
+Primary-site: xinvaders3d.sourceforge.net
+Platforms: X11, DOS, Win95
+Copying-policy: GPL
+End

@@ -1,0 +1,36 @@
+all: game
+
+CC = gcc
+LIBS  = -lalleg -lm
+OBJS = game.o aliens.o player.o effects.o \
+object.o camera.o main-dos.o vec4x1.o mat4x4.o
+DEPENDS = 
+#CFLAGS = -pg -Wall -pedantic -ansi
+#CFLAGS = -ansi
+#OPTIONS = -D_GNU_SOURCE -DGAME_LINUX_X11 -DGAME_DEBUG
+OPTIONS= -DGAME_LINUX_X11
+
+.c.o: $(DEPENDS)
+	$(CC) -c $(CFLAGS) $(OPTIONS) $< -o $@
+
+game: $(OBJS) $(DEPENDS)
+	$(CC) -o xinv3d $(OBJS) $(LIBS) $(OPTIONS)
+
+clean:
+	del *.o
+	del xinv3d.exe
+
+aliens.o: aliens.c game.h vec4x1.h mat4x4.h camera.h system.h defines.h \
+ object.h externs.h
+camera.o: camera.c mat4x4.h vec4x1.h camera.h
+effects.o: effects.c game.h vec4x1.h mat4x4.h camera.h system.h \
+ defines.h object.h externs.h
+game.o: game.c game.h vec4x1.h mat4x4.h camera.h system.h defines.h \
+ object.h externs.h
+object.o: object.c mat4x4.h vec4x1.h defines.h object.h
+main-dos.o: main-dos.c game.h vec4x1.h mat4x4.h camera.h system.h \
+ defines.h object.h externs.h
+mat4x4.o: mat4x4.c mat4x4.h vec4x1.h
+player.o: player.c game.h vec4x1.h mat4x4.h camera.h system.h defines.h \
+ object.h externs.h
+vec4x1.o: vec4x1.c vec4x1.h

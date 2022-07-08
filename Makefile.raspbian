@@ -1,4 +1,4 @@
-all:	vecx.emulated/vecx vecx.direct/vecx gyrocks/gyrocks battlezone/battlezone gravitar/gravitar spaceduel/spaceduel tempest/tempest blackwidow/blackwidow deluxe/deluxe lunar/lunar cinematronics/cinemu helloWorld redbaron/redbaron linmenu/linmenu VMMenu/vmmenu xhyperoid/vhyperoid zblast/zblast tailgunner/tailgunner asteroids_sbt/asteroids
+all:	vecx.emulated/vecx vecx.direct/vecx gyrocks/gyrocks battlezone/battlezone gravitar/gravitar spaceduel/spaceduel tempest/tempest blackwidow/blackwidow deluxe/deluxe lunar/lunar cinematronics/cinemu helloWorld redbaron/redbaron linmenu/linmenu VMMenu/vmmenu xhyperoid/vhyperoid zblast/zblast tailgunner/tailgunner asteroids_sbt/asteroids xinvaders3d/xinv3d
 
 lunar/lunar:
 	cd lunar; make -f Makefile.raspbian
@@ -67,13 +67,17 @@ linmenu/linmenu:
 VMMenu/vmmenu:
 	cd VMMenu; make -f Makefile.raspbian
 	cd ..
-	
+
 xhyperoid/vhyperoid:
 	cd xhyperoid; make -f Makefile
 	cd ..
-	
+
 zblast/zblast:
 	cd zblast; make -f Makefile
+	cd ..
+
+xinvaders3d/xinv3d:
+	cd xinvaders3d; make -f Makefile
 	cd ..
 
 clean:
@@ -122,6 +126,8 @@ clean:
 	cd xhyperoid; make -f Makefile clean
 	cd ..
 	cd zblast; make -f Makefile clean
+	cd ..
+	cd xinvaders3d; make -f Makefile clean
 	cd ..
 
 install:

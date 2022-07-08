@@ -1,0 +1,25 @@
+See the file README for complete information about XInvaders 3D 
+in general. This file covers Microsoft Windows issues only.
+
+INFORMATION FOR PLAYERS:
+
+This Windows port of XInvaders 3D runs on Windows 95, 98, NT,
+and 2000. To start the game, just launch xinv3d.exe. See README
+for instructions, or look at "How to Play" on the system menu
+after you start the game.
+
+This Windows port was done by Thomas Boutell (boutell@boutell.com).
+
+INFORMATION FOR PROGRAMMERS:
+
+To build the game, just add all of the .c files to a "Win32 Application"
+project, including main-w.c, but excluding main-x11.c and any other
+main-*.c files for non-Windows operating systems. Then, BE SURE TO
+DEFINE THE PREPROCESSOR MACRO GAME_WIN32. If you prefer Makefiles, use 
+the Unix Makefile as a guide. This game is very easy to build with
+any Windows development environment.
+
+If you make any modifications to the code, please keep ALL Windows-specific
+code in main-w.c where it belongs! 
+
+Windows-specific questions? Contact Thomas Boutell (boutell@boutell.com).

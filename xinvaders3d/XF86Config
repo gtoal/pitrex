@@ -1,0 +1,97 @@
+Section "ServerLayout"
+	Identifier     "Layout0"
+	Screen      0  "Screen0" 0 0
+	InputDevice    "Keyboard0" "CoreKeyboard"
+	InputDevice    "Mice" "CorePointer"
+EndSection
+
+Section "Module"
+	Load "freetype"
+	# Load "xtt"
+	Load  "extmod"
+	Load  "glx"
+	Load  "dri"
+	Load  "dbe"
+	Load  "record"
+	Load  "xtrap"
+	Load  "type1"
+	Load  "speedo"
+EndSection
+Section "InputDevice"
+	Identifier  "Mice"
+#	Driver      "vectrexmouse"
+#	Option      "DebugLevel" "4"
+#	Option      "Delta" "500"
+#	Option      "MaxX" "500"
+#	Option      "RelativeMovement" "false"
+	Driver      "void"
+#	Driver      "mouse"
+EndSection
+
+#Keys:
+#-=-=-
+#
+#SPACE         : Fire Missile
+#Left Arrow    : move left
+#Right Arrow   : move right
+#Up Arrow      : move up
+#Down Arrow    : move down
+#q             : Reset game
+#f             : Show frame-rate
+#p             : Pause game
+#ESC           : Terminate Program
+
+Section "InputDevice"
+	Identifier  "Keyboard0"
+#	Driver      "keyboard"
+#	Driver      "kbd"
+#	Option	    "XkbModel" "pc101"
+#	Option	    "XkbLayout" "us"
+	Driver      "vectrexkbd"
+	Option      "ReadAnalogue" "true"
+#	Option      "DebugLevel" "3"
+	Option      "B2+3Key" "24"
+	Option      "B2+4Key" "37"
+	Option      "B1Key" "1"
+	Option      "B2Key" "33"
+	Option      "B3Key" "25"
+	Option      "B4Key" "57"
+#	Option      "Timeout" "1000"
+EndSection
+
+Section "InputDevice"
+	Identifier  "Keyboard1"
+#	Driver      "keyboard"
+	Driver      "kbd"
+	Option	    "XkbModel" "pc101"
+	Option	    "XkbLayout" "us"
+EndSection
+
+Section "Monitor"
+	Identifier   "Monitor0"
+	HorizSync    31.5 - 35.1
+	VertRefresh  50.0 - 70.0
+EndSection
+
+Section "Device"
+	Identifier  "PiTrex"
+	Driver      "dummy"
+	Option      "Xscale" "1.05"
+	Option      "Yscale" "0.9"
+	Option      "Xoffset" "3000"
+	Option      "Yoffset" "-4500"
+	Option      "RefreshCheckInterval" "1"
+EndSection
+
+Section "Screen"
+	Identifier "Screen0"
+	Device     "PiTrex"
+	Monitor    "Monitor0"
+	DefaultDepth     16
+	SubSection "Display"
+		Viewport   0 0
+		Depth     16
+		Modes    "800x600"
+	EndSubSection
+EndSection
+

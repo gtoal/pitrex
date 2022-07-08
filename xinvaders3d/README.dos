@@ -1,0 +1,28 @@
+See the file README for complete information about XInvaders 3D 
+in general. This file covers MS-DOS issues only.
+
+INFORMATION FOR PLAYERS:
+
+This is the MS-DOS port of XInvaders 3D. It should run on any 
+IBM-PC or compatible, running some version of MS-DOS greater than 6.0. 
+To start the game, just type: xinv3d. See README for instructions.
+
+MS-DOS port done by Don Llopis (dllopi01@fiu.edu).
+
+INFORMATION FOR PROGRAMMERS:
+
+To build the game, type: 
+        make -f Makefile.dos
+
+You must have the latest version of DJGPP (a 32bit DOS compiler) and at 
+least version 3.12 of the Allegro graphics library.
+
+If you make any modifications to the code, please keep ALL DOS-specific
+code in main-dos.c.
+
+Both DJGPP and Allegro can be found here:
+http://www.delorie.com/djgpp/
+
+Have Fun!
+Don Llopis
+dllopi01@fiu.edu

@@ -24,29 +24,16 @@ unsigned char started = 0;
 /* Note that logging all debug messages causes extreme slow-down in display */
 //#define PITREX_DEBUG
 
-/* Checks for whether a recal is required.
- * Always draws up to the maximum recal interval - a traditional WaitRecal
- * may allow for a cleaner display, but only possible with buffered vector
- * lists. Or is it?
- */
-void __svgalib_vectrex_recalcheck(void)
-{
-        if (GET (VIA_int_flags) & 0x20)
-        {
-         v_WaitRecal();
-         v_readButtons();
-        }
-}
-
 static CARD32 PitrexPaddingFrame (OsTimerPtr timer, CARD32 now, pointer arg)
 {
         ScrnInfoPtr pScrn = (ScrnInfoPtr) arg;
 	DUMMYPtr dPtr = DUMMYPTR(pScrn);
+
+        if ( (GET (VIA_int_flags) & 0x20) && started)
+        {
 #ifdef PITREX_DEBUG
         xf86DrvMsg(pScrn->scrnIndex, X_INFO, "X-vectrex: Padding Frame.\n");
 #endif
-        if ( (GET (VIA_int_flags) & 0x20) && started)
-        {
          v_WaitRecal_buffered(0);
          v_readButtons();
         }
@@ -56,10 +43,12 @@ static CARD32 PitrexPaddingFrame (OsTimerPtr timer, CARD32 now, pointer arg)
 static void
 PitrexSetupForSolidLine(ScrnInfoPtr pScrn, int color, int rop, unsigned planemask)
 {
- /* TODO: Set intensity from colour - same problem as settings for per-game config. */
- /* v_WaitRecal here? */
+  DUMMYPtr dPtr = DUMMYPTR(pScrn);
+ /* TODO: Configurable intensity maps from colour like in svgalib-vectrex. */
+  beamintensity = (char)((color >> (pScrn->depth - 4)) + dPtr->intensityOffset);
 #ifdef PITREX_DEBUG
-        xf86DrvMsg(pScrn->scrnIndex, X_INFO, "X-vectrex: line set-up.\n");
+        xf86DrvMsg(pScrn->scrnIndex, X_INFO, "X-vectrex: line set-up. Colour=%d (%d scaled)\n", color,
+	           (color >> (pScrn->depth - 4)) + dPtr->intensityOffset);
 #endif
 }
 
@@ -81,7 +70,6 @@ PitrexSubsequentSolidTwoPointLine(ScrnInfoPtr pScrn, int x1, int y1,
                               int x2, int y2, int flags)
 {
         if (beamintensity <= 0) return;
-//        __svgalib_vectrex_recalcheck();
 /*
 #ifdef PITREX_DEBUG
         xf86DrvMsg(pScrn->scrnIndex, X_INFO, "X-vectrex: Draw Input = %d,%d-%d,%d.\n", x1, y1, x2, y2);
@@ -127,27 +115,30 @@ static void PitrexSubsequentSolidBresenhamLine(ScrnInfoPtr pScrn,
 static void
 PitrexSetupForSolidFill(ScrnInfoPtr pScrn, int color, int rop, unsigned planemask)
 {
- /* TODO: Set intensity from colour - same problem as settings for per-game config. */
- /* v_WaitRecal here? */
+  DUMMYPtr dPtr = DUMMYPTR(pScrn);
+ /* TODO: Configurable intensity maps from colour like in svgalib-vectrex. */
+  beamintensity = (char)((color >> (pScrn->depth - 4)) + dPtr->intensityOffset);
 //        xf86DrvMsg(pScrn->scrnIndex, X_INFO, "X-vectrex: solid set-up.\n");
 }
 
 static void
 PitrexSubsequentSolidFillRect(ScrnInfoPtr pScrn, int x, int y, int w, int h)
 {
-
- if (h > 100)
+ DUMMYPtr dPtr = DUMMYPTR(pScrn);
+ if (h > dPtr->refreshBoxHeight)
  {
   v_WaitRecal_buffered(1);
   v_readButtons();
   started = 1;
  }
-/*
- PitrexSubsequentSolidTwoPointLine(pScrn, x, y, x+w, y, 0);
- PitrexSubsequentSolidTwoPointLine(pScrn, x+w, y, x+w, y+h, 0);
- PitrexSubsequentSolidTwoPointLine(pScrn, x+w, y+h, x, y+h, 0);
- PitrexSubsequentSolidTwoPointLine(pScrn, x, y+h, x, y, 0);
-*/
+ else
+ {
+   PitrexSubsequentSolidTwoPointLine(pScrn, x, y, x+w, y, 0);
+   PitrexSubsequentSolidTwoPointLine(pScrn, x+w, y, x+w, y+h, 0);
+   PitrexSubsequentSolidTwoPointLine(pScrn, x+w, y+h, x, y+h, 0);
+   PitrexSubsequentSolidTwoPointLine(pScrn, x, y+h, x, y, 0);
+ }
+
 #ifdef PITREX_DEBUG
 	xf86DrvMsg(pScrn->scrnIndex, X_INFO, "X-vectrex: Rect.\n");
 #endif
@@ -201,7 +192,7 @@ Bool pitrexXAAinit(ScreenPtr pScreen)
      xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Could Not Initialise Vectrex Connection\n");
      return FALSE;
     }
-     v_setName("X_generic"); /* TODO: per-game settings... somehow */
+     v_setName("X_generic"); /* per-game settings via XF86Config files */
      v_init();
     xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Started Vectrex Display\n");
 

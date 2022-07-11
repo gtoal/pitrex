@@ -472,9 +472,22 @@ DUMMYPreInit(ScrnInfoPtr pScrn, int flags)
     if (dPtr->yoffset != 0) {
 	xf86Msg(X_CONFIG, "PITREX XAA: Y offset = %d\n", dPtr->yoffset);
     }
-    dPtr->refreshInterval = xf86SetIntOption(pScrn->options, "Refresh Check Interval", 9);
-    if (dPtr->refreshInterval != 0) {
+    dPtr->refreshBoxHeight = xf86SetIntOption(pScrn->options, "RefreshBoxHeight", 100);
+    if (dPtr->refreshBoxHeight != 100) {
+	xf86Msg(X_CONFIG, "PITREX XAA: Refresh Box Height = %d\n", dPtr->refreshBoxHeight);
+    }
+    dPtr->refreshInterval = xf86SetIntOption(pScrn->options, "RefreshCheckInterval", 1);
+    if (dPtr->refreshInterval != 1) {
 	xf86Msg(X_CONFIG, "PITREX XAA: Refresh Check Interval = %d\n", dPtr->refreshInterval);
+    }
+    dPtr->intensityOffset = xf86SetIntOption(pScrn->options, "IntensityOffset", 50);
+    if (dPtr->intensityOffset > 65 || dPtr->intensityOffset < -127) {
+        dPtr->intensityOffset = 50;
+	xf86Msg(X_CONFIG, "PITREX XAA: Intensity Offset Value = %d is invalid, defaulting to 50\n",
+	        dPtr->intensityOffset);
+    }
+    if (dPtr->intensityOffset != 50) {
+	xf86Msg(X_CONFIG, "PITREX XAA: Intensity Offset Value = %d\n", dPtr->intensityOffset);
     }
 
     return TRUE;

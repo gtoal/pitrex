@@ -175,6 +175,13 @@ Options for the new/modified drivers follow.
 "Yscale" - scale factor for the Y axis  (default "1")
 "Xoffset" - offset value for the X axis (default "0")
 "Yoffset" - offset value for the Y axis (default "0")
+"RefreshBoxHeight" - Rectangles above this size indicate new frame
+                     (default "100")
+"RefreshCheckInterval" - How often the driver checks whether a
+                         padding frame is required, in milliseconds
+                         (default "1")
+"IntensityOffset" - Value between -127 and 65 indicating offset for
+                    colour to intensity translation (default "50")
 
 -- vectrexkbd --
 

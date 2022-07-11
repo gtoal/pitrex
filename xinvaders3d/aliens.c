@@ -45,8 +45,8 @@
 enum alien_enum
 {
    MAX_FORMATRIX4IONS           = 5,
-   MAX_ALIENS               = 40,
-   ALIENS_PER_FORMATRIX4ION     = 8,
+   MAX_ALIENS               = 30,
+   ALIENS_PER_FORMATRIX4ION     = 6,
    MAX_BOMBS                = 12,
 
    LEFT                     = 0,
@@ -624,28 +624,28 @@ void Aliens_draw ( OBJECT *obj, MATRIX4 r )
       
         /* left leg */ 
          Draw_line ( p[8], p[9], p[10], p[11], GREEN );
-         Draw_line ( p[10], p[11], p[12], p[13], GREEN );
-         Draw_line ( p[12], p[13], p[8], p[9], GREEN );
+//         Draw_line ( p[10], p[11], p[12], p[13], GREEN );
+//         Draw_line ( p[12], p[13], p[8], p[9], GREEN );
          Draw_line ( p[10], p[11], p[14], p[15], GREEN );
-         Draw_line ( p[14], p[15], p[12], p[13], GREEN );
+//         Draw_line ( p[14], p[15], p[12], p[13], GREEN );
        
         /* right leg */ 
          Draw_line ( p[8], p[9], p[16], p[17], GREEN );
-         Draw_line ( p[16], p[17], p[18], p[19], GREEN );
-         Draw_line ( p[18], p[19], p[8], p[9], GREEN );
+//         Draw_line ( p[16], p[17], p[18], p[19], GREEN );
+//         Draw_line ( p[18], p[19], p[8], p[9], GREEN );
          Draw_line ( p[16], p[17], p[20], p[21], GREEN );
-         Draw_line ( p[20], p[21], p[18], p[19], GREEN );
+//         Draw_line ( p[20], p[21], p[18], p[19], GREEN );
         
-        /* left eye */ 
+        /* left eye */ /*
          Draw_line ( p[22], p[23], p[24], p[25], RED );
          Draw_line ( p[24], p[25], p[26], p[27], RED );
          Draw_line ( p[26], p[27], p[22], p[23], RED );
-
-         /* right eye */
+*/
+         /* right eye */ /*
          Draw_line ( p[22], p[23], p[28], p[29], RED );
          Draw_line ( p[28], p[29], p[30], p[31], RED );
          Draw_line ( p[30], p[31], p[22], p[23], RED );
-
+*/
          alien = alien->next;
       }
    }

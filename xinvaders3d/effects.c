@@ -29,7 +29,7 @@
 
 enum stars_enum
 {
-   MAX_STARS = 100
+   MAX_STARS = 20
 };
 
 struct STARSSTRUCT

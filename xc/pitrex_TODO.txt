@@ -1,9 +1,6 @@
 * Move PiTrex display code out of dummy driver and into an
   independent graphics driver.
 
-* Improve v_waitRecal and buffered frame management to minimise
-  flicker.
-
 * Fix segmentation fault on shut-down
 
 * Find better default dettings for vectrex mouse input driver

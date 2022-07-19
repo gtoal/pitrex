@@ -2,7 +2,7 @@ XFree86 4.8.0 for PiTrex (Xvectrex)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In order to aid displaying the output of X-based programs on the
-Vectrex, icluding those running on another computer to improve
+Vectrex, including those running on another computer to improve
 performance, XFree86 has been modified to work with the PiTrex
 software for display of vector graphics and to accept controller
 inputs.
@@ -106,18 +106,6 @@ Section "ServerLayout"
         InputDevice    "Mice" "CorePointer"
 EndSection
 
-Section "Module"
-        Load "freetype"
-        # Load "xtt"
-        Load  "extmod"
-        Load  "glx"
-        Load  "dri"
-        Load  "dbe"
-        Load  "record"
-        Load  "xtrap"
-        Load  "type1"
-        Load  "speedo"
-EndSection
 Section "InputDevice"
         Identifier  "Mice"
 #       Driver      "vectrexmouse"
@@ -150,6 +138,8 @@ Section "Device"
       ###     Display Scaling      ###
         Option      "Xscale" "0.5"
         Option      "Yscale" "0.5"
+      ###     Intensity Offset/Brightness    ###
+	Option      "IntensityOffset" "50"
 EndSection
 
 Section "Screen"
@@ -176,12 +166,14 @@ Options for the new/modified drivers follow.
 "Xoffset" - offset value for the X axis (default "0")
 "Yoffset" - offset value for the Y axis (default "0")
 "RefreshBoxHeight" - Rectangles above this size indicate new frame
-                     (default "100")
+                     (default "100").
 "RefreshCheckInterval" - How often the driver checks whether a
                          padding frame is required, in milliseconds
-                         (default "1")
+                         (default "1").
 "IntensityOffset" - Value between -127 and 65 indicating offset for
-                    colour to intensity translation (default "50")
+                    colour to intensity translation. Higher values
+                    increase overall brightness.
+                    (default "50")
 
 -- vectrexkbd --
 
@@ -220,6 +212,12 @@ Button Assignments
 "debug_level" - Set level of debugging messages printed by server
                 to stdout and log. (default: "0" = disabled)
 
+This one-liner, run on any system running X with xev installed,
+prints X key numbers which can be used in the configuration. Press
+the key you want converted while the "Event Tester" window is
+selected and the value will be printed to stdout.
+xev | while read input; do if keycode=`expr "$input" : '.*keycode \([0-9]*\) .*'`; then echo `expr $keycode - 8`; fi; done
+
 -- vectrexmouse --
 
 "MaxX" - Max X value (default: "1000")
@@ -245,7 +243,8 @@ option is now default when built for ARM32.
 When starting the X server from the command prompt, it is
 recommended to use the "-keeptty" option so that the X server can
 be shut down with Ctrl-C. Note that at the moment the server seg.
-faults during shut-down, which isn't ideal.
+faults during shut-down, which isn't ideal. Pressing buttons
+1+2+3+4 on the Vectrex controller also causes the X server to exit.
 
 To enable remote connections, add the name or IP address on your
 network of the computer you want to connect to the Pi to the file
@@ -253,7 +252,7 @@ network of the computer you want to connect to the Pi to the file
 temporary changes to permissions.
 
 After loading the X server, set the DISPLAY environment variable
-to ":0" before attempting to launch programs, eg.
+to ":0" before attempting to launch programs on the Pi, eg.
   export DISPLAY=:0
 
 When a program stops updating the display (eg. closes), the PiTrex

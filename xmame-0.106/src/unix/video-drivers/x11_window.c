@@ -33,7 +33,7 @@ static int use_mit_shm;
 #endif
 
 static XImage *image = NULL;
-static GC gc;
+XColor color_info;
 enum { X11_NORMAL, X11_MITSHM };
 static int x11_window_update_method;
 static int startx = 0;
@@ -96,7 +96,7 @@ int x11_window_init(void)
    mouse and keyboard can't be setup before the display has. */
 int x11_window_open_display(int reopen)
 {
-        int needed_width, needed_height;
+        int needed_width, needed_height, i;
 
         /* set aspect_ratio, do this early since this can change yarbsize */
         mode_set_aspect_ratio((double)screen->width/screen->height);
@@ -131,7 +131,16 @@ int x11_window_open_display(int reopen)
           starty = ((window_height - window_height) / 2) & ~3;
 
           /* create gc */
-          gc = XCreateGC (display, window, 0, &xgcv);
+          window_gc = XCreateGC (display, window, 0, &xgcv);
+
+	  /* set up colour mapping to intensity for direct vector drawing (PiTrex) */
+	  for (i = 0; i < 256; i++)
+	  {
+	    color_info.red = color_info.green = color_info.blue = i << 8;
+	    XAllocColor (display, DefaultColormap (display, DefaultScreen (display)),
+	    		   &color_info);
+	    intensity_table[i] = color_info.pixel;
+	  }
 
 	  /* open xinput */
           xinput_open(0, ExposureMask);
@@ -288,7 +297,7 @@ void x11_window_close_display (void)
    /* now just free everything else */
    if (window)
    {
-      XFreeGC(display, gc);
+      XFreeGC(display, window_gc);
       XDestroyWindow (display, window);
       window = 0;
    }
@@ -337,7 +346,7 @@ const char *x11_window_update_display(mame_bitmap *bitmap,
    {
       case X11_MITSHM:
 #ifdef USE_MITSHM
-         XShmPutImage (display, window, gc, image,
+         XShmPutImage (display, window, window_gc, image,
            vis_in_dest_out->min_x, vis_in_dest_out->min_y,
            startx+vis_in_dest_out->min_x, starty+vis_in_dest_out->min_y,
            vis_in_dest_out->max_x - vis_in_dest_out->min_x,
@@ -346,7 +355,7 @@ const char *x11_window_update_display(mame_bitmap *bitmap,
          break;
       case X11_NORMAL:
 /*
-         XPutImage (display, window, gc, image,
+         XPutImage (display, window, window_gc, image,
            vis_in_dest_out->min_x, vis_in_dest_out->min_y,
            startx+vis_in_dest_out->min_x, starty+vis_in_dest_out->min_y,
            vis_in_dest_out->max_x - vis_in_dest_out->min_x,

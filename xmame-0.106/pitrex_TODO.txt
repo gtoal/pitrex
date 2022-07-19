@@ -1,9 +1,6 @@
 * Build for the Raspberry Pi and try to get performance as quick as
   possible on there.
 
-* Handle vector colour and intensity (probably the same thing in
-  this context), currently everything is drawn white.
-
 * Improve the accelerated mode so that it works alright on PC as
   well as Vectrex and make sure that it does the frame syncing in
   the right sequence.

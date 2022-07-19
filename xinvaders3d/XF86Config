@@ -1,3 +1,4 @@
+# Xvectrex configuration for Xinvaders 3D
 Section "ServerLayout"
 	Identifier     "Layout0"
 	Screen      0  "Screen0" 0 0
@@ -5,27 +6,9 @@ Section "ServerLayout"
 	InputDevice    "Mice" "CorePointer"
 EndSection
 
-Section "Module"
-	Load "freetype"
-	# Load "xtt"
-	Load  "extmod"
-	Load  "glx"
-	Load  "dri"
-	Load  "dbe"
-	Load  "record"
-	Load  "xtrap"
-	Load  "type1"
-	Load  "speedo"
-EndSection
 Section "InputDevice"
 	Identifier  "Mice"
-#	Driver      "vectrexmouse"
-#	Option      "DebugLevel" "4"
-#	Option      "Delta" "500"
-#	Option      "MaxX" "500"
-#	Option      "RelativeMovement" "false"
 	Driver      "void"
-#	Driver      "mouse"
 EndSection
 
 #Keys:
@@ -43,28 +26,12 @@ EndSection
 
 Section "InputDevice"
 	Identifier  "Keyboard0"
-#	Driver      "keyboard"
-#	Driver      "kbd"
-#	Option	    "XkbModel" "pc101"
-#	Option	    "XkbLayout" "us"
 	Driver      "vectrexkbd"
 	Option      "ReadAnalogue" "true"
-#	Option      "DebugLevel" "3"
-	Option      "B2+3Key" "24"
-	Option      "B2+4Key" "37"
-	Option      "B1Key" "1"
-	Option      "B2Key" "33"
-	Option      "B3Key" "25"
-	Option      "B4Key" "57"
-#	Option      "Timeout" "1000"
-EndSection
-
-Section "InputDevice"
-	Identifier  "Keyboard1"
-#	Driver      "keyboard"
-	Driver      "kbd"
-	Option	    "XkbModel" "pc101"
-	Option	    "XkbLayout" "us"
+	Option      "B1Key" "16"	# q (Reset game)
+	Option      "B2Key" "33"	# f (Show frame-rate)
+	Option      "B3Key" "25"	# p (Pause game)
+	Option      "B4Key" "57"	# SpaceBar (Fire Missile)
 EndSection
 
 Section "Monitor"
@@ -94,4 +61,3 @@ Section "Screen"
 		Modes    "800x600"
 	EndSubSection
 EndSection
-

@@ -100,18 +100,28 @@ and won't display on the Vectrex.
 
 The veckeyboard XFree86 driver works well for many games. The
 following button assignments for the keyboard section of the
-XFree86Config file will set: fire (button A) = 4,
-Thrust (button B) = 3, insert coin = 1, start game = 2:
+XF86Config file will set a combination that works in many games:
 
-        Option      "B1Key" "6"
-        Option      "B2Key" "2"
-        Option      "B3Key" "56"
-        Option      "B4Key" "29"
+        Option      "B2+3Key" "1"       # Esc (exit)
+        Option      "B3+4Key" "6"       # 5 (insert coin)
+        Option      "B1Key" "2"         # 1 (start)        
+        Option      "B2Key" "57"        # SpaceBar (fire 2)
+        Option      "B3Key" "56"        # Left-Alt (thrust)
+        Option      "B4Key" "29"        # Left-Ctrl (fire 1)
 
-Some games like Star Wars would be better with the vecmouse driver,
-but it's not really working very well yet. To make matters worse,
-XMAME doesn't seem to use the mouse very well for some games even on
-PC.
+Games designed for an analogue joystick, like Star Wars, are better
+using the vecmouse driver. The veckeyboard driver still needs to be
+loaded in order to access the "insert coin" and "start" buttons.
+Pass the "-alwaysusemouse" option to xmame so that the mouse is
+used. Left, Middle, and Right mouse buttons map to Vectrex
+controller buttons 2, 3, and 4 respectively.
+
+Example XF86Config files are provided, "xmame-0.106/XF86Config" for
+games with digital controls, and "xmame-0.106/XF86Config_analogue"
+for games that need analogue controls and therefore require the
+vecmouse driver. Start the X server with the
+"-xf86config [config file]" option so that it uses one of these
+instead of the default at /etc/X11/XF86Config.
 
 Developers
 ^^^^^^^^^^
@@ -122,14 +132,10 @@ That is the bare-bones accelerated X11 vector video driver. Scaling
 code there is to fit the display within the X window rather than to
 the Vectrex display.
 
-There's plenty of room for improvement, particularly with
-intensity/colour information currently ignored (as it is in the
-XFree86 driver at the moment).
-
-Other modifications are minor things. x11_window_update_display in
-src/unix/video-drivers/x11_window.c
-is where the display actually gets updated by XMAME, and may be a
-place for more improvements.
+Remaining modifications are minor things. x11_window_update_display
+in "src/unix/video-drivers/x11_window.c" is where the display
+actually gets updated by XMAME, and may be a place for more
+improvements.
 
 It would be nice to pull in Graham's PiTrex driver for AdvanceMAME,
 as an accelerated driver like this, or maybe even an alternative

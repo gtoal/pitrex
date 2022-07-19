@@ -1,0 +1,54 @@
+# XMAME Xvectrex Configuration (digital controls)
+Section "ServerLayout"
+	Identifier     "Layout0"
+	Screen      0  "Screen0" 0 0
+	InputDevice    "Keyboard0" "CoreKeyboard"
+	InputDevice    "Mice" "CorePointer"
+EndSection
+
+Section "InputDevice"
+	Identifier  "Mice"
+	Driver      "void"
+EndSection
+
+Section "InputDevice"
+	Identifier  "Keyboard0"
+	Driver      "vectrexkbd"
+	Option      "ReadAnalogue" "true"
+	Option      "B2+3Key" "1"	# Esc (exit)
+	Option      "B3+4Key" "6"	# 5 (insert coin)
+	Option      "B1Key" "2"		# 1 (start)
+	Option      "B2Key" "57"	# SpaceBar (fire 2)
+	Option      "B3Key" "56"	# Left-Alt (thrust)
+	Option      "B4Key" "29"	# Left-Ctrl (fire 1)
+EndSection
+
+Section "Monitor"
+	Identifier   "Monitor0"
+	HorizSync    31.5 - 35.1
+	VertRefresh  50.0 - 70.0
+EndSection
+
+Section "Device"
+	Identifier  "PiTrex"
+	Driver      "dummy"
+	Option      "Xscale" "1.05"
+	Option      "Yscale" "0.9"
+	Option      "Xoffset" "3000"
+	Option      "Yoffset" "-4500"
+	Option      "RefreshCheckInterval" "1"
+	Option      "IntensityOffset" "40"
+EndSection
+
+Section "Screen"
+	Identifier "Screen0"
+	Device     "PiTrex"
+	Monitor    "Monitor0"
+	DefaultDepth     16
+	SubSection "Display"
+		Viewport   0 0
+		Depth     16
+		Modes    "800x600"
+	EndSubSection
+EndSection
+

@@ -21,6 +21,7 @@ unsigned int xdim;
 unsigned int ydim;
 OsTimerPtr waitRecalTimer;
 unsigned char started = 0;
+int lines = 0;
 /* Note that logging all debug messages causes extreme slow-down in display */
 //#define PITREX_DEBUG
 
@@ -69,7 +70,7 @@ static void
 PitrexSubsequentSolidTwoPointLine(ScrnInfoPtr pScrn, int x1, int y1,
                               int x2, int y2, int flags)
 {
-        if (beamintensity <= 0) return;
+        if (beamintensity <= 0 || lines == MAX_PIPELINE/2) return;
 /*
 #ifdef PITREX_DEBUG
         xf86DrvMsg(pScrn->scrnIndex, X_INFO, "X-vectrex: Draw Input = %d,%d-%d,%d.\n", x1, y1, x2, y2);
@@ -87,6 +88,7 @@ PitrexSubsequentSolidTwoPointLine(ScrnInfoPtr pScrn, int x1, int y1,
                                  beamintensity
                                 );
 #endif
+	lines++;
 }
 
 /* Horizontal lines always drawn to the right (DEGREES_0)
@@ -130,6 +132,7 @@ PitrexSubsequentSolidFillRect(ScrnInfoPtr pScrn, int x, int y, int w, int h)
   v_WaitRecal_buffered(1);
   v_readButtons();
   started = 1;
+  lines = 0;
  }
  else
  {
@@ -152,6 +155,7 @@ void PitrexSync(ScrnInfoPtr pScrn)
 
 Bool pitrexXAAinit(ScreenPtr pScreen)
 {
+    lines=0;
     XAAInfoRecPtr infoPtr;
     ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
     DUMMYPtr dPtr = DUMMYPTR(pScrn);

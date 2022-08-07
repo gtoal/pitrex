@@ -1,0 +1,66 @@
+/*
+ * ALSA Sound Driver for xMAME
+ *
+ *  Copyright 2000 Luc Saillard <luc.saillard@alcove.fr>
+ *  
+ *  This file and the acompanying files in this directory are free software;
+ *  you can redistribute them and/or modify them under the terms of the GNU
+ *  Library General Public License as published by the Free Software Foundation;
+ *  either version 2 of the License, or (at your option) any later version.
+ *
+ *  These files are distributed in the hope that they will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public
+ *  License along with these files; see the file COPYING.LIB.  If not,
+ *  write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ *
+ * Changelog:
+ *   v 0.1 Thu, 10 Aug 2000 08:29:00 +0200
+ *     - initial release
+ *     - TODO: find the best sound card to play sound.
+ *   v 0.2 Wed, 13 Sep 2000    Syouzou Sugitani <shy@debian.or.jp>
+ *     - change from block to stream mode.
+ *   v 0.3 Sat, 16 Sep 2000    Syouzou Sugitani <shy@debian.or.jp>
+ *     - one important bug fix, performance improvements and code cleanup.
+ *   v 0.4 Sun, 15 Apr 2001    Syouzou Sugitani <shy@debian.or.jp>
+ *     - minor cosmetic changes.
+ *     - suppression of bogus warnings about underruns.
+ *     - TODO: add support for ALSA 0.9 API.
+ *   v 0.5 Thu, 17 May 2001    Syouzou Sugitani <shy@debian.or.jp>
+ *     - added preliminary support for ALSA 0.9 API.
+ *     - split of the 0.5 and 0.9 API stuff into separate files.
+ *   v 0.6 Sat, 19 May 2001    Syouzou Sugitani <shy@debian.or.jp>
+ *     - update of the 0.9 API stuff.
+ *       added -list-alsa-pcm option.
+ *       improved write error handling.
+ *
+ */
+
+#include "xmame.h"           /* xMAME common header */
+#include "devices.h"         /* xMAME device header */
+
+#ifdef SYSDEP_DSP_ALSA
+
+#include <sys/ioctl.h>       /* System and I/O control */
+#include <alsa/asoundlib.h>   /* ALSA sound library header */
+#include "sysdep/sysdep_dsp.h"
+#include "sysdep/sysdep_dsp_priv.h"
+#include "sysdep/plugin_manager.h"
+
+#ifdef SND_LIB_VERSION
+
+#if SND_LIB_VERSION >= (5<<8)
+#if SND_LIB_VERSION >= (9<<8)
+#include "alsa_0.9.c"
+#else
+#include "alsa_0.5.c"
+#endif
+#endif
+
+#endif /* SND_LIB_VERSION */
+
+#endif /* SYSDEP_DSP_ALSA */

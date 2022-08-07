@@ -1,0 +1,7 @@
+* Fix frame syncing problem that causes Omega Race and possibly other
+  games to redraw multiple frames, which doesn't happen in XMAME
+  0.106.
+
+* Add display and controller driver for direct communication with the
+  Vectrex Interface Library (need a system for timer-based frame
+  updates).

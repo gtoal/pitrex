@@ -1,0 +1,54 @@
+
+ **********************************
+ ** XMAME 37b16 for Raspberry Pi **
+ **********************************
+
+ -------------
+
+ Quick Readme by Slaanesh
+ Last Updated : 8th October 2014
+
+ -------------
+
+Q: What is xmame?
+
+A: Xmame is the Unix and Unix-like port of the highly esteemed MAME system.
+
+
+Q: What is MAME/MESS?
+
+A: MAME stands for Multi Arcade Machine Emulator. As the name suggests, it is
+    a program that emulates the hardware (and low-level firmware) of a massive
+    variety of arcade machines.
+   MESS stands for Multi Emulator Super System. It is an emulator for the
+    hardware of many different games consules (e.g. Sega, NES, SNES, etc.)
+    as well as many different old games-oriented home computers (e.g. C64,
+    C128, ZX80, etc.)
+   While the two programs are conceptually different, and have different
+    development teams, they share a lot of code and are distributed together.
+
+
+Q: How do I compile XMAME/XMESS?
+
+A: The Raspberry Pi version can be compiled by using the following 3 steps:
+   'make' - to create the directory structure
+   'm68k.sh' - to create Musashi 68000 Op code generator
+   'make' - to complete the compile. Allow 90-120 minutes if compiling on Pi.
+
+
+Q: What optimizations have beem made to this version?
+
+A: Lots! :)
+   DispmanX for graphics output scaling.
+   Cyclone and DrZ80 ARM assembly CPU cores for M68000 and Z80 respectively.
+   Other improvements as "necessary".
+   There's also an SDL version without dispmanx for non-raspberry systems.
+
+
+Q: OK, I've got the source and compiled it. How do I run a game?
+
+A: ./xmame.dispmanx.37b16 <game> 
+
+   By default cyclone and drz80 are not enabled, to enable these specify:
+
+   ./xmame.dispmanx.37b16 <game> -cyclone -drz80

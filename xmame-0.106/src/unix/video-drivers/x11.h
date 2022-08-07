@@ -19,7 +19,7 @@ extern struct rc_option	x11_input_opts[];
 EXTERN Display 		*display;
 EXTERN Window		window;
 EXTERN Screen 		*screen;
-GC			window_gc;
+EXTERN GC		window_gc;
 EXTERN unsigned int	window_width;
 EXTERN unsigned int	window_height;
 EXTERN unsigned int	custom_window_width;
@@ -28,7 +28,7 @@ EXTERN int		use_xsync;
 EXTERN int		root_window_id; /* root window id (for swallowing the mame window) */
 EXTERN int		run_in_root_window;
 EXTERN int		x11_exposed;
-unsigned int		intensity_table[255];
+EXTERN unsigned int	intensity_table[256];
 #ifdef USE_MITSHM
 EXTERN int		x11_mit_shm_error;
 #endif

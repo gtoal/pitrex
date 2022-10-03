@@ -369,7 +369,6 @@
     (signed char) 0x01 // endmarker (high bit in pattern not set)
 };
 
-
  int8_t*  ABC[]=
 {
     // starting with ' ' SPACE (0x20)
@@ -434,6 +433,8 @@
     ABC_25, // Z
 };
 
+#define CHARACTERS	58 // Number of elements in the ABC array
+
 // using set scale!
 void v_Draw_VLp(int8_t *list)
 {
@@ -467,9 +468,11 @@ void v_Draw_VLp(int8_t *list)
 // coordinates given in vectrex 8 bit
 void v_printString(int8_t x, int8_t y, char* string, uint8_t textSize, uint8_t brightness)
 {
+	  int charElement;
 	  if (usePipeline)
 	  {
 		int i=0;
+		int8_t* list;
 
 		#define SCALEFONT (textSize *1.5 )
 		SET_OPTIMAL_SCALE(120*SCALEFONT,120*SCALEFONT);
@@ -479,7 +482,11 @@ void v_printString(int8_t x, int8_t y, char* string, uint8_t textSize, uint8_t b
 		int startY = y*128;
 		while (*string != 0)
 		{
-			int8_t* list   = ABC[*string-0x20];
+			charElement = *string-0x20;
+			if (charElement <= CHARACTERS && charElement > 0)
+			  list   = ABC[charElement];
+			else
+			  list   = ABC[0];
 			string++;
 			do
 			{
@@ -507,7 +514,7 @@ startY=(*(list+1))*SCALEFONT+startY;
 				cpb->pattern = 0; 
 				cpb->debug[0] = 0;
 			  }
-*/			  
+*/
 			  list = list+3;
 			  i++;
 			}
@@ -522,10 +529,15 @@ startY=(*(list+1))*SCALEFONT+startY;
     UNZERO();
     v_setScale(0x7f);
     v_moveToImmediate8(x, y);
-        v_setScale(textSize);
+    v_setScale(textSize);
+    int8_t* oneLetterList;
     while (*string != 0)
     {
-        int8_t* oneLetterList   = ABC[*string-0x20];
+        charElement = *string-0x20;
+	if (charElement <= CHARACTERS && charElement > 0)
+	  oneLetterList   = ABC[charElement];
+	else
+	  oneLetterList   = ABC[0];
         string++;
         v_Draw_VLp(oneLetterList);
     }
@@ -542,9 +554,11 @@ startY=(*(list+1))*SCALEFONT+startY;
 // coordinates given in vectrex 8 bit
 void v_printStringNP(int8_t x, int8_t y, char* string, uint8_t textSize, uint8_t brightness)
 {
+      int charElement;
       if (usePipeline)
       {
         int i=0;
+	int8_t* list;
 
         #define SCALEFONT (textSize *1.5 )
         SET_OPTIMAL_SCALE(120*SCALEFONT,120*SCALEFONT);
@@ -554,7 +568,11 @@ void v_printStringNP(int8_t x, int8_t y, char* string, uint8_t textSize, uint8_t
         int startY = y*128;
         while (*string != 0)
         {
-            int8_t* list   = ABC[*string-0x20];
+	    charElement = *string-0x20;
+	    if (charElement <= CHARACTERS && charElement > 0)
+	      list   = ABC[charElement];
+	    else
+	      list   = ABC[0];
             string++;
             do
             {
@@ -590,10 +608,15 @@ void v_printStringNP(int8_t x, int8_t y, char* string, uint8_t textSize, uint8_t
     UNZERO();
     v_setScale(0x7f);
     v_moveToImmediate8(x, y);
-        v_setScale(textSize);
+    v_setScale(textSize);
+    int8_t* oneLetterList;
     while (*string != 0)
     {
-        int8_t* oneLetterList   = ABC[*string-0x20];
+	charElement = *string-0x20;
+	if (charElement <= CHARACTERS && charElement > 0)
+	  oneLetterList   = ABC[charElement];
+	else
+	  oneLetterList   = ABC[0];
         string++;
         v_Draw_VLp(oneLetterList);
     }

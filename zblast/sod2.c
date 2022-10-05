@@ -561,14 +561,14 @@ else
 }
 
 
-void output_sample(int count)
+void output_sample(int out_count)
 {
-count+=sample_midval;
-if(count>sample_maxval) count=sample_maxval;
-if(count<0) count=0;
+out_count+=sample_midval;
+if(out_count>sample_maxval) out_count=sample_maxval;
+if(out_count<0) out_count=0;
 
 /* 8-bit output */
-write_sample(count);
+write_sample(out_count);
 }
 
 

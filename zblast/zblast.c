@@ -272,7 +272,7 @@ int gameover_count;
 int score;
 int tweenwave,paused;
 int usedebris=1,usestars=1;
-int count,donetrace,endtrace;
+int baddie_count,donetrace,endtrace;
 
 
 #ifdef USE_X
@@ -759,7 +759,7 @@ while(!quit && (!dead || (dead && gameover_count>0)))
       }
     else
       {
-      if(!dead && (count=countbaddies())==0)
+      if(!dead && (baddie_count=countbaddies())==0)
         {
         wavenum++;
         looped=0;
@@ -1037,7 +1037,7 @@ if(wavenum>1)
   }
 
 showstatus(0);
-count=countbaddies();
+baddie_count=countbaddies();
 
 return(0);
 }

@@ -78,7 +78,6 @@ extern int (*executeDebugger)(int);
 #define BCM2835_INT_FIQ       0x20C
 
 // RPi3 / Zero2 (BCM2837) (addresses from timtest.c)
-#define BCM2837_GPIO_BASE       0x3F000000
 #define BCM2837_INT_PMIR        0x10
 #define BCM2837_INT_PMICR       0x14
 #define BCM2837_INT_CORE0_ICR   0x40

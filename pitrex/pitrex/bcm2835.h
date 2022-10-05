@@ -591,6 +591,8 @@
 #define BCM2835_PERI_BASE               0x20000000
 /*! Size of the peripherals block on RPi 1 */
 #define BCM2835_PERI_SIZE               0x01000000
+/*! Alternate base address for RPI  2 / 3 */
+#define BCM2835_RPI2_PERI_BASE          0x3F000000
 
 /*! Offsets for the bases of various peripherals within the peripherals block
   /   Base Address of the System Timer registers
@@ -616,7 +618,8 @@
 #define BCM2835_SPI2_BASE				0x2150C0
 /*! Base Address of the BSC1 registers */
 #define BCM2835_BSC1_BASE				0x804000
-
+/*! Base Address of the quad-core CPU control registers for RPi 3 etc. */
+#define BCM2835_QUAD_BASE		0x40000000
 
 /*! Physical address and size of the peripherals block
   May be overridden on RPi2
@@ -625,8 +628,16 @@ extern uint32_t *bcm2835_peripherals_base;
 /*! Size of the peripherals block to be mapped */
 extern uint32_t bcm2835_peripherals_size;
 
+/*! Physical address of the quad-core CPU control register block on RPi2
+//  etc.
+ */
+extern uint32_t *bcm2835_quad_control_base;
+
 /*! Virtual memory address of the mapped peripherals block */
 extern uint32_t *bcm2835_peripherals;
+
+/*! Virtual memory address of the mapped CPU core control register block */
+extern uint32_t *bcm2835_quad_control;
 
 /*! Base of the ST (System Timer) registers.
   Available after bcm2835_init has been called (as root)

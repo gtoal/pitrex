@@ -45,9 +45,18 @@
 uint32_t *bcm2835_peripherals_base = (uint32_t *)BCM2835_PERI_BASE;
 uint32_t bcm2835_peripherals_size = BCM2835_PERI_SIZE;
 
+/*! Physical address of the quad-core CPU control register block on RPi2
+//  etc.
+ */
+uint32_t *bcm2835_quad_control_base =(uint32_t *)BCM2835_QUAD_BASE;
+
 /* Virtual memory address of the mapped peripherals block
  */
 uint32_t *bcm2835_peripherals = (uint32_t *)MAP_FAILED;
+
+/* Virtual memory address of the mapped quad-core CPU control register block
+ */
+uint32_t *bcm2835_quad_control = (uint32_t *)MAP_FAILED;
 
 /* And the register bases within the peripherals block
  */
@@ -1760,6 +1769,8 @@ printf("bcm2835_init()\r\n");
 printf("DEV: /dev/mem - opened as root\r\n");
       /* Base of the peripherals block is mapped to VM */
       bcm2835_peripherals = mapmem("gpio", bcm2835_peripherals_size, memfd, (off_t)bcm2835_peripherals_base);
+      if ((int)bcm2835_peripherals_base == BCM2835_RPI2_PERI_BASE)
+        bcm2835_quad_control = mapmem(NULL, bcm2835_peripherals_size, memfd, (off_t)bcm2835_quad_control_base);
       if (bcm2835_peripherals == MAP_FAILED) goto exit;
 
       /* Now compute the base addresses of various peripherals,
@@ -1798,6 +1809,10 @@ printf("DEV: /dev/mem - opened as root\r\n");
       bcm2835_gpio = bcm2835_peripherals;
       ok = 1;
     }
+    
+    if  ((int)bcm2835_peripherals_base == BCM2835_RPI2_PERI_BASE &&
+         bcm2835_quad_control == MAP_FAILED)
+      fprintf(stderr, "bcm2835_init: Unable to access quad-core CPU control registers\n") ;
 
 exit:
     if (memfd >= 0)

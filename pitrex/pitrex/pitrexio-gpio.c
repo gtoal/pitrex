@@ -1,7 +1,7 @@
 /* PiTrex I/O functions for initialising Raspberry Pi GPIO, and Reading/Writing from/to Vectrex
  * Kevin Koster, 2020.
  * "Short" I/O routines by Chris Salomon.
- * V. 1.1
+ * V. 1.2
  */
 
 #include <unistd.h>
@@ -227,7 +227,8 @@ __sync_synchronize();
 	// was: bcm2835_peri_write ((bcm2835_gpio + BCM2835_GPCLR0/4), 0xFFFFFFFF);
 	//      bcm2835_gpio_set (13); // R/#W High
 
-	*bcm2835_gpio_GPCLR0 = 0xFFFFDFFF;
+	*bcm2835_gpio_GPCLR0 = 0xFFFFFFFF;
+	bcm2835_gpio_set (13); // R/#W High
 }
 
 /*
@@ -491,15 +492,14 @@ char vectrexwrite_begin_on_irq (unsigned int address, unsigned char data)
 	//Shifted to position on 32bit bus
 	unsigned long shortaddress = ((address & 0x0F) | highaddressbits) << 7;
 	
-	bcm2835_peri_write ((bcm2835_gpio + BCM2835_GPCLR0/4), 0xFFFFFFFF); //LATCH EN Low  R/#W Low
+	bcm2835_peri_write ((bcm2835_gpio + BCM2835_GPCLR0/4), 0xFFFFFFFF); //LATCH EN Low  R/#W Low  IRQ LATCH Low
 	// Data Output Mode:
 	bcm2835_peri_write ((bcm2835_gpio + BCM2835_GPFSEL1/4), writeconfig_GPFSEL1);		// GPIO Pins 10-13 = OUTPUT| 14-15 = TTY | 16-19 = OUTPUT
 	bcm2835_peri_write ((bcm2835_gpio + BCM2835_GPFSEL2/4), 0x8249);			// GPIO Pins 20-23 = OUTPUT | 24 = INPUT | 25    = OUTPUT | 26-29 = INPUT
 
 	bcm2835_peri_write ((bcm2835_gpio + BCM2835_GPSET0/4), (data << 16) | shortaddress ); // Data on Data Bus and Address on Address Bus
-
+/* Comment this out if using the VPU IRQ_LATCH-driven beam-off routine */
 	bcm2835_gpio_set (6); //IRQ LATCH High
-	
 #ifdef USE_EDR
 	// Detect RDY rising edge with EDR:
 	bcm2835_gpio_ren (24); //Enable detection of RDY (#OE) rising edge.

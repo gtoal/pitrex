@@ -1,4 +1,9 @@
-Pitrex IO Lib Changes for V1.1:
+Pitrex IO Lib Changes
+
+V1.2:
+*Set R/#W High separately at end of vectrexwrite_short to avoid sace condition with inputs to IC3b.
+
+V1.1:
 
 *Fixed wrong value written to bcm2835_gpio_GPFSEL2 in short routines.
 

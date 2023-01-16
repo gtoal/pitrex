@@ -593,6 +593,8 @@
 #define BCM2835_PERI_SIZE               0x01000000
 /*! Alternate base address for RPI  2 / 3 */
 #define BCM2835_RPI2_PERI_BASE          0x3F000000
+/*! Alternate base address for RPI VPU / QPU processors */
+#define BCM2835_GPU_PERI_BASE          0x7E000000
 
 /*! Offsets for the bases of various peripherals within the peripherals block
   /   Base Address of the System Timer registers
@@ -1895,6 +1897,8 @@ extern "C" {
     extern void bcm2835_pwm_set_data(uint8_t channel, uint32_t data);
 
     /*! @}  */
+
+extern int  memfd;
 #ifdef __cplusplus
 }
 #endif

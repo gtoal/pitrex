@@ -1,0 +1,22 @@
+TODO
+
+* Fix the compiler/makefile, or find another compiler, which can
+  actually make binaries which run on their like assembly programs
+  do!
+
+* Support raster text by integrating it into the vector pipeline.
+
+* Confirm VPU delay timing matches CPU delay timing.
+
+* Automatically refresh the last display frame if the CPU hasn't
+  updated the pipeline in time for the Vectrex's next refresh cycle.
+
+* Ideally integrate other I/O operations (sound and controller
+  inputs) VPU-side so that the Vectrex Interface lib doesn't need
+  to wait for it to finish before progressing after a display
+  update.
+
+* With the above done, the Vectrex Interface lib no longer needs to
+  wait for refresh intervals - it can just update the pipeline as
+  often as possible and leave the VPU to keep the refresh timing
+  correct.

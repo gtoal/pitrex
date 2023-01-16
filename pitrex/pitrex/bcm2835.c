@@ -58,6 +58,9 @@ uint32_t *bcm2835_peripherals = (uint32_t *)MAP_FAILED;
  */
 uint32_t *bcm2835_quad_control = (uint32_t *)MAP_FAILED;
 
+/* Virtual memory address of pipeline
+ */
+
 /* And the register bases within the peripherals block
  */
 volatile uint32_t *bcm2835_gpio        = (uint32_t *)MAP_FAILED;
@@ -121,6 +124,8 @@ static uint8_t bcm2835_byte_reverse_table[] =
     0x0f, 0x8f, 0x4f, 0xcf, 0x2f, 0xaf, 0x6f, 0xef,
     0x1f, 0x9f, 0x5f, 0xdf, 0x3f, 0xbf, 0x7f, 0xff
 };
+
+int  memfd;
 
 static uint8_t bcm2835_correct_order(uint8_t b)
 {
@@ -1644,9 +1649,12 @@ void bcm2835_pwm_set_data(uint8_t channel, uint32_t data)
 /* Initialise this library. */
 int bcm2835_init(void)
 {
-printf("FREESTANDING: bcm2835_init()\r\n");
+    printf("FREESTANDING: bcm2835_init()\r\n");
+#ifdef VPU
+    bcm2835_peripherals = (uint32_t*)BCM2835_GPU_PERI_BASE;
+#else
     bcm2835_peripherals = (uint32_t*)BCM2835_PERI_BASE;
-
+#endif
     bcm2835_pads = bcm2835_peripherals + BCM2835_GPIO_PADS/4;
     bcm2835_clk  = bcm2835_peripherals + BCM2835_CLOCK_BASE/4;
     bcm2835_gpio = bcm2835_peripherals + BCM2835_GPIO_BASE/4;
@@ -1711,7 +1719,6 @@ static void unmapmem(void **pmem, size_t size)
 /* Initialise this library. */
 int bcm2835_init(void)
 {
-    int  memfd;
     int  ok;
     FILE *fp;
 
@@ -1769,9 +1776,9 @@ printf("bcm2835_init()\r\n");
 printf("DEV: /dev/mem - opened as root\r\n");
       /* Base of the peripherals block is mapped to VM */
       bcm2835_peripherals = mapmem("gpio", bcm2835_peripherals_size, memfd, (off_t)bcm2835_peripherals_base);
+      if (bcm2835_peripherals == MAP_FAILED) goto exit;
       if ((int)bcm2835_peripherals_base == BCM2835_RPI2_PERI_BASE)
         bcm2835_quad_control = mapmem(NULL, bcm2835_peripherals_size, memfd, (off_t)bcm2835_quad_control_base);
-      if (bcm2835_peripherals == MAP_FAILED) goto exit;
 
       /* Now compute the base addresses of various peripherals,
       // which are at fixed offsets within the mapped peripherals block
@@ -1832,7 +1839,7 @@ int bcm2835_close(void)
 
 
     unmapmem((void**) &bcm2835_peripherals, bcm2835_peripherals_size);
-    bcm2835_peripherals = MAP_FAILED;
+    unmapmem((void**) &bcm2835_quad_control, bcm2835_peripherals_size);
     bcm2835_gpio = MAP_FAILED;
     bcm2835_pwm  = MAP_FAILED;
     bcm2835_clk  = MAP_FAILED;

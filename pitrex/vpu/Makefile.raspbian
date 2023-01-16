@@ -1,0 +1,37 @@
+BUILD_DIR_PURE := build.raspbian
+BUILD_DIR := $(BUILD_DIR_PURE)/
+PITREX_DIR := ../pitrex/
+
+CFLAGS := -Ofast -I../ -DPIZERO -DRPI0 -DPITREX_DEBUG -DFAKE_VPU
+CC := gcc
+
+.PHONY: dirCheck
+
+all: dirCheck pitrexLib gpuMem $(BUILD_DIR)vpu_disPipe.o vpu_disPipe
+	echo All up to date
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
+
+## COMPILE
+gpuMem:
+	CFLAGS=-DFAKE_VPU $(MAKE) -e -C loader -f Makefile dirCheck mailbox.o gpuMem.o
+
+pitrexLib:
+	$(MAKE) -C $(PITREX_DIR) -f Makefile.raspbian all
+
+$(BUILD_DIR)vpu_disPipe.o: vpu_disPipe.c ../vectrex/vectrexInterface.h loader/mailbox.h loader/gpuMem.h
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)vpu_disPipe.o -c vpu_disPipe.c
+
+## LINK
+vpu_disPipe: $(BUILD_DIR)vpu_disPipe.o pitrexLib gpuMem
+	$(RM) vpu_disPipe
+	$(CC) $(CFLAGS) -o vpu_disPipe \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	loader/$(BUILD_DIR)mailbox.o \
+	loader/$(BUILD_DIR)gpuMem.o \
+	$(BUILD_DIR)vpu_disPipe.o
+
+clean:
+	$(RM) $(BUILD_DIR)*.* vpu_disPipe

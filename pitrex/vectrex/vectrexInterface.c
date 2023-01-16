@@ -193,6 +193,8 @@ int myDebug;
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
+#include <fcntl.h>
+#include <sys/mman.h>
 
 #ifdef RTSCHED
 #include <sched.h>
@@ -345,6 +347,10 @@ unsigned int resetToZeroDifMax;
 VectorPipeline P0[MAX_PIPELINE];
 VectorPipeline P1[MAX_PIPELINE];
 VectorPipeline *_P[] = { P0, P1 };
+VectorPipeline *_vpuP_phys[] = { (VectorPipeline *)MAP_FAILED, (VectorPipeline *)MAP_FAILED };
+volatile uint32_t *pipelineInfoPtr = (uint32_t *)MAP_FAILED;
+PipelineInfo *vpuPipelineInfo = (PipelineInfo *)MAP_FAILED;
+uint32_t vpuPipelineInfo_phys = 0xFFFFFFFF;
 
 VectorPipeline *pl;
 int pipelineAlt;
@@ -386,6 +392,8 @@ void setCustomClipping (int enabled, int x0, int y0, int x1, int y1) {
   customClipxMax = x1;
   customClipyMax = y1;
 }
+
+int vpu;
 
 /* should be called once on startup / reset */
 GlobalMemSettings *settings;
@@ -476,7 +484,6 @@ struct sched_param sp = {.sched_priority = 99 };
   usePipeline = 1;
   pipelineCounter = 0;
   pipelineAlt = 0;
-  pl = _P[pipelineAlt];
   cpb = &pb[pipelineCounter];   // current base pipeline
 
   v_detectExitEvents = 1;
@@ -548,6 +555,81 @@ struct sched_param sp = {.sched_priority = 99 };
 */
   printf ("2) Settings->flags = %02x\r\n", settings->flags);
 
+  /** VPU Init **/
+  vpu=0;
+
+#ifndef FREESTANDING
+  FILE *fd = NULL;
+  int memfd = 0;
+  unsigned int lenLoaded = 0;
+  fd = fopen("/tmp/pitrex_gpu_mem", "r"); // Created by GPU binary loader
+  if (fd != NULL)
+  { // Load GPU memory addresses allocated by GPU executable loader and map to virtual address space.
+    vpu=1;
+    printf ("GPU acceleration available\n");
+
+    lenLoaded = fread ((void *)&_vpuP_phys[0], 4, 1, fd);
+    if (1 != lenLoaded) {
+      printf ("GPU pipeline 0 address read failed (len loaded: %i) (Error: %m)\r\n", lenLoaded);
+      fclose (fd);
+      vpu=0;
+    }
+    else {
+      lenLoaded = fread ((void *)&_vpuP_phys[1], 4, 1, fd);
+      if (1 != lenLoaded) {
+        printf ("GPU pipeline 1 address read failed (len loaded: %i) (Error: %m)\r\n", lenLoaded);
+        fclose (fd);
+        vpu=0;
+      }
+      else {
+        lenLoaded = fread ((void *)&vpuPipelineInfo_phys, 4, 1, fd);
+        if (1 != lenLoaded) {
+          printf ("GPU pipeline info address read failed (len loaded: %i) (Error: %m)\r\n", lenLoaded);
+          fclose (fd);
+	  vpu=0;
+        }
+      else {
+        fclose (fd);
+	if ((memfd = open("/dev/mem", O_RDWR|O_SYNC) ) < 0) {
+	   vpu=0;
+           printf("can't open /dev/mem, unable to map GPU pipeline memory.\nThis program should be run as root.\n");
+        }
+	else {
+          printf ("GPU Pipeline 0 Address: %p\nGPU Pipeline 1 Address: %p\nGPU Pipeline Info Address: %p\n",
+	           (void *)_vpuP_phys[0], (void *)_vpuP_phys[1], (void *)vpuPipelineInfo_phys);
+          _P[0] = mmap(0, sizeof(VectorPipeline)*MAX_PIPELINE, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, (off_t)_vpuP_phys[0]);
+          if (_P[0] == MAP_FAILED) {
+	    printf("Failed to map GPU pipeline 0 memory! Error: %m\n");
+	    vpu=0;
+	  }
+	  else {
+            _P[1] = mmap(0, sizeof(VectorPipeline)*MAX_PIPELINE, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, (off_t)_vpuP_phys[1]);
+            if (_P[1] == MAP_FAILED) {
+	      printf("Failed to map GPU pipeline 1 memory! Error: %m\n");
+	      munmap (_P[0], sizeof(VectorPipeline)*MAX_PIPELINE);
+	      vpu=0;
+	    }
+	    else {
+	      vpuPipelineInfo = mmap(0, sizeof(PipelineInfo), PROT_READ | PROT_WRITE, MAP_SHARED, memfd, (off_t)vpuPipelineInfo_phys);
+	      if (vpuPipelineInfo == MAP_FAILED) {
+	        printf ("Failed to map GPU pipeline info memory! Error: %m\n");
+	        munmap (_P[0], sizeof(VectorPipeline)*MAX_PIPELINE);
+		munmap (_P[1], sizeof(VectorPipeline)*MAX_PIPELINE);
+	        vpu=0;
+	      }
+	      else {
+	        pipelineInfoPtr = (uint32_t *)PIPELINE_INFO_ADDR;
+              }
+	    }
+          }
+	  close(memfd);
+	 }
+        }
+      }
+    }
+  }
+#endif
+  pl = _P[pipelineAlt]; // This is either in local memory or GPU memory, depending on above
 }
 
 /***********************************************************************/
@@ -902,6 +984,7 @@ void v_directDraw32 (int32_t xStart, int32_t yStart, int32_t xEnd, int32_t yEnd,
 
   WAIT_T1_END ();
   SWITCH_BEAM_OFF ();
+
 }
 
 /***********************************************************************/
@@ -939,6 +1022,7 @@ void v_directDeltaDraw32 (int32_t _xLen, int32_t _yLen, uint8_t brightness) {
   // lookup wait table 0x00 - 0xff (scale) for 100% correct timer values?
   WAIT_T1_END ();
   SWITCH_BEAM_OFF ();
+
 }
 
 /***********************************************************************/
@@ -1084,6 +1168,7 @@ void v_setRefresh (int hz) {
  */
 void handlePipeline (void);
 void displayPipeline (void);
+void vpuDisplayPipeline (void);
 void v_WaitRecal_buffered (int buildBuffer);
 void v_printBitmapUni (unsigned char *bitmapBlob, int width, int height, int size, int x, int y);
 
@@ -1103,8 +1188,10 @@ void v_WaitRecal (void) {
        }
 
      */
-
-    displayPipeline ();
+    if (vpu)
+      vpuDisplayPipeline ();
+    else
+      displayPipeline ();
     handleUARTInterface ();
     // wait for Via T2 to expire
     while ((GET (VIA_int_flags) & 0x20) == 0) {
@@ -1152,7 +1239,10 @@ void v_WaitRecal_buffered (int buildBuffer) {
       }
       roundCounter++;
       v_resetIntegratorOffsets ();
-      displayPipeline ();
+      if (vpu)
+        vpuDisplayPipeline ();
+      else
+        displayPipeline ();
     }
   }
   ioDone = 0;
@@ -1668,6 +1758,7 @@ void v_drawToImmediate8 (int8_t xLen, int8_t yLen) {
   START_T1_TIMER ();
   WAIT_T1_END ();
   SWITCH_BEAM_OFF ();
+
 }
 
 /***********************************************************************/
@@ -4151,6 +4242,35 @@ void enableLinuxInterrupts (void) {
 #endif
 }
 
+/* Copy pipeline-related global variables to GPU memory for processing by GPU.
+ * Returns when GPU reaches end of pipeline. */
+void vpuDisplayPipeline (void) {
+#ifndef FREESTANDING
+   vpuPipelineInfo->dpl = _vpuP_phys[pipelineAlt ? 0 : 1];
+   vpuPipelineInfo->browseMode = browseMode;
+   vpuPipelineInfo->currentBrowsline = currentBrowsline;
+   vpuPipelineInfo->currentDisplayedBrowseLine = currentDisplayedBrowseLine;
+   vpuPipelineInfo->crankyFlag = crankyFlag;
+   vpuPipelineInfo->currentPortA = currentPortA;
+   vpuPipelineInfo->currentYSH = currentYSH;
+   vpuPipelineInfo->currentZSH = currentZSH;
+   vpuPipelineInfo->calibrationValue = calibrationValue;
+   vpuPipelineInfo->currentScale = currentScale;
+   vpuPipelineInfo->lastScale = lastScale;
+   vpuPipelineInfo->currentCursorX = currentCursorX;
+   vpuPipelineInfo->currentCursorY = currentCursorY;
+   vpuPipelineInfo->DELAY_AFTER_T1_END_VALUE = DELAY_AFTER_T1_END_VALUE;
+   vpuPipelineInfo->DELAY_ZERO_VALUE = DELAY_ZERO_VALUE;
+
+   *pipelineInfoPtr = vpuPipelineInfo_phys; // Write address of pipeline variables structure in GPU memory to register, for reading by VPU
+   // Note: Now can't read/write to VIA until VPU has finished, or else it'll clash
+   while ((uintptr_t)*pipelineInfoPtr != 0xFFFFFFFF) ; // wait for VPU to finish and reset pointer address, to avoid I/O conflicts
+   // TODO: Implement all VIA access in VPU driver so that we can go ahead here
+   //       and prepare the next pipeline, only waiting for the VPU to finish once
+   //       the next frame is ready to be displayed.
+#endif
+}
+
 void displayPipeline (void) {
   int c = 0;
   VectorPipeline *dpl = _P[pipelineAlt ? 0 : 1];
@@ -4429,6 +4549,7 @@ void displayPipeline (void) {
 #endif
             delayT1 -= 2;
           }
+
           SWITCH_BEAM_OFF ();
           if ((browseMode) && (dpl[c].type == PL_DRAW_PATTERN)) {
             if (lineNo == currentBrowsline)

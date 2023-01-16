@@ -1,0 +1,25 @@
+# Set this to where your vc4-toolchain executables are:
+# VC4_TOOLCHAIN_DIR := ../../../vc4-toolchain/prefix/bin/
+VC4_TOOLCHAIN_DIR := /mnt/onboard_flash/DATA/pitrex/vc4-toolchain/prefix/bin/
+
+BUILD_DIR_PURE := build.vpu
+BUILD_DIR := $(BUILD_DIR_PURE)/
+
+CFLAGS := -Ofast -DPIZERO -DRPI0 -DFREESTANDING
+CC := vc4-elf-gcc
+
+.PHONY: dirCheck
+
+all: dirCheck $(BUILD_DIR)bcm2835.o $(BUILD_DIR)pitrexio-gpio.o
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
+
+$(BUILD_DIR)bcm2835.o: bcm2835.c bcm2835.h
+	$(VC4_TOOLCHAIN_DIR)$(CC) $(CFLAGS) -c bcm2835.c -o $(BUILD_DIR)bcm2835.o
+
+$(BUILD_DIR)pitrexio-gpio.o: pitrexio-gpio.c pitrexio-gpio.h bcm2835.h
+	$(VC4_TOOLCHAIN_DIR)$(CC) $(CFLAGS) -c pitrexio-gpio.c -o $(BUILD_DIR)pitrexio-gpio.o
+
+clean:
+	$(RM) $(BUILD_DIR)*.*

@@ -1,0 +1,43 @@
+# Set this to where your vc4-toolchain executables are:
+VC4_TOOLCHAIN_DIR := ../../vc4-toolchain/prefix/bin/
+
+BUILD_DIR_PURE := build.vpu
+BUILD_DIR := $(BUILD_DIR_PURE)/
+PITREX_DIR := ../pitrex/
+
+# Optimiser options don't seem to do anything (same binary size)
+CFLAGS := -T vc4-teststub.ld -I../ -DPIZERO -DRPI0 -DPITREX_DEBUG -DVPU
+CC := vc4-elf-gcc
+
+.PHONY: dirCheck
+
+all: dirCheck pitrexLib $(BUILD_DIR)vpu_disPipe.o vpu_disPipe.elf vpu_disPipe.bin
+	echo All up to date
+
+dirCheck:
+	if [ ! -d $(BUILD_DIR_PURE) ]; then mkdir $(BUILD_DIR_PURE); fi
+
+## COMPILE
+pitrexLib:
+	$(MAKE) -C $(PITREX_DIR) -f Makefile.vpu all
+
+$(BUILD_DIR)vpu_disPipe.o: vpu_disPipe.c ../vectrex/vectrexInterface.h
+	$(VC4_TOOLCHAIN_DIR)$(CC) $(CFLAGS) -o $(BUILD_DIR)vpu_disPipe.o -c vpu_disPipe.c
+
+## LINK
+vpu_disPipe.elf: $(BUILD_DIR)vpu_disPipe.o pitrexLib
+	$(RM) vpu_disPipe.elf
+	$(VC4_TOOLCHAIN_DIR)$(CC) $(CFLAGS) -o vpu_disPipe.elf \
+	$(PITREX_DIR)$(BUILD_DIR)bcm2835.o \
+	$(PITREX_DIR)$(BUILD_DIR)pitrexio-gpio.o \
+	$(BUILD_DIR)vpu_disPipe.o
+	chmod a-x vpu_disPipe.elf
+
+## BINARY
+vpu_disPipe.bin: vpu_disPipe.elf
+	$(RM) vpu_disPipe.bin
+	$(VC4_TOOLCHAIN_DIR)vc4-elf-objcopy -O binary vpu_disPipe.elf vpu_disPipe.bin
+	chmod a-x vpu_disPipe.bin
+
+clean:
+	$(RM) $(BUILD_DIR)*.* vpu_disPipe.bin vpu_disPipe.elf

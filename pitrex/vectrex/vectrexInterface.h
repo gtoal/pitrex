@@ -17,7 +17,6 @@ int waitFullMicro(void);
 void measureTime(void); // debug and measure only
 
 extern void setCustomClipping(int enabled, int x0, int y0, int x1, int y1);
-void v_setBrightness(uint8_t brightness);
 void v_directDeltaMove32start(int32_t xLen, int32_t yLen);
 void v_directDeltaMoveEnd(void);
 void v_directMove32(int32_t xEnd, int32_t yEnd);
@@ -29,7 +28,6 @@ void v_directDeltaDraw32(int32_t xLen, int32_t yLen, uint8_t brightness);
 
 
 void v_zeroWait(void);
-void v_deflok(void);
 void v_setRefresh(int hz);
 void v_WaitRecal(void);
 void v_WaitRecal_buffered (int buildBuffer);
@@ -46,18 +44,21 @@ void v_set_font(unsigned char **userfont); // set the font for v_printStringRast
 // as 7-bit ascii.
 
 
-void v_setScale(uint16_t s);
 void v_moveToImmediate8(int8_t xLen, int8_t yLen);
 void v_drawToImmediate8(int8_t xLen, int8_t yLen);
-
 void v_setName(char *name);
 int v_loadSettings(char *name, unsigned char *blob, int blobSize);
 int v_saveSettings(char *name, unsigned char *blob, int blobSize);
-
 uint32_t v_millis(void); // only using low counters!
 uint32_t v_micros(void); // only using low counters!
 
 extern int (*executeDebugger)(int);
+
+#if !defined(VPU) && !defined(FAKE_VPU)
+void v_setBrightness(uint8_t brightness);
+void v_setScale(uint16_t s);
+void v_deflok(void);
+#endif
 
 ////////////////////////////////////////////////////////////////////////////
 // Linux Interrupt stuff (Kevin Koster)
@@ -219,8 +220,6 @@ extern int bufferType; // 0 = none, 1 = double buffer, 2 = auto buffer (if pipel
 #define SET_WORD_ORDERED(adr, v1, v2) do {vectrexwrite((adr), v1); DELAY_CYCLES(DELAY_PORT_B_BEFORE_PORT_A_VALUE); vectrexwrite(adr+1, v2); } while(0)
 #define SET(address, val) vectrexwrite(address, val)
 #define GET(address) vectrexread(address)
-
-
 
 
 /*
@@ -455,7 +454,14 @@ do { \
   DELAY_XSH(); \
   } while (0)
 
-
+#ifdef VPU
+#define CYCLE_PER_LOOP 113
+#define WAIT_CYCLE_NANO(n) do{ \
+    uint32_t l = (n/113)+1; \
+    asm volatile("0:" "sub %[count], 1;" "cmp %[count], 0;" "bne 0b;" :[count]"+r"(l)); \
+    } while(0)
+#else
+// ARM SUBS instruction is not equivalent to the VPU SUBS instruction (subtract with saturation)
 // 4 cycles per loop?
 // 1 cycle = 1 nano second
 #define CYCLE_PER_LOOP 4
@@ -465,6 +471,7 @@ do { \
     else { l+=(n)>>7; \
     }asm volatile( "0:" "SUBS %[count], #2;" "SUBS %[count], #-1;" "BNE 0b;" :[count]"+r"(l) ); \
     } while(0)
+#endif
 
 // need an enclosing () below? - check usages first
 #define GET_SYSTEM_TIMER_LO *(bcm2835_st + BCM2835_ST_CLO/4)
@@ -481,7 +488,7 @@ do { \
        __sync_synchronize(); \
        while (GET_SYSTEM_TIMER_LO < tend);} while (0)
 
-#define WAIT_MICRO_MARK_DELTA(utime)  do{ \\
+#define WAIT_MICRO_MARK_DELTA(utime)  do{ \
        uint32_t tend = timerMark +(utime); \
        __sync_synchronize(); \
        while (GET_SYSTEM_TIMER_LO < tend);} while (0)
@@ -616,4 +623,54 @@ extern GlobalMemSettings *settings;
 #define CV_SPECIAL_DEFLOK 2
 #define CV_SPECIAL_AFTER 0x80
 
+#if !defined(VPU) && !defined(FAKE_VPU)
 #include <vectrex/ini.h>
+#endif
+
+////////////////////////////////////////////////////////////////////////////
+// VPU stuff (Kevin Koster)
+////////////////////////////////////////////////////////////////////////////
+
+/* This register is in the "Multicore Sync Block" (0x7e000000 - 0x7e001000).
+ * RGBtoHDMI uses it, but I'm not sure where they got it from. Maybe something to
+ * do with Mailbox, in which case GPU driver comms might write to it. Although
+ * Mailbox base address is supposed to be PERIPHERAL_BASE + 0xB880.
+ *  - It's sorta documented here:
+ *     https://paulwratt.github.io/rpi-internal-registers-online/Region_MS.html
+ */
+#define PIPELINE_INFO_ADDR (bcm2835_peripherals + 0xA4/4)
+
+typedef struct {
+	volatile unsigned int DELAY_AFTER_T1_END_VALUE;
+	volatile unsigned int DELAY_ZERO_VALUE;
+	volatile int browseMode;
+	volatile int currentBrowsline;
+	volatile int currentDisplayedBrowseLine;
+	volatile CrankyFlags crankyFlag;
+	volatile int32_t currentCursorX;
+	volatile int32_t currentCursorY;
+	volatile int16_t currentPortA;
+	volatile int16_t currentYSH;
+	volatile int16_t currentZSH;
+	volatile uint8_t calibrationValue;
+	volatile uint16_t currentScale;
+	volatile uint16_t lastScale;
+	volatile VectorPipeline *dpl;
+       } PipelineInfo;
+
+#if defined(VPU) || defined(FAKE_VPU)
+#define DELAY_AFTER_T1_END_VALUE pipelineInfo->DELAY_AFTER_T1_END_VALUE
+#define DELAY_ZERO_VALUE pipelineInfo->DELAY_ZERO_VALUE
+#define browseMode pipelineInfo->browseMode
+#define currentBrowsline pipelineInfo->currentBrowsline
+#define currentDisplayedBrowseLine pipelineInfo->currentDisplayedBrowseLine
+#define crankyFlag pipelineInfo->crankyFlag
+#define currentCursorX pipelineInfo->currentCursorX
+#define currentCursorY pipelineInfo->currentCursorY
+#define currentPortA pipelineInfo->currentPortA
+#define currentYSH pipelineInfo->currentYSH
+#define currentZSH pipelineInfo->currentZSH
+#define calibrationValue pipelineInfo->calibrationValue
+#define currentScale pipelineInfo->currentScale
+#define lastScale pipelineInfo->lastScale
+#endif

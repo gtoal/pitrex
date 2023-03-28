@@ -6,6 +6,7 @@ Code by Mario Montminy, Aug 2020
 Modifications by Chad Gray, Aug 2020
 
 Usage: cartlist <vectrex rom directory> >> vmmenu.ini
+       cartlist <vectrex rom file> >> vmmenu.ini
 
 You *WILL* have to edit the resulting file and clean up some of
 the names, as the game name is not always presented in the ROM,
@@ -169,9 +170,11 @@ int main(int argc, char **argv)
 {
    int             result;
    char           *dir_str = ROMDIR;
+   char           *file_str;
    FILE           *fp = NULL;
    DIR            *d = NULL;
    struct dirent  *dir = NULL;
+   struct dirent  dummy_dir;
    char            file_name[2 * MAX_FILENAME];
    vectrex_rom_info_t rom;
 
@@ -189,10 +192,26 @@ int main(int argc, char **argv)
    d = opendir(dir_str);
    if (d == NULL)
    {
-      printf("Unable to open ROM Directory: %s\nUsage: cartlist romdir\n", ROMDIR);
-      goto END;
+      fp = fopen(dir_str, "rb");
+      if (fp == NULL)
+      {
+         printf("Unable to open ROM File or Directory\nUsage: cartlist [romdir or rom]\n", ROMDIR);
+         goto END;
+      }
+      dir = &dummy_dir;
+      dir->d_type = DT_REG;
+      file_str = strrchr(dir_str, '/');
+      if (file_str == NULL)
+      {
+         strncpy(dir->d_name, dir_str, sizeof(dir->d_name) - 1);
+      }
+      else
+      {
+         strncpy(dir->d_name, file_str + 1, sizeof(dir->d_name) - 1);
+      }
    }
-   dir = readdir(d);
+   else
+      dir = readdir(d);
    while (dir)
    {
       memset(&rom, 0, sizeof(rom));
@@ -203,7 +222,14 @@ int main(int argc, char **argv)
          strncpy(file_name, dir_str, sizeof(file_name) - 1);
          strncat(file_name, "/", sizeof(file_name) - strlen(file_name) - 1);
          strncat(file_name, dir->d_name, sizeof(file_name) - strlen(file_name) - 1);
-         fp = fopen(file_name, "rb");
+         if (dir == &dummy_dir)
+         {
+            dir = NULL;
+         }
+         else
+         {
+            fp = fopen(file_name, "rb");
+         }
          if (fp == NULL)
          {
             // printf("fopen(\"%s\"): %s\n", file_name, strerror(errno));
@@ -234,7 +260,10 @@ SKIP:
          fclose(fp);
          fp = NULL;
       }
-      dir = readdir(d);
+      if (d)
+      {
+         dir = readdir(d);
+      }
    }
 
    if (d)

@@ -665,7 +665,7 @@ void RunGame(char *gameargs, char *zvgargs)
       {
          zvgFrameClose();              // Close the ZVG
       }
-      sprintf(command, "/opt/pitrex/bin/vmm.sh '%s' '%s'", gameargs, zvgargs);
+      sprintf(command, "/opt/pitrex/bin/vmm.sh '%s' %s", gameargs, zvgargs);
    }
    else
    {

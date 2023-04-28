@@ -139,6 +139,7 @@ static int   colours[2][7];             // array of [colours][7] and [intensitie
 
 static char  attractargs[30];
 static char  zvgargs[30];
+static char  runarg2[162];
 static int   totalnumgames=0;
 
 static char  autogame[30];
@@ -452,7 +453,8 @@ int main(int argc, char *argv[])
                }
                if (cc == keyz[k_start])                                                      // launch VMAME
                {
-                  RunGame(sel_clone->clone, vectorgames->name);
+                  sprintf(runarg2, "'%s' '%s'", vectorgames->name, sel_clone->parent);
+                  RunGame(sel_clone->clone, runarg2);
                }
                if (cc == keyz[k_nclone])                                                     // [Right]: go to next clone in list
                {

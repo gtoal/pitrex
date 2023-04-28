@@ -2089,6 +2089,7 @@ static int mame_stats(struct osd_bitmap *bitmap,int selected)
 
 int showcopyright(struct osd_bitmap *bitmap)
 {
+#ifndef RASPI
 	int done;
 	char buf[1000];
 	char buf2[256];
@@ -2124,7 +2125,7 @@ int showcopyright(struct osd_bitmap *bitmap)
 	setup_selected = 0;/*// */
 	erase_screen(bitmap);
 	update_video_and_audio();
-
+#endif
 	return 0;
 }
 

@@ -80,6 +80,10 @@ xinvaders3d/xinv3d:
 	cd xinvaders3d; make -f Makefile
 	cd ..
 
+vecho/vecho:
+	cd vecho; make -f Makefile
+	cd ..
+
 clean:
 	cd lunar; make -f Makefile.raspbian clean
 	cd ..
@@ -129,6 +133,8 @@ clean:
 	cd ..
 	cd xinvaders3d; make -f Makefile clean
 	cd ..
+	cd vecho; make -f Makefile clean
+	cd ..
 
 install:
 	mkdir -p /opt/pitrex/bin
@@ -171,4 +177,6 @@ install:
 	cd xhyperoid; make -f Makefile install
 	cd ..
 	cd zblast; make -f Makefile install
+	cd ..
+	cd vecho; make -f Makefile install
 	cd ..

@@ -1,0 +1,97 @@
+These are the shell scripts for the Linux environment running on
+modified Tiny Core Linux PiCore 13.1 ("PiTrexCore"). The following
+are brief descriptions which will be elaborated upon in the Wiki
+eventually.
+
+bootlocal.sh - Run at end of boot to set up the software
+               environment, start WiFi or Bluetooth if specified
+               on the kernel command line, and either start the
+               VMMenu menu program or another program specified
+               on the kernel command line. (run as root)
+
+btinit.sh - Initialise the Bluetooth hardware on the Pi Zero W or
+            Zero 2 W. (run as root)
+
+btpair.sh - Pair and connect to a Bluetooth device (after Bluetooth
+            is initialised by btinit.sh) by MAC address of ID read
+            from file.
+            Options:
+             -a   Pair with audio device listed by ID or MAC
+                  address in btdev_audio.txt on SD card root   
+                  directory, and set as default audio device
+             -c   Pair with controller device listed by ID or MAC
+                  address in btdev_controller.txt on SD card root
+                  directory.
+             (run as root)
+
+btstart.sh - Runs btinit.sh and "btpair.sh -a" with sudo, for launching
+             from VMMenu.
+             Note that the bluetooth scripts really need more feedback
+             and interaction via the Vectrex.
+
+wifiinit.sh - Connect to Wireless network specified in
+              wpa_supplicant.conf on the root directory of the SD
+              card. The "-b" argument causes it to run in the
+              background.
+
+usbaudio.sh - Initialise/switch-to audio output using a USB sound
+              device.
+
+zip2vmmenu.sh - Identify arcade ROMs within ZIP files and add
+                corresponding VMMenu menu entry from menu data
+                file (contains menu entries and CRC32 ROM
+                checksums).
+                Usage:
+                 zip2vmmenu.sh [menu data file] [roms directory]
+
+mkvmmenu.sh - Generate menu file for VMMenu, including MAME ROMs
+              (uses zip2vmmenu.sh), Vectrex ROMs (uses cartlist),
+              and native PiTrex executables.
+              On SD card directories read are:
+              /roms - XMAME ROMs in ZIP files (can optionally use
+                      sub-directories for different XMAME versions)
+              /vectrex - Vectrex ROM binaries.
+              /tcz - PiTrex executables in gzip-compressed Squashfs
+                     file systems (Tiny Core Linux extensions).
+              Menu lists for each directory are saved and only
+              regenerated if the contents have changed.
+              (run as root)
+
+piext.sh - Run in PiTrex source root directory after compiling
+           all software to build Tiny Core Linux extensions in
+           distro/tcz. Programs with install rules in
+           Makefile.raspbian have extensions generated using that,
+           or else installation locations are specified in an
+           [extension].list file (files to be added from below the
+           top level of the program's directory are symlinked, 
+           Symlink to a symlink if you want to include a symlink in 
+           the extension).
+           Note that this will delete everything in /opt/pitrex and
+           all previous extension files in distro/tcz.
+
+vmm_pitrexcore.sh - This runs the program selected from VMMenu. 
+                    Loads all required extensions, determines the
+                    correct configuration settings, launches the
+                    program (starting the X server if required),
+                    then saves any configuration changes after the
+                    program exits (this is the only point that the
+                    SD card is mounted with write access). Remote
+                    X programs are run remotely if WiFi is enabled
+                    and xmame_remote.sh connects successfully.
+
+vmm.sh - Calls vmm_pitrexcore.sh with arguments passed from VMMenu
+         without root permissions. An ugly solution to an annoying
+         permissions problem.
+
+xmame_remote.sh - Set up and switch to/from remote XMAME on PC via
+                  WiFi and XFree86. Runs mkvmmenu.sh to update the
+                  menu entries for the ROMs available for the
+                  different local/remote XMAME versions (37b16
+                  local, 0.106 remote). PC's IP address is
+                  discovered using mDNS and ROMs are copied to the
+                  PC's RAM file system using the Rsync protocol.
+
+xmame_rexec.sh - Script to run XMAME on remote system via Rexec
+                 protocol, with display on the PiTrex X server.
+
+builtin.ini - Menu entries for system commands.

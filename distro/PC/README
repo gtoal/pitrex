@@ -1,0 +1,10 @@
+These are scripts and configuration files for the remote PC
+system based on Tiny Core Linux 14.0. Key shell scripts are:
+
+opt/bootlocal.sh - Set-up commands run at the end of the boot
+                   process. (run as root)
+
+usr/local/bin/menu.sh - The menu displayed to the user for
+                        connecting to a network using either WiFi or
+                        Ethernet, or changing the audio volume.
+                        (run as root)

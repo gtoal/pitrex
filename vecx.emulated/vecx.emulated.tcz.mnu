@@ -1,0 +1,1 @@
+Linux|Select VecX Emulation Mode|vecxsel|rm -f /tmp/flags/vecx_direct

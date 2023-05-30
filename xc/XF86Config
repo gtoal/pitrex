@@ -1,0 +1,55 @@
+Section "ServerLayout"
+        Identifier     "Layout0"
+        Screen      0  "Screen0" 0 0
+        InputDevice    "Keyboard0" "CoreKeyboard"
+        InputDevice    "Mice" "CorePointer"
+EndSection
+
+Section "InputDevice"
+        Identifier  "Mice"
+#       Driver      "vectrexmouse"
+        Driver      "void"
+EndSection
+
+Section "InputDevice"
+        Identifier  "Keyboard0"
+        Driver      "vectrexkbd"
+
+      ### Button to key assignments ###
+        Option      "B2+3Key" "24"
+        Option      "B2+4Key" "37"
+        Option      "B1Key" "6"
+        Option      "B2Key" "2"
+        Option      "B3Key" "56"
+        Option      "B4Key" "29"
+EndSection
+
+Section "Monitor"
+        Identifier   "Monitor0"
+        HorizSync    31.5 - 35.1
+        VertRefresh  50.0 - 70.0
+EndSection
+
+Section "Device"
+        Identifier  "PiTrex"
+        Driver      "dummy"
+
+      ###     Display Scaling      ###
+        Option      "Xscale" "0.5"
+        Option      "Yscale" "0.5"
+      ###     Intensity Offset/Brightness    ###
+        Option      "IntensityOffset" "50"
+EndSection
+
+Section "Screen"
+        Identifier "Screen0"
+        Device     "PiTrex"
+        Monitor    "Monitor0"
+        DefaultDepth     16
+        SubSection "Display"
+                Viewport   0 0
+                Depth     16
+                Modes    "800x600"
+        EndSubSection
+EndSection
+

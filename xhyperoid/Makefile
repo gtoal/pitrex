@@ -112,9 +112,9 @@ check-made:
 
 install: check-made installdirs
 	if [ -f vhyperoid ]; then \
-	install -o root -g games -m 4511 vhyperoid $(BINDIR); fi
+	install -o root -g games -m 4555 vhyperoid $(BINDIR); fi
 	if [ -f xhyperoid ]; then \
-	install -m 511 xhyperoid $(XBINDIR); fi
+	install -m 555 xhyperoid $(XBINDIR); fi
 	install -m 444 xhyperoid.6 $(MANDIR)
 	ln -f $(MANDIR)/xhyperoid.6 $(MANDIR)/vhyperoid.6
 	chmod 555 $(SOUNDSDIR)

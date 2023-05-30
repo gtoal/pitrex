@@ -89,7 +89,7 @@ Running
 From PC, after X server running PiTrex drivers has been started on
 the Raspberry Pi, run:
 
-DISPLAY=raspberrypi:0 xmame -hwvec 2 -skip_gameinfo -skip_warnings omegrace
+DISPLAY=raspberrypi:0 xmame -hwvec 2 -skip_gameinfo -skip_warnings -skip_disclaimer omegrace
 
 If your LAN doesn't have a DNS server that resolves the
 "raspberrypi" host name, replace that with its IP address (or add it

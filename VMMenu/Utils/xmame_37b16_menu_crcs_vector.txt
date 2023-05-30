@@ -1,0 +1,503 @@
+||411207f2|| Sega|Space Fury (revision C)|spacfury|spacfury
+||d071ab7e|| Sega|Space Fury (revision C)|spacfury|spacfury
+||aebc7b97|| Sega|Space Fury (revision C)|spacfury|spacfury
+||dbbba35e|| Sega|Space Fury (revision C)|spacfury|spacfury
+||d9e9eadc|| Sega|Space Fury (revision C)|spacfury|spacfury
+||7ed947b6|| Sega|Space Fury (revision C)|spacfury|spacfury
+||d2443a22|| Sega|Space Fury (revision C)|spacfury|spacfury
+||1985ccfc|| Sega|Space Fury (revision C)|spacfury|spacfury
+||330f0751|| Sega|Space Fury (revision C)|spacfury|spacfury
+||8366eadb|| Sega|Space Fury (revision C)|spacfury|spacfury
+||896a615c|| Sega|Space Fury (revision A)|spacfury|spacfura
+||e1ea7964|| Sega|Space Fury (revision A)|spacfury|spacfura
+||cdb04233|| Sega|Space Fury (revision A)|spacfury|spacfura
+||5f03e632|| Sega|Space Fury (revision A)|spacfury|spacfura
+||45a77b44|| Sega|Space Fury (revision A)|spacfury|spacfura
+||ba008f8b|| Sega|Space Fury (revision A)|spacfury|spacfura
+||78677d31|| Sega|Space Fury (revision A)|spacfury|spacfura
+||a8a51105|| Sega|Space Fury (revision A)|spacfury|spacfura
+||d60f667d|| Sega|Space Fury (revision A)|spacfury|spacfura
+||aea85b6a|| Sega|Space Fury (revision A)|spacfury|spacfura
+||6245aa23|| Sega|Zektor (revision B)|zektor|zektor
+||efeb4fb5|| Sega|Zektor (revision B)|zektor|zektor
+||daa6c25c|| Sega|Zektor (revision B)|zektor|zektor
+||62b67dde|| Sega|Zektor (revision B)|zektor|zektor
+||c2db0ba4|| Sega|Zektor (revision B)|zektor|zektor
+||4d948414|| Sega|Zektor (revision B)|zektor|zektor
+||b0556a6c|| Sega|Zektor (revision B)|zektor|zektor
+||750ecadf|| Sega|Zektor (revision B)|zektor|zektor
+||34f8850f|| Sega|Zektor (revision B)|zektor|zektor
+||52b22ab2|| Sega|Zektor (revision B)|zektor|zektor
+||a704d142|| Sega|Zektor (revision B)|zektor|zektor
+||6975e33d|| Sega|Zektor (revision B)|zektor|zektor
+||d48ab5c2|| Sega|Zektor (revision B)|zektor|zektor
+||ab54a94c|| Sega|Zektor (revision B)|zektor|zektor
+||c9d4f3a5|| Sega|Zektor (revision B)|zektor|zektor
+||893b7dbc|| Sega|Zektor (revision B)|zektor|zektor
+||867bdf4f|| Sega|Zektor (revision B)|zektor|zektor
+||bd447623|| Sega|Zektor (revision B)|zektor|zektor
+||9f8f10e8|| Sega|Zektor (revision B)|zektor|zektor
+||ad2f0f6c|| Sega|Zektor (revision B)|zektor|zektor
+||e27d7144|| Sega|Zektor (revision B)|zektor|zektor
+||7965f636|| Sega|Zektor (revision B)|zektor|zektor
+||0da13158|| Sega|Tac/Scan|tacscan|tacscan
+||98de6fd5|| Sega|Tac/Scan|tacscan|tacscan
+||dc400074|| Sega|Tac/Scan|tacscan|tacscan
+||2caf6f7e|| Sega|Tac/Scan|tacscan|tacscan
+||1495ce3d|| Sega|Tac/Scan|tacscan|tacscan
+||ab7fc5d9|| Sega|Tac/Scan|tacscan|tacscan
+||cf5e5016|| Sega|Tac/Scan|tacscan|tacscan
+||b61a3ab3|| Sega|Tac/Scan|tacscan|tacscan
+||bc0273b1|| Sega|Tac/Scan|tacscan|tacscan
+||7894da98|| Sega|Tac/Scan|tacscan|tacscan
+||db865654|| Sega|Tac/Scan|tacscan|tacscan
+||2c2454de|| Sega|Tac/Scan|tacscan|tacscan
+||77028885|| Sega|Tac/Scan|tacscan|tacscan
+||babe5cf1|| Sega|Tac/Scan|tacscan|tacscan
+||1b98b618|| Sega|Tac/Scan|tacscan|tacscan
+||cb3ded3b|| Sega|Tac/Scan|tacscan|tacscan
+||43016a79|| Sega|Tac/Scan|tacscan|tacscan
+||a4397772|| Sega|Tac/Scan|tacscan|tacscan
+||002f3bc4|| Sega|Tac/Scan|tacscan|tacscan
+||0326d87a|| Sega|Tac/Scan|tacscan|tacscan
+||f35ed1ec|| Sega|Tac/Scan|tacscan|tacscan
+||6203be22|| Sega|Tac/Scan|tacscan|tacscan
+||411207f2|| Sega|Eliminator (2 Players, set 1)|elim2|elim2
+||fd2a2916|| Sega|Eliminator (2 Players, set 1)|elim2|elim2
+||79eb5548|| Sega|Eliminator (2 Players, set 1)|elim2|elim2
+||3944972e|| Sega|Eliminator (2 Players, set 1)|elim2|elim2
+||852f7b4d|| Sega|Eliminator (2 Players, set 1)|elim2|elim2
+||cf932b08|| Sega|Eliminator (2 Players, set 1)|elim2|elim2
+||99a3f3c9|| Sega|Eliminator (2 Players, set 1)|elim2|elim2
+||d35f0fa3|| Sega|Eliminator (2 Players, set 1)|elim2|elim2
+||8fd4da21|| Sega|Eliminator (2 Players, set 1)|elim2|elim2
+||629c9a28|| Sega|Eliminator (2 Players, set 1)|elim2|elim2
+||643df651|| Sega|Eliminator (2 Players, set 1)|elim2|elim2
+||d29d70d2|| Sega|Eliminator (2 Players, set 1)|elim2|elim2
+||c5e153a3|| Sega|Eliminator (2 Players, set 1)|elim2|elim2
+||40597a92|| Sega|Eliminator (2 Players, set 1)|elim2|elim2
+||411207f2|| Sega|Eliminator (2 Players, set 2)|elim2|elim2a
+||a40ac3a5|| Sega|Eliminator (2 Players, set 2)|elim2|elim2a
+||ff100604|| Sega|Eliminator (2 Players, set 2)|elim2|elim2a
+||ebfe33bd|| Sega|Eliminator (2 Players, set 2)|elim2|elim2a
+||03d41db3|| Sega|Eliminator (2 Players, set 2)|elim2|elim2a
+||f2c7ece3|| Sega|Eliminator (2 Players, set 2)|elim2|elim2a
+||1fc58b00|| Sega|Eliminator (2 Players, set 2)|elim2|elim2a
+||f37480d1|| Sega|Eliminator (2 Players, set 2)|elim2|elim2a
+||328819f8|| Sega|Eliminator (2 Players, set 2)|elim2|elim2a
+||1b8e8380|| Sega|Eliminator (2 Players, set 2)|elim2|elim2a
+||16aa3156|| Sega|Eliminator (2 Players, set 2)|elim2|elim2a
+||3c7c893a|| Sega|Eliminator (2 Players, set 2)|elim2|elim2a
+||5cee23b1|| Sega|Eliminator (2 Players, set 2)|elim2|elim2a
+||8cdacd35|| Sega|Eliminator (2 Players, set 2)|elim2|elim2a
+||97010c3e|| Sega|Eliminator (4 Players)|elim2|elim4
+||657d7320|| Sega|Eliminator (4 Players)|elim2|elim4
+||b15fe578|| Sega|Eliminator (4 Players)|elim2|elim4
+||0702b586|| Sega|Eliminator (4 Players)|elim2|elim4
+||4168dd3b|| Sega|Eliminator (4 Players)|elim2|elim4
+||c950f24c|| Sega|Eliminator (4 Players)|elim2|elim4
+||dc8c91cc|| Sega|Eliminator (4 Players)|elim2|elim4
+||11eda631|| Sega|Eliminator (4 Players)|elim2|elim4
+||b9dd6e7a|| Sega|Eliminator (4 Players)|elim2|elim4
+||c92c7237|| Sega|Eliminator (4 Players)|elim2|elim4
+||889b98e3|| Sega|Eliminator (4 Players)|elim2|elim4
+||d79248a5|| Sega|Eliminator (4 Players)|elim2|elim4
+||c5dabc77|| Sega|Eliminator (4 Players)|elim2|elim4
+||24c8e5d8|| Sega|Eliminator (4 Players)|elim2|elim4
+||96d48238|| Sega|Eliminator (4 Players)|elim2|elim4
+||be46f5d9|| Sega|Star Trek|startrek|startrek
+||65e3baf3|| Sega|Star Trek|startrek|startrek
+||8169fd3d|| Sega|Star Trek|startrek|startrek
+||78fd68dc|| Sega|Star Trek|startrek|startrek
+||3f55ab86|| Sega|Star Trek|startrek|startrek
+||2542ecfb|| Sega|Star Trek|startrek|startrek
+||75c2526a|| Sega|Star Trek|startrek|startrek
+||096d75d0|| Sega|Star Trek|startrek|startrek
+||bc7b9a12|| Sega|Star Trek|startrek|startrek
+||ed9fe2fb|| Sega|Star Trek|startrek|startrek
+||28699d45|| Sega|Star Trek|startrek|startrek
+||3a7593cb|| Sega|Star Trek|startrek|startrek
+||5b11886b|| Sega|Star Trek|startrek|startrek
+||62eb96e6|| Sega|Star Trek|startrek|startrek
+||99852d1d|| Sega|Star Trek|startrek|startrek
+||76ce27b2|| Sega|Star Trek|startrek|startrek
+||dd92d187|| Sega|Star Trek|startrek|startrek
+||e37d3a1e|| Sega|Star Trek|startrek|startrek
+||b2ec8125|| Sega|Star Trek|startrek|startrek
+||6f188354|| Sega|Star Trek|startrek|startrek
+||b0a3eae8|| Sega|Star Trek|startrek|startrek
+||8b4e2e07|| Sega|Star Trek|startrek|startrek
+||e5663070|| Sega|Star Trek|startrek|startrek
+||4340616d|| Sega|Star Trek|startrek|startrek
+||b779884b|| Sega|Star Trek|startrek|startrek
+||03713920|| Sega|Star Trek|startrek|startrek
+||ebb5c3a9|| Sega|Star Trek|startrek|startrek
+||b8763eea|| Atari|Lunar Lander (rev 2)|llander|llander
+||77da4b2f|| Atari|Lunar Lander (rev 2)|llander|llander
+||2724e591|| Atari|Lunar Lander (rev 2)|llander|llander
+||72837a4e|| Atari|Lunar Lander (rev 2)|llander|llander
+||355a9371|| Atari|Lunar Lander (rev 2)|llander|llander
+||9c4ffa68|| Atari|Lunar Lander (rev 2)|llander|llander
+||00000000|| Atari|Lunar Lander (rev 2)|llander|llander
+||2aff3140|| Atari|Lunar Lander (rev 1)|llander|llander1
+||493e24b7|| Atari|Lunar Lander (rev 1)|llander|llander1
+||2724e591|| Atari|Lunar Lander (rev 1)|llander|llander1
+||b11a7d01|| Atari|Lunar Lander (rev 1)|llander|llander1
+||355a9371|| Atari|Lunar Lander (rev 1)|llander|llander1
+||9c4ffa68|| Atari|Lunar Lander (rev 1)|llander|llander1
+||00000000|| Atari|Lunar Lander (rev 1)|llander|llander1
+||0cc75459|| Atari|Asteroids (rev 2)|asteroid|asteroid
+||096ed35c|| Atari|Asteroids (rev 2)|asteroid|asteroid
+||312caa02|| Atari|Asteroids (rev 2)|asteroid|asteroid
+||8b71fd9e|| Atari|Asteroids (rev 2)|asteroid|asteroid
+||e9bfda64|| Atari|Asteroids (rev 1)|asteroid|asteroi1
+||e53c28a9|| Atari|Asteroids (rev 1)|asteroid|asteroi1
+||7d4e3d05|| Atari|Asteroids (rev 1)|asteroid|asteroi1
+||99699366|| Atari|Asteroids (rev 1)|asteroid|asteroi1
+||605fc0f2|| Other|Asteroids (bootleg on Lunar Lander hardware)|asteroid|asteroib
+||e106de77|| Other|Asteroids (bootleg on Lunar Lander hardware)|asteroid|asteroib
+||6b1d8594|| Other|Asteroids (bootleg on Lunar Lander hardware)|asteroid|asteroib
+||8b71fd9e|| Other|Asteroids (bootleg on Lunar Lander hardware)|asteroid|asteroib
+||a4d7a525|| Atari|Asteroids Deluxe (rev 2)|astdelux|astdelux
+||d4004aae|| Atari|Asteroids Deluxe (rev 2)|astdelux|astdelux
+||6d720c41|| Atari|Asteroids Deluxe (rev 2)|astdelux|astdelux
+||0dcc0be6|| Atari|Asteroids Deluxe (rev 2)|astdelux|astdelux
+||bb8cabe1|| Atari|Asteroids Deluxe (rev 2)|astdelux|astdelux
+||7d511572|| Atari|Asteroids Deluxe (rev 2)|astdelux|astdelux
+||8f5dabc6|| Atari|Asteroids Deluxe (rev 1)|astdelux|astdelu1
+||157a8516|| Atari|Asteroids Deluxe (rev 1)|astdelux|astdelu1
+||fdea913c|| Atari|Asteroids Deluxe (rev 1)|astdelux|astdelu1
+||d8db74e3|| Atari|Asteroids Deluxe (rev 1)|astdelux|astdelu1
+||3b597407|| Atari|Asteroids Deluxe (rev 1)|astdelux|astdelu1
+||7d511572|| Atari|Asteroids Deluxe (rev 1)|astdelux|astdelu1
+||efbc3fa0|| Atari|Battle Zone (set 1)|bzone|bzone
+||5d9d9111|| Atari|Battle Zone (set 1)|bzone|bzone
+||ab55cbd2|| Atari|Battle Zone (set 1)|bzone|bzone
+||ad281297|| Atari|Battle Zone (set 1)|bzone|bzone
+||0b7bfaa4|| Atari|Battle Zone (set 1)|bzone|bzone
+||1e14e919|| Atari|Battle Zone (set 1)|bzone|bzone
+||7414177b|| Atari|Battle Zone (set 1)|bzone|bzone
+||8ea8f939|| Atari|Battle Zone (set 1)|bzone|bzone
+||13de36d5|| Atari|Battle Zone (set 2)|bzone|bzone2
+||5d9d9111|| Atari|Battle Zone (set 2)|bzone|bzone2
+||ab55cbd2|| Atari|Battle Zone (set 2)|bzone|bzone2
+||ad281297|| Atari|Battle Zone (set 2)|bzone|bzone2
+||0b7bfaa4|| Atari|Battle Zone (set 2)|bzone|bzone2
+||1e14e919|| Atari|Battle Zone (set 2)|bzone|bzone2
+||7414177b|| Atari|Battle Zone (set 2)|bzone|bzone2
+||8ea8f939|| Atari|Battle Zone (set 2)|bzone|bzone2
+||e228dd64|| Atari|Battle Zone (cocktail)|bzone|bzonec
+||dddfac9a|| Atari|Battle Zone (cocktail)|bzone|bzonec
+||7e00e823|| Atari|Battle Zone (cocktail)|bzone|bzonec
+||c0f8c068|| Atari|Battle Zone (cocktail)|bzone|bzonec
+||5adc64bd|| Atari|Battle Zone (cocktail)|bzone|bzonec
+||ed8a860e|| Atari|Battle Zone (cocktail)|bzone|bzonec
+||04babf45|| Atari|Battle Zone (cocktail)|bzone|bzonec
+||7414177b|| Atari|Battle Zone (cocktail)|bzone|bzonec
+||76cf57f6|| Atari|Battle Zone (cocktail)|bzone|bzonec
+||60f23983|| Atari|Red Baron|redbaron|redbaron
+||69bed808|| Atari|Red Baron|redbaron|redbaron
+||d1104dd7|| Atari|Red Baron|redbaron|redbaron
+||7434acb4|| Atari|Red Baron|redbaron|redbaron
+||c0e7589e|| Atari|Red Baron|redbaron|redbaron
+||ad81d1da|| Atari|Red Baron|redbaron|redbaron
+||9fcffea0|| Atari|Red Baron|redbaron|redbaron
+||60250ede|| Atari|Red Baron|redbaron|redbaron
+||65d61fe7|| Atari|Tempest (rev 3)|tempest|tempest
+||11077375|| Atari|Tempest (rev 3)|tempest|tempest
+||f3e2827a|| Atari|Tempest (rev 3)|tempest|tempest
+||aeb0f7e9|| Atari|Tempest (rev 3)|tempest|tempest
+||ef2eb645|| Atari|Tempest (rev 3)|tempest|tempest
+||beb352ab|| Atari|Tempest (rev 3)|tempest|tempest
+||a4de050f|| Atari|Tempest (rev 3)|tempest|tempest
+||35619648|| Atari|Tempest (rev 3)|tempest|tempest
+||73d38e47|| Atari|Tempest (rev 3)|tempest|tempest
+||707bd5c3|| Atari|Tempest (rev 3)|tempest|tempest
+||29f7e937|| Atari|Tempest (rev 3)|tempest|tempest
+||c16ec351|| Atari|Tempest (rev 3)|tempest|tempest
+||65d61fe7|| Atari|Tempest (rev 1)|tempest|tempest1
+||11077375|| Atari|Tempest (rev 1)|tempest|tempest1
+||f3e2827a|| Atari|Tempest (rev 1)|tempest|tempest1
+||7356896c|| Atari|Tempest (rev 1)|tempest|tempest1
+||55952119|| Atari|Tempest (rev 1)|tempest|tempest1
+||beb352ab|| Atari|Tempest (rev 1)|tempest|tempest1
+||a4de050f|| Atari|Tempest (rev 1)|tempest|tempest1
+||35619648|| Atari|Tempest (rev 1)|tempest|tempest1
+||73d38e47|| Atari|Tempest (rev 1)|tempest|tempest1
+||796a9918|| Atari|Tempest (rev 1)|tempest|tempest1
+||29f7e937|| Atari|Tempest (rev 1)|tempest|tempest1
+||c16ec351|| Atari|Tempest (rev 1)|tempest|tempest1
+||65d61fe7|| Atari|Tempest (rev 2)|tempest|tempest2
+||11077375|| Atari|Tempest (rev 2)|tempest|tempest2
+||f3e2827a|| Atari|Tempest (rev 2)|tempest|tempest2
+||7356896c|| Atari|Tempest (rev 2)|tempest|tempest2
+||ef2eb645|| Atari|Tempest (rev 2)|tempest|tempest2
+||beb352ab|| Atari|Tempest (rev 2)|tempest|tempest2
+||a4de050f|| Atari|Tempest (rev 2)|tempest|tempest2
+||35619648|| Atari|Tempest (rev 2)|tempest|tempest2
+||73d38e47|| Atari|Tempest (rev 2)|tempest|tempest2
+||707bd5c3|| Atari|Tempest (rev 2)|tempest|tempest2
+||29f7e937|| Atari|Tempest (rev 2)|tempest|tempest2
+||c16ec351|| Atari|Tempest (rev 2)|tempest|tempest2
+||65d61fe7|| Other|Tempest Tubes|tempest|temptube
+||11077375|| Other|Tempest Tubes|tempest|temptube
+||f3e2827a|| Other|Tempest Tubes|tempest|temptube
+||aeb0f7e9|| Other|Tempest Tubes|tempest|temptube
+||ef2eb645|| Other|Tempest Tubes|tempest|temptube
+||cefb03f0|| Other|Tempest Tubes|tempest|temptube
+||a4de050f|| Other|Tempest Tubes|tempest|temptube
+||35619648|| Other|Tempest Tubes|tempest|temptube
+||73d38e47|| Other|Tempest Tubes|tempest|temptube
+||707bd5c3|| Other|Tempest Tubes|tempest|temptube
+||29f7e937|| Other|Tempest Tubes|tempest|temptube
+||c16ec351|| Other|Tempest Tubes|tempest|temptube
+||691122fe|| Atari|Space Duel|spacduel|spacduel
+||d8dd0461|| Atari|Space Duel|spacduel|spacduel
+||f4037b6e|| Atari|Space Duel|spacduel|spacduel
+||4c451e8a|| Atari|Space Duel|spacduel|spacduel
+||ee72da63|| Atari|Space Duel|spacduel|spacduel
+||e41b38a3|| Atari|Space Duel|spacduel|spacduel
+||5652710f|| Atari|Space Duel|spacduel|spacduel
+||debcb243|| Atari|Gravitar (version 3)|gravitar|gravitar
+||4135629a|| Atari|Gravitar (version 3)|gravitar|gravitar
+||358f25d9|| Atari|Gravitar (version 3)|gravitar|gravitar
+||4ac78df4|| Atari|Gravitar (version 3)|gravitar|gravitar
+||a2a55013|| Atari|Gravitar (version 3)|gravitar|gravitar
+||d3700b3c|| Atari|Gravitar (version 3)|gravitar|gravitar
+||8e12e3e0|| Atari|Gravitar (version 3)|gravitar|gravitar
+||467ad5da|| Atari|Gravitar (version 3)|gravitar|gravitar
+||840603af|| Atari|Gravitar (version 3)|gravitar|gravitar
+||3f3805ad|| Atari|Gravitar (version 3)|gravitar|gravitar
+||debcb243|| Atari|Gravitar (version 2)|gravitar|gravitr2
+||4135629a|| Atari|Gravitar (version 2)|gravitar|gravitr2
+||358f25d9|| Atari|Gravitar (version 2)|gravitar|gravitr2
+||37034287|| Atari|Gravitar (version 2)|gravitar|gravitr2
+||167315e4|| Atari|Gravitar (version 2)|gravitar|gravitr2
+||aaa9e62c|| Atari|Gravitar (version 2)|gravitar|gravitr2
+||ae437253|| Atari|Gravitar (version 2)|gravitar|gravitr2
+||5d6bc29e|| Atari|Gravitar (version 2)|gravitar|gravitr2
+||0db1ff34|| Atari|Gravitar (version 2)|gravitar|gravitr2
+||4521ca48|| Atari|Gravitar (version 2)|gravitar|gravitr2
+||7e7be63a|| Atari|Quantum (rev 2)|quantum|quantum
+||2d8f5759|| Atari|Quantum (rev 2)|quantum|quantum
+||408d34f4|| Atari|Quantum (rev 2)|quantum|quantum
+||63154484|| Atari|Quantum (rev 2)|quantum|quantum
+||bdc52fad|| Atari|Quantum (rev 2)|quantum|quantum
+||dab4066b|| Atari|Quantum (rev 2)|quantum|quantum
+||bf271e5c|| Atari|Quantum (rev 2)|quantum|quantum
+||d2894424|| Atari|Quantum (rev 2)|quantum|quantum
+||13ec512c|| Atari|Quantum (rev 2)|quantum|quantum
+||acb50363|| Atari|Quantum (rev 2)|quantum|quantum
+||5af0bd5b|| Atari|Quantum (rev 1)|quantum|quantum1
+||f9724666|| Atari|Quantum (rev 1)|quantum|quantum1
+||408d34f4|| Atari|Quantum (rev 1)|quantum|quantum1
+||63154484|| Atari|Quantum (rev 1)|quantum|quantum1
+||948f228b|| Atari|Quantum (rev 1)|quantum|quantum1
+||e4c48e4e|| Atari|Quantum (rev 1)|quantum|quantum1
+||bf271e5c|| Atari|Quantum (rev 1)|quantum|quantum1
+||d2894424|| Atari|Quantum (rev 1)|quantum|quantum1
+||13ec512c|| Atari|Quantum (rev 1)|quantum|quantum1
+||acb50363|| Atari|Quantum (rev 1)|quantum|quantum1
+||176d73d3|| Atari|Quantum (prototype)|quantum|quantump
+||12fc631f|| Atari|Quantum (prototype)|quantum|quantump
+||b64fab48|| Atari|Quantum (prototype)|quantum|quantump
+||a52a9433|| Atari|Quantum (prototype)|quantum|quantump
+||5b29cba3|| Atari|Quantum (prototype)|quantum|quantump
+||c64fc03a|| Atari|Quantum (prototype)|quantum|quantump
+||854f9c09|| Atari|Quantum (prototype)|quantum|quantump
+||1aac576c|| Atari|Quantum (prototype)|quantum|quantump
+||1285b5e7|| Atari|Quantum (prototype)|quantum|quantump
+||e19de844|| Atari|Quantum (prototype)|quantum|quantump
+||97f6000c|| Atari|Black Widow|bwidow|bwidow
+||3da354ed|| Atari|Black Widow|bwidow|bwidow
+||2fc4ce79|| Atari|Black Widow|bwidow|bwidow
+||0dd52987|| Atari|Black Widow|bwidow|bwidow
+||fe3febb7|| Atari|Black Widow|bwidow|bwidow
+||10ad0376|| Atari|Black Widow|bwidow|bwidow
+||8a1430ee|| Atari|Black Widow|bwidow|bwidow
+||44f9943f|| Atari|Black Widow|bwidow|bwidow
+||a046a2e2|| Atari|Black Widow|bwidow|bwidow
+||4dc28b22|| Atari|Black Widow|bwidow|bwidow
+||538e7d2f|| Atari|Star Wars (rev 2)|starwars|starwars
+||04f1876e|| Atari|Star Wars (rev 2)|starwars|starwars
+||f725e344|| Atari|Star Wars (rev 2)|starwars|starwars
+||f6da0a00|| Atari|Star Wars (rev 2)|starwars|starwars
+||7e406703|| Atari|Star Wars (rev 2)|starwars|starwars
+||c7e51237|| Atari|Star Wars (rev 2)|starwars|starwars
+||01061762|| Atari|Star Wars (rev 2)|starwars|starwars
+||2e619b70|| Atari|Star Wars (rev 2)|starwars|starwars
+||6cfa3544|| Atari|Star Wars (rev 2)|starwars|starwars
+||03f6acb2|| Atari|Star Wars (rev 2)|starwars|starwars
+||dbf3aea2|| Atari|Star Wars (rev 2)|starwars|starwars
+||e38070a8|| Atari|Star Wars (rev 2)|starwars|starwars
+||538e7d2f|| Atari|Star Wars (rev 1)|starwars|starwar1
+||e75ff867|| Atari|Star Wars (rev 1)|starwars|starwar1
+||f725e344|| Atari|Star Wars (rev 1)|starwars|starwar1
+||f6da0a00|| Atari|Star Wars (rev 1)|starwars|starwar1
+||7e406703|| Atari|Star Wars (rev 1)|starwars|starwar1
+||c7e51237|| Atari|Star Wars (rev 1)|starwars|starwar1
+||01061762|| Atari|Star Wars (rev 1)|starwars|starwar1
+||2e619b70|| Atari|Star Wars (rev 1)|starwars|starwar1
+||6cfa3544|| Atari|Star Wars (rev 1)|starwars|starwar1
+||03f6acb2|| Atari|Star Wars (rev 1)|starwars|starwar1
+||dbf3aea2|| Atari|Star Wars (rev 1)|starwars|starwar1
+||e38070a8|| Atari|Star Wars (rev 1)|starwars|starwar1
+||c67284ca|| Atari|Major Havoc (rev 3)|mhavoc|mhavoc
+||522a9cc0|| Atari|Major Havoc (rev 3)|mhavoc|mhavoc
+||ea3d6877|| Atari|Major Havoc (rev 3)|mhavoc|mhavoc
+||a4d380ca|| Atari|Major Havoc (rev 3)|mhavoc|mhavoc
+||ba935067|| Atari|Major Havoc (rev 3)|mhavoc|mhavoc
+||2ca83c76|| Atari|Major Havoc (rev 3)|mhavoc|mhavoc
+||5f81c5f3|| Atari|Major Havoc (rev 3)|mhavoc|mhavoc
+||93faf210|| Atari|Major Havoc (rev 3)|mhavoc|mhavoc
+||16eef583|| Atari|Major Havoc (rev 2)|mhavoc|mhavoc2
+||bf192284|| Atari|Major Havoc (rev 2)|mhavoc|mhavoc2
+||833c5d4e|| Atari|Major Havoc (rev 2)|mhavoc|mhavoc2
+||2b3b591f|| Atari|Major Havoc (rev 2)|mhavoc|mhavoc2
+||4d766827|| Atari|Major Havoc (rev 2)|mhavoc|mhavoc2
+||2ca83c76|| Atari|Major Havoc (rev 2)|mhavoc|mhavoc2
+||5f81c5f3|| Atari|Major Havoc (rev 2)|mhavoc|mhavoc2
+||93faf210|| Atari|Major Havoc (rev 2)|mhavoc|mhavoc2
+||3050c0e6|| Atari|Major Havoc (prototype)|mhavoc|mhavocp
+||94caf6c0|| Atari|Major Havoc (prototype)|mhavoc|mhavocp
+||05cba70a|| Atari|Major Havoc (prototype)|mhavoc|mhavocp
+||c567c11b|| Atari|Major Havoc (prototype)|mhavoc|mhavocp
+||a8c35ccd|| Atari|Major Havoc (prototype)|mhavoc|mhavocp
+||e272ed41|| Atari|Major Havoc (prototype)|mhavoc|mhavocp
+||e152c9d8|| Atari|Major Havoc (prototype)|mhavoc|mhavocp
+||22ea7399|| Atari|Major Havoc (prototype)|mhavoc|mhavocp
+||c67284ca|| Other|Major Havoc (Return to Vax)|mhavoc|mhavocrv
+||1255bd7f|| Other|Major Havoc (Return to Vax)|mhavoc|mhavocrv
+||21889079|| Other|Major Havoc (Return to Vax)|mhavoc|mhavocrv
+||4c7235dc|| Other|Major Havoc (Return to Vax)|mhavoc|mhavocrv
+||84735445|| Other|Major Havoc (Return to Vax)|mhavoc|mhavocrv
+||2ca83c76|| Other|Major Havoc (Return to Vax)|mhavoc|mhavocrv
+||4deea2c9|| Other|Major Havoc (Return to Vax)|mhavoc|mhavocrv
+||c52ec664|| Other|Major Havoc (Return to Vax)|mhavoc|mhavocrv
+||b1f9bd12|| Atari|The Empire Strikes Back|esb|esb
+||ef1e3ae5|| Atari|The Empire Strikes Back|esb|esb
+||62ce5c12|| Atari|The Empire Strikes Back|esb|esb
+||27b0889b|| Atari|The Empire Strikes Back|esb|esb
+||fd5c725e|| Atari|The Empire Strikes Back|esb|esb
+||ea9e4dce|| Atari|The Empire Strikes Back|esb|esb
+||76d07f59|| Atari|The Empire Strikes Back|esb|esb
+||b8d0f69d|| Atari|The Empire Strikes Back|esb|esb
+||6a2a4d98|| Atari|The Empire Strikes Back|esb|esb
+||6a76138f|| Atari|The Empire Strikes Back|esb|esb
+||afbf6e01|| Atari|The Empire Strikes Back|esb|esb
+||24ae3815|| Atari|The Empire Strikes Back|esb|esb
+||ca72d341|| Atari|The Empire Strikes Back|esb|esb
+||edf0fd53|| Cinematronics|Space Wars|spacewar|spacewar
+||4f21328b|| Cinematronics|Space Wars|spacewar|spacewar
+||7c3d68c8|| Vectorbeam|Barrier|barrier|barrier
+||aec142b5|| Vectorbeam|Barrier|barrier|barrier
+||b5838b5d|| Cinematronics|Star Castle (version 3)|starcas|starcas
+||f6bc2f4d|| Cinematronics|Star Castle (version 3)|starcas|starcas
+||188cd97c|| Cinematronics|Star Castle (version 3)|starcas|starcas
+||c367b69d|| Cinematronics|Star Castle (version 3)|starcas|starcas
+||65d0a225|| Cinematronics|Star Castle (older)|starcas|starcas1
+||d8f58d9a|| Cinematronics|Star Castle (older)|starcas|starcas1
+||d4f35b82|| Cinematronics|Star Castle (older)|starcas|starcas1
+||9fd3de54|| Cinematronics|Star Castle (older)|starcas|starcas1
+||21ec9a04|| Cinematronics|Tailgunner|tailg|tailg
+||8d7410b3|| Cinematronics|Tailgunner|tailg|tailg
+||2c954ab6|| Cinematronics|Tailgunner|tailg|tailg
+||8e2c8494|| Cinematronics|Tailgunner|tailg|tailg
+||40c2c5b8|| Cinematronics|Rip Off|ripoff|ripoff
+||a9208afb|| Cinematronics|Rip Off|ripoff|ripoff
+||29c13701|| Cinematronics|Rip Off|ripoff|ripoff
+||150bd4c8|| Cinematronics|Rip Off|ripoff|ripoff
+||d7e71f84|| Cinematronics|Armor Attack|armora|armora
+||df1c2370|| Cinematronics|Armor Attack|armora|armora
+||b0276118|| Cinematronics|Armor Attack|armora|armora
+||229d779f|| Cinematronics|Armor Attack|armora|armora
+||b16440f9|| Cinematronics|War of the Worlds|wotw|wotw
+||bfdf4a5a|| Cinematronics|War of the Worlds|wotw|wotw
+||9b5cea48|| Cinematronics|War of the Worlds|wotw|wotw
+||c9d3c866|| Cinematronics|War of the Worlds|wotw|wotw
+||ac3646f9|| Vectorbeam|Warrior|warrior|warrior
+||517d3021|| Vectorbeam|Warrior|warrior|warrior
+||2e39340f|| Vectorbeam|Warrior|warrior|warrior
+||8e91b502|| Vectorbeam|Warrior|warrior|warrior
+||376e6c5c|| Cinematronics|Star Hawk|starhawk|starhawk
+||bb71144f|| Cinematronics|Star Hawk|starhawk|starhawk
+||1f3c5333|| Cinematronics|Solar Quest|solarq|solarq
+||d6c16bcc|| Cinematronics|Solar Quest|solarq|solarq
+||a5970e5c|| Cinematronics|Solar Quest|solarq|solarq
+||b763fff2|| Cinematronics|Solar Quest|solarq|solarq
+||d3115b0f|| Cinematronics|Boxing Bugs|boxingb|boxingb
+||3a44268d|| Cinematronics|Boxing Bugs|boxingb|boxingb
+||c97a9cbb|| Cinematronics|Boxing Bugs|boxingb|boxingb
+||98d34ff5|| Cinematronics|Boxing Bugs|boxingb|boxingb
+||5bb3269b|| Cinematronics|Boxing Bugs|boxingb|boxingb
+||85bf83ad|| Cinematronics|Boxing Bugs|boxingb|boxingb
+||25b51799|| Cinematronics|Boxing Bugs|boxingb|boxingb
+||7f41de6a|| Cinematronics|Boxing Bugs|boxingb|boxingb
+||3552c03f|| Vectorbeam|Speed Freak|speedfrk|speedfrk
+||4b90cdec|| Vectorbeam|Speed Freak|speedfrk|speedfrk
+||616c7cf9|| Vectorbeam|Speed Freak|speedfrk|speedfrk
+||fbe90d63|| Vectorbeam|Speed Freak|speedfrk|speedfrk
+||d5b9cb19|| Cinematronics|Sundance|sundance|sundance
+||445c4f20|| Cinematronics|Sundance|sundance|sundance
+||67887d48|| Cinematronics|Sundance|sundance|sundance
+||10b77ebd|| Cinematronics|Sundance|sundance|sundance
+||866596c1|| Other|Demon|demon|demon
+||1109e2f1|| Other|Demon|demon|demon
+||d447a3c3|| Other|Demon|demon|demon
+||64b515f0|| Other|Demon|demon|demon
+||1e2cc262|| Other|Demon|demon|demon
+||19244f25|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||5d702c7d|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||56a7ce8a|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||2e192db0|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||9c71c600|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||a4eb59a5|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||8308dd6e|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||9d3abf97|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||4e076ae7|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||cc9e19ca|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||a96525d2|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||8e426628|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||88b71027|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||d90c9773|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||e4a58b7d|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||877e849c|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||715adc4a|| Cinematronics|Cosmic Chasm (set 1)|cchasm|cchasm
+||19244f25|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||5d702c7d|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||56a7ce8a|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||2e192db0|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||9c71c600|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||a4eb59a5|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||8308dd6e|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||9d3abf97|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||008b26ef|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||c2c532a3|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||a96525d2|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||8e426628|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||e02293f8|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||d90c9773|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||e4a58b7d|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||877e849c|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||715adc4a|| Cinematronics|Cosmic Chasm (set 2)|cchasm|cchasm1
+||0424d46e|| Midway|Omega Race|omegrace|omegrace
+||edcd7a7d|| Midway|Omega Race|omegrace|omegrace
+||6d10f197|| Midway|Omega Race|omegrace|omegrace
+||8e8d4b54|| Midway|Omega Race|omegrace|omegrace
+||1d0fdf3a|| Midway|Omega Race|omegrace|omegrace
+||d44c0814|| Midway|Omega Race|omegrace|omegrace
+||7d426017|| Midway|Omega Race|omegrace|omegrace
+||25f8da18|| Centuri|Aztarac|aztarac|aztarac
+||04e20626|| Centuri|Aztarac|aztarac|aztarac
+||230e244c|| Centuri|Aztarac|aztarac|aztarac
+||37b12697|| Centuri|Aztarac|aztarac|aztarac
+||1293fb9d|| Centuri|Aztarac|aztarac|aztarac
+||712c206a|| Centuri|Aztarac|aztarac|aztarac
+||743a6501|| Centuri|Aztarac|aztarac|aztarac
+||a65cbf99|| Centuri|Aztarac|aztarac|aztarac
+||9cf1b0a1|| Centuri|Aztarac|aztarac|aztarac
+||5f0080d5|| Centuri|Aztarac|aztarac|aztarac
+||8cc7f7fa|| Centuri|Aztarac|aztarac|aztarac
+||40452376|| Centuri|Aztarac|aztarac|aztarac
+||e897dfcd|| Centuri|Aztarac|aztarac|aztarac
+||4016de77|| Centuri|Aztarac|aztarac|aztarac

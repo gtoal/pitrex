@@ -67,7 +67,7 @@ cp -rf /mnt/mmcblk0p1/roms/37b16/.xmame* /home/tc/
 chown -R tc:staff /home/tc/.xmame*
 
 # Start WiFi
-[ "$WIFI" ] && /usr/bin/wifiinit.sh -b
+[ "$WIFI" ] && sudo -u tc usr/bin/wifiinit.sh -b
 
 # Start Bluetooth
 if [ "$BLUETOOTH" ]
